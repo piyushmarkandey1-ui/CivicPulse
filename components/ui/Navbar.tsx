@@ -314,7 +314,7 @@ export function Navbar() {
 
           {/* Desktop Auth Controls */}
           <div className="hidden md:flex flex-shrink-0 items-center gap-3">
-            {!loading && !user && <DualPortalAuthDropdowns />}
+            {!loading && !user && pathname !== "/map" && <DualPortalAuthDropdowns />}
 
             {!loading && user && (
               <div className="flex items-center gap-3">

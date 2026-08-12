@@ -238,7 +238,18 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
               )}
             >
               <div className="text-xl" aria-hidden>
-                {escl.isOverdue ? "⚠️" : "⏱️"}
+                {escl.isOverdue ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                )}
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider">
@@ -313,7 +324,9 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                     : "bg-[#8B2635] text-white border-transparent hover:bg-[#641B27]"
                 )}
               >
-                <span aria-hidden>👍</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                </svg>
                 {hasUpvoted ? "Confirmed (+1)" : `Confirm Issue (${issue.upvotes})`}
               </motion.button>
             </div>
