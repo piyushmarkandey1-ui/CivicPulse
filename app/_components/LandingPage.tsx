@@ -859,12 +859,9 @@ function CTASection() {
               Join thousands of residents actively monitoring and improving city infrastructure.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-3.5 mt-2">
-              <GradientButton href="/map?report=true" size="lg" variant="primary">
-                Report a Municipal Issue
-              </GradientButton>
-              <GradientButton href="/map" variant="outline" size="lg">
-                Explore Live Map Radar →
+            <div className="mt-2">
+              <GradientButton href="/map" size="lg" variant="primary">
+                Launch Civic Radar →
               </GradientButton>
             </div>
 
