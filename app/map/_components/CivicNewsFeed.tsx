@@ -40,6 +40,7 @@ export default function CivicNewsFeed({
   const { role, profile } = useAuth();
   const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const sortedIssues = [...issues].sort((a, b) => {
     if (a.severity === "critical" && b.severity !== "critical") return -1;
@@ -51,16 +52,32 @@ export default function CivicNewsFeed({
   const inProgressCount = issues.filter((i) => i.status === "In Progress" || i.status === "Verified").length;
   const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
 
+  // Function to pause ticker during manual interaction and auto-resume after 6s
+  const handleUserManualScroll = () => {
+    setIsPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => {
+      setIsPaused(false);
+    }, 6000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    };
+  }, []);
+
+  // Smooth background auto-scroll when not manually interacting
   useEffect(() => {
     if (!isOpen || isPaused) return;
 
     const interval = setInterval(() => {
       if (scrollRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-        if (scrollTop + clientHeight >= scrollHeight - 4) {
+        if (scrollTop + clientHeight >= scrollHeight - 2) {
           scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
         } else {
-          scrollRef.current.scrollBy({ top: 1.2, behavior: "auto" });
+          scrollRef.current.scrollBy({ top: 1, behavior: "auto" });
         }
       }
     }, 45);
@@ -114,7 +131,7 @@ export default function CivicNewsFeed({
             aria-label="Civic Pulse Bulletin"
           >
             {/* Header */}
-            <div className="pt-20 pb-3.5 px-5 border-b border-[#DED8CD] bg-white">
+            <div className="pt-20 pb-3.5 px-5 border-b border-[#DED8CD] bg-white flex-shrink-0">
               {/* Top Title Row with integrated collapse button */}
               <div className="flex items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
@@ -221,15 +238,22 @@ export default function CivicNewsFeed({
               </div>
             </div>
 
-            {/* Scrolling Feed Container without annoying popup info */}
+            {/* Smooth Scroll Feed Container with Manual Scroll & Drag Support */}
             <div
               className="relative flex-1 overflow-hidden"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
+              onWheel={handleUserManualScroll}
+              onTouchStart={handleUserManualScroll}
+              onPointerDown={handleUserManualScroll}
             >
               <div
                 ref={scrollRef}
-                className="h-full overflow-y-auto p-4 space-y-3 scrollbar-none"
+                className="h-full overflow-y-auto p-4 space-y-3 overscroll-contain"
+                style={{
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "#DED8CD transparent",
+                }}
               >
                 {sortedIssues.map((issue) => {
                   const isSelected = selectedIssue?.id === issue.id;
@@ -307,7 +331,7 @@ export default function CivicNewsFeed({
             </div>
 
             {/* Bottom Telemetry Bar */}
-            <div className="p-3 border-t border-[#DED8CD] bg-white text-center">
+            <div className="p-3 border-t border-[#DED8CD] bg-white text-center flex-shrink-0">
               <p className="text-[11px] text-[#625E59] flex items-center justify-center gap-1.5">
                 <span>💡</span>
                 <span>Click any incident to fly GIS map & view SLA telemetry</span>
