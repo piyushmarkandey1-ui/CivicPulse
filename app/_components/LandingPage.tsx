@@ -332,24 +332,52 @@ function HeroSection() {
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap gap-4 items-center"
+            className="flex flex-col sm:flex-row flex-wrap gap-3.5 items-stretch sm:items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <GradientButton href="/map" size="lg">
-              <span className="flex items-center gap-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-                    fill="currentColor" fillOpacity="0.3" stroke="currentColor" strokeWidth="1.5"/>
-                  <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
-                </svg>
-                Report an Issue
-              </span>
-            </GradientButton>
-            <GradientButton href="/map" variant="outline" size="lg">
-              View Live Map →
-            </GradientButton>
+            {/* For Citizens Button with quick action */}
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/[0.04] border border-copper/30">
+              <Link
+                href="/signup"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-copper text-[#0D0D0C] hover:bg-copper-light transition-all shadow-md"
+              >
+                <span>👤</span>
+                <span>For Citizens (Sign Up)</span>
+              </Link>
+              <Link
+                href="/login"
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-text-secondary hover:text-white transition-colors"
+              >
+                Sign In →
+              </Link>
+            </div>
+
+            {/* For Officers Button with quick action */}
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-amber-500/[0.05] border border-amber-500/30">
+              <Link
+                href="/gov-login"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-400 text-[#0D0D0C] hover:bg-amber-300 transition-all shadow-md"
+              >
+                <span>🛡️</span>
+                <span>For Officers (Sign In)</span>
+              </Link>
+              <Link
+                href="/gov-signup"
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 transition-colors"
+              >
+                Register →
+              </Link>
+            </div>
+
+            <Link
+              href="/map"
+              className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-text-muted hover:text-copper transition-colors"
+            >
+              <span>Explore Live Map</span>
+              <span>→</span>
+            </Link>
           </motion.div>
 
           {/* Trust strip */}
