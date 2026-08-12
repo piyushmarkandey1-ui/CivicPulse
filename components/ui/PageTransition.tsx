@@ -14,17 +14,17 @@ const pageVariants = {
     y: 0,
     filter: "blur(0px)",
     transition: {
-      duration: 0.38,
-      ease: [0.22, 1, 0.36, 1], // custom cubic-bezier for smooth decel
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1] as any,
     },
   },
   exit: {
     opacity: 0,
-    y: -8,
-    filter: "blur(2px)",
+    y: 12,
+    filter: "blur(4px)",
     transition: {
-      duration: 0.22,
-      ease: "easeIn",
+      duration: 0.28,
+      ease: "easeIn" as any,
     },
   },
 };

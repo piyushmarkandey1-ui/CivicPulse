@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { type Filters } from "./MapDashboard";
-import { type Category, type Severity, type IssueStatus } from "./mockData";
+import { type Category, type Severity, type IssueStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_CHIPS: { label: string; value: Category | "all" }[] = [

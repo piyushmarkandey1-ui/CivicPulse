@@ -4,12 +4,13 @@ import { useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L, { type LatLngTuple } from "leaflet";
+import { type Issue, type Severity } from "@/lib/types";
 
 import "leaflet/dist/leaflet.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
 
-import { type Issue, type Severity, HOTSPOT_DATA } from "./mockData";
+import { HOTSPOT_DATA } from "./mockData";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const MAP_CENTER: LatLngTuple = [19.09, 72.865];

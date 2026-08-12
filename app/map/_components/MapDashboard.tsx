@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
+import { type Issue, type Category, type Severity, type IssueStatus } from "@/lib/types";
 import { db, storage } from "@/lib/firebase";
 import { collection, onSnapshot, doc, updateDoc, increment, setDoc } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";

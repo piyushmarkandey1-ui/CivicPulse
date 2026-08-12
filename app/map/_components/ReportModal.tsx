@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { MapPin, UploadCloud, X, Loader2 } from "lucide-react";
+import { type Category, type Severity, type Issue } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { type Category, type Severity, type Issue } from "./mockData";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";

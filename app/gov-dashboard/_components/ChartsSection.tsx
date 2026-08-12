@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { 
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell
 } from "recharts";
 import { TREND_DATA, DEPT_RESOLUTION_DATA } from "./mockData";
 
@@ -64,7 +64,7 @@ export default function ChartsSection() {
               <Bar dataKey="rate" name="Resolution %" fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={24}>
                 {
                   DEPT_RESOLUTION_DATA.map((entry, index) => (
-                    <cell key={`cell-${index}`} fill={entry.rate > 80 ? '#14B8A6' : entry.rate > 60 ? '#F59E0B' : '#ef4444'} />
+                    <Cell key={`cell-${index}`} fill={entry.rate > 80 ? '#14B8A6' : entry.rate > 60 ? '#F59E0B' : '#ef4444'} />
                   ))
                 }
               </Bar>
