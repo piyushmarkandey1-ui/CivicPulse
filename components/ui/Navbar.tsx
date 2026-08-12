@@ -260,15 +260,16 @@ export function Navbar() {
 
   return (
     <>
-      <header
-        className={cn(
-          "fixed top-0 inset-x-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-[#F7F4ED]/80 backdrop-blur-md border-b border-[#DED8CD]/50 py-3 shadow-[0_2px_16px_rgba(36,34,34,0.03)]"
-            : "bg-transparent py-4"
-        )}
-      >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      {/* Completely Transparent Full-Width Header Wrapper with Floating Capsule Inside */}
+      <header className="fixed top-2.5 inset-x-0 z-50 flex justify-center px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300">
+        <nav
+          className={cn(
+            "w-full max-w-7xl flex items-center justify-between gap-4 px-5 py-2 rounded-full pointer-events-auto transition-all duration-300",
+            scrolled
+              ? "bg-white/80 backdrop-blur-md border border-[#DED8CD]/60 shadow-[0_8px_24px_rgba(36,34,34,0.05),0_1px_2px_rgba(36,34,34,0.02)]"
+              : "bg-transparent border border-transparent"
+          )}
+        >
           {/* Logo */}
           <Link
             href="/"
@@ -282,7 +283,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Nav Links (Clean, No Box Enclosing) */}
+          {/* Desktop Nav Links (Clean, Floating Text with Subtle Indicator) */}
           <ul className="hidden md:flex items-center gap-1" role="navigation">
             {navLinks.map((link) => {
               const active = pathname === link.href;
@@ -291,7 +292,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "relative px-3.5 py-1.5 text-sm font-medium transition-colors duration-200",
+                      "relative px-3.5 py-1 text-sm font-medium transition-colors duration-200",
                       active
                         ? "text-[#8B2635] font-bold"
                         : "text-[#625E59] hover:text-[#8B2635]"
@@ -382,7 +383,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed top-[56px] inset-x-0 z-40 border-b border-[#DED8CD] px-4 py-4 md:hidden bg-[#F7F4ED]/95 backdrop-blur-md shadow-xl"
+            className="fixed top-[60px] inset-x-4 z-50 rounded-2xl border border-[#DED8CD] p-4 md:hidden bg-white/95 backdrop-blur-md shadow-2xl"
           >
             <ul className="flex flex-col gap-1">
               {navLinks.map((link) => {
@@ -392,7 +393,7 @@ export function Navbar() {
                     <Link
                       href={link.href}
                       className={cn(
-                        "block px-3.5 py-2.5 rounded-lg text-sm transition-colors",
+                        "block px-3.5 py-2.5 rounded-xl text-sm transition-colors",
                         active
                           ? "text-[#8B2635] bg-[#F0E5D8] font-bold"
                           : "text-[#625E59] hover:text-[#8B2635] hover:bg-[#F0E5D8]/50"
