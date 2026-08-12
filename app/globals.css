@@ -1,0 +1,163 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap");
+
+/* ─── Design Tokens ────────────────────────────────────────────────────────── */
+@theme {
+  /* Color palette */
+  --color-navy:        #0B1120;
+  --color-navy-light:  #0F172A;
+  --color-navy-muted:  #1E293B;
+  --color-teal:        #14B8A6;
+  --color-teal-light:  #2DD4BF;
+  --color-teal-dark:   #0D9488;
+  --color-amber:       #F59E0B;
+  --color-amber-light: #FCD34D;
+  --color-amber-dark:  #D97706;
+  --color-slate-50:    #F8FAFC;
+  --color-slate-200:   #E2E8F0;
+  --color-slate-400:   #94A3B8;
+  --color-slate-500:   #64748B;
+  --color-slate-600:   #475569;
+  --color-slate-700:   #334155;
+  --color-slate-800:   #1E293B;
+  --color-slate-900:   #0F172A;
+  --color-red-500:     #EF4444;
+  --color-green-500:   #22C55E;
+
+  /* Typography */
+  --font-sora: "Sora", sans-serif;
+  --font-sans: "Sora", sans-serif;
+
+  /* Border radius */
+  --radius-glass: 1rem;
+
+  /* Box shadows */
+  --shadow-glow-teal:  0 0 30px rgba(20, 184, 166, 0.35), 0 0 60px rgba(20, 184, 166, 0.15);
+  --shadow-glow-amber: 0 0 30px rgba(245, 158, 11, 0.35), 0 0 60px rgba(245, 158, 11, 0.15);
+  --shadow-glass:      0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+  --shadow-card:       0 4px 24px rgba(0, 0, 0, 0.3);
+
+  /* Keyframes */
+  --animate-blob:          blob-float 20s ease-in-out infinite;
+  --animate-blob-delayed:  blob-float 26s ease-in-out infinite 6s;
+  --animate-fade-slide-in: fade-slide-in 0.35s ease-out forwards;
+  --animate-pulse-slow:    pulse 4s ease-in-out infinite;
+}
+
+@keyframes blob-float {
+  0%   { transform: translate(0px, 0px) scale(1);         }
+  25%  { transform: translate(40px, -30px) scale(1.05);   }
+  50%  { transform: translate(-20px, 20px) scale(0.97);   }
+  75%  { transform: translate(30px, 40px) scale(1.03);    }
+  100% { transform: translate(0px, 0px) scale(1);         }
+}
+
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0px);  }
+}
+
+/* ─── Base Reset ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0B1120;
+  color: #E2E8F0;
+  font-family: "Sora", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Typography Scale ─────────────────────────────────────────────────────── */
+.text-hero {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.text-h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-h2 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.text-h3 {
+  font-size: clamp(1.125rem, 2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Gradient Text Utility ────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #14B8A6 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glassmorphism Utility ────────────────────────────────────────────────── */
+.glass {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0B1120; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #14B8A6; }
+
+/* ─── Focus Ring ───────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #14B8A6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
