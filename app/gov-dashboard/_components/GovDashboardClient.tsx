@@ -49,7 +49,7 @@ export default function GovDashboardClient() {
   };
 
   return (
-    <div className="min-h-screen bg-navy text-slate-200 flex overflow-hidden selection:bg-teal/30">
+    <div className="min-h-screen bg-background text-text-primary flex overflow-hidden selection:bg-copper/30">
       {/* Sidebar Navigation */}
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -65,10 +65,10 @@ export default function GovDashboardClient() {
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/10">
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-copper opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-copper"></span>
               </span>
-              <span className="text-xs font-semibold text-slate-300">Live Data Sync</span>
+              <span className="text-xs font-semibold text-text-secondary">Live Data Sync</span>
             </div>
           </div>
         </header>

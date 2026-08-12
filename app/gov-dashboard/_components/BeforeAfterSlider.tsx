@@ -54,7 +54,7 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }
           <h4 className="font-bold text-white text-sm">{data.title}</h4>
           <p className="text-xs text-slate-400 mt-0.5">{data.ward}</p>
         </div>
-        <Badge label="Verified Fix" variant="green" />
+        <Badge label="Verified Fix" variant="success" />
       </div>
 
       <div 
@@ -90,11 +90,11 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }
 
         {/* Draggable Handle */}
         <div 
-          className="absolute top-0 bottom-0 w-1 bg-teal cursor-col-resize z-10 hover:bg-teal-light active:bg-teal-light transition-colors"
+          className="absolute top-0 bottom-0 w-1 bg-copper cursor-col-resize z-10 hover:bg-copper-light active:bg-copper-light transition-colors"
           style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-navy border-2 border-teal flex items-center justify-center shadow-lg" style={{ boxShadow: "0 0 15px rgba(20,184,166,0.6)" }}>
-            <MoveHorizontal className="h-4 w-4 text-teal" />
+            <MoveHorizontal className="h-4 w-4 text-copper" />
           </div>
         </div>
       </div>

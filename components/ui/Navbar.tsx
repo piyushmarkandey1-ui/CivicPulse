@@ -12,11 +12,11 @@ import { auth } from "@/lib/firebase";
 function LogoIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="10" r="2.5" fill="#4FD1A5" />
+      <circle cx="12" cy="10" r="2.5" fill="#D98B52" />
       <path
         d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-        fill="rgba(79,209,165,0.15)"
-        stroke="#4FD1A5"
+        fill="rgba(217, 139, 82, 0.15)"
+        stroke="#D98B52"
         strokeWidth="1.5"
       />
     </svg>
@@ -73,7 +73,7 @@ export function Navbar() {
         )}
         style={
           scrolled
-            ? { background: "rgba(7,11,20,0.88)", backdropFilter: "blur(24px)" }
+            ? { background: "rgba(18,17,16,0.88)", backdropFilter: "blur(24px)" }
             : undefined
         }
       >
@@ -83,8 +83,8 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="CivicPulse home">
             <LogoIcon />
             <span className="font-semibold text-[15px] tracking-tight">
-              <span className="text-slate-100">Civic</span>
-              <span className="text-teal">Pulse</span>
+              <span className="text-text-primary">Civic</span>
+              <span className="text-copper">Pulse</span>
             </span>
           </Link>
 
@@ -99,15 +99,15 @@ export function Navbar() {
                     className={cn(
                       "relative px-3.5 py-2 rounded-md text-sm transition-colors duration-200",
                       active
-                        ? "text-teal"
-                        : "text-slate-400 hover:text-slate-100"
+                        ? "text-copper"
+                        : "text-text-muted hover:text-text-primary"
                     )}
                   >
                     {link.label}
                     {active && (
                       <motion.span
                         layoutId="nav-indicator"
-                        className="absolute inset-0 rounded-md bg-teal/[0.07] border border-teal/[0.15]"
+                        className="absolute inset-0 rounded-md bg-copper/[0.07] border border-copper/[0.15]"
                         transition={{ type: "spring", stiffness: 420, damping: 34 }}
                       />
                     )}
@@ -123,13 +123,13 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-sm text-slate-400 hover:text-slate-100 transition-colors px-3 py-2"
+                  className="text-sm text-text-muted hover:text-text-primary transition-colors px-3 py-2"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/signup"
-                  className="text-sm font-semibold px-4 py-2 rounded-lg bg-teal text-[#070B14] hover:bg-teal-light transition-colors duration-200"
+                  className="text-sm font-semibold px-4 py-2 rounded-lg bg-copper text-[#0D0D0C] hover:bg-copper-light transition-colors duration-200"
                 >
                   Get Started
                 </Link>
@@ -140,14 +140,14 @@ export function Navbar() {
                 {role === "citizen" && (
                   <Link
                     href="/map"
-                    className="text-sm font-semibold px-4 py-2 rounded-lg bg-teal text-[#070B14] hover:bg-teal-light transition-colors duration-200"
+                    className="text-sm font-semibold px-4 py-2 rounded-lg bg-copper text-[#0D0D0C] hover:bg-copper-light transition-colors duration-200"
                   >
                     Report Issue
                   </Link>
                 )}
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-slate-500 hover:text-slate-300 transition-colors px-3 py-2"
+                  className="text-sm text-slate-500 hover:text-text-secondary transition-colors px-3 py-2"
                 >
                   Sign out
                 </button>
@@ -177,7 +177,7 @@ export function Navbar() {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="fixed top-[56px] inset-x-0 z-40 border-b border-white/[0.05] px-4 py-4 md:hidden"
-            style={{ background: "rgba(7,11,20,0.95)", backdropFilter: "blur(24px)" }}
+            style={{ background: "rgba(18,17,16,0.95)", backdropFilter: "blur(24px)" }}
           >
             <ul className="flex flex-col gap-0.5">
               {navLinks.map((link) => {
@@ -189,8 +189,8 @@ export function Navbar() {
                       className={cn(
                         "block px-3.5 py-2.5 rounded-md text-sm transition-colors",
                         active
-                          ? "text-teal bg-teal/[0.07] border border-teal/[0.12]"
-                          : "text-slate-400 hover:text-slate-100 hover:bg-white/[0.03]"
+                          ? "text-copper bg-copper/[0.07] border border-copper/[0.12]"
+                          : "text-text-muted hover:text-text-primary hover:bg-white/[0.03]"
                       )}
                     >
                       {link.label}
@@ -201,10 +201,10 @@ export function Navbar() {
               <li className="pt-3 mt-2 border-t border-white/[0.06]">
                 {!loading && !user && (
                   <div className="flex flex-col gap-2">
-                    <Link href="/login" className="block text-center py-2.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-white/[0.03] rounded-md transition-colors">
+                    <Link href="/login" className="block text-center py-2.5 text-sm text-text-muted hover:text-text-primary hover:bg-white/[0.03] rounded-md transition-colors">
                       Sign in
                     </Link>
-                    <Link href="/signup" className="block text-center py-2.5 text-sm font-semibold rounded-lg bg-teal text-[#070B14] hover:bg-teal-light transition-colors">
+                    <Link href="/signup" className="block text-center py-2.5 text-sm font-semibold rounded-lg bg-copper text-[#0D0D0C] hover:bg-copper-light transition-colors">
                       Get Started
                     </Link>
                   </div>
@@ -212,11 +212,11 @@ export function Navbar() {
                 {!loading && user && (
                   <>
                     {role === "citizen" && (
-                      <Link href="/map" className="block text-center py-2.5 text-sm font-semibold rounded-lg bg-teal text-[#070B14] hover:bg-teal-light transition-colors">
+                      <Link href="/map" className="block text-center py-2.5 text-sm font-semibold rounded-lg bg-copper text-[#0D0D0C] hover:bg-copper-light transition-colors">
                         Report Issue
                       </Link>
                     )}
-                    <button onClick={handleLogout} className="block w-full text-center py-2.5 text-sm text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] rounded-md transition-colors">
+                    <button onClick={handleLogout} className="block w-full text-center py-2.5 text-sm text-slate-500 hover:text-text-secondary hover:bg-white/[0.03] rounded-md transition-colors">
                       Sign out
                     </button>
                   </>

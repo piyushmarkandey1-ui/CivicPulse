@@ -31,7 +31,7 @@ export default function ProfileHeader({ profile }: { profile: typeof USER_PROFIL
       <div className="flex-1 text-center md:text-left">
         <div className="flex flex-col md:flex-row items-center gap-3 mb-2">
           <h1 className="text-h2 text-white">{profile.name}</h1>
-          <Badge label={profile.level} variant="teal" />
+          <Badge label={profile.level} variant="copper" />
         </div>
         <p className="text-body-sm text-slate-400 mb-6">CivicPulse member since {profile.joinDate}</p>
 

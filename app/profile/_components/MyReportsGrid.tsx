@@ -36,10 +36,10 @@ function MiniTimeline({ current }: { current: string }) {
 }
 
 // ─── Badge Map ──────────────────────────────────────────────────────────────
-const SEV_VARIANT: Record<string, "red" | "amber" | "green"> = {
-  critical: "red",
-  moderate: "amber",
-  resolved: "green",
+const SEV_VARIANT: Record<string, "critical" | "warning" | "success"> = {
+  critical: "critical",
+  moderate: "warning",
+  resolved: "success",
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ export default function MyReportsGrid({ reports, onSelectReport }: MyReportsGrid
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             
             <div className="absolute top-3 left-3">
-              <Badge label={report.status} variant={report.status === "Resolved" ? "green" : "teal"} />
+              <Badge label={report.status} variant={report.status === "Resolved" ? "success" : "copper"} />
             </div>
             <div className="absolute top-3 right-3">
               <Badge label={report.severity.toUpperCase()} variant={SEV_VARIANT[report.severity]} pulse={report.severity === "critical"} />

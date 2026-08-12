@@ -72,7 +72,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative z-10 mt-auto border-t border-gray-border bg-white">
+    <footer className="relative z-10 mt-auto border-t border-white/[0.06] bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10">
           <div className="col-span-2 space-y-4">
@@ -81,16 +81,16 @@ export function Footer() {
               className="inline-flex items-center gap-2"
               aria-label="CivicPulse home"
             >
-              <span className="text-blue">
+              <span className="text-copper">
                 <MapPinIcon />
               </span>
               <span className="font-bold text-[1.0625rem] tracking-tight">
-                <span className="text-gray-dark">Civic</span>
-                <span className="gradient-text">Pulse</span>
+                <span className="text-white">Civic</span>
+                <span className="text-copper">Pulse</span>
               </span>
             </Link>
 
-            <p className="text-body-sm text-gray-mid max-w-[17rem] leading-relaxed">
+            <p className="text-body-sm text-text-muted max-w-[17rem] leading-relaxed">
               Empowering communities through transparent civic data, real-time
               issue tracking, and collaborative governance.
             </p>
@@ -101,7 +101,7 @@ export function Footer() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="p-2 rounded-md text-gray-mid hover:text-blue hover:bg-blue-muted transition-colors duration-200"
+                  className="p-2 rounded-md text-text-muted hover:text-copper hover:bg-copper/10 transition-colors duration-200"
                 >
                   {s.icon}
                 </a>
@@ -111,13 +111,13 @@ export function Footer() {
 
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category} className="space-y-3">
-              <p className="text-caption text-gray-mid">{category}</p>
+              <p className="text-caption text-text-muted">{category}</p>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-body-sm text-gray-mid hover:text-gray-dark transition-colors duration-200"
+                      className="text-body-sm text-text-muted hover:text-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
@@ -128,11 +128,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-border flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-caption text-gray-mid normal-case tracking-normal">
+        <div className="mt-10 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <span className="text-caption text-text-muted normal-case tracking-normal">
             © {year} CivicPulse. All rights reserved.
           </span>
-          <span className="text-caption text-gray-mid normal-case tracking-normal">
+          <span className="text-caption text-text-muted normal-case tracking-normal">
             Built for accountable cities
           </span>
         </div>

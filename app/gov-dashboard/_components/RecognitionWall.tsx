@@ -30,7 +30,7 @@ export default function RecognitionWall() {
 
             {/* Medal Icon */}
             <div className="relative mb-4">
-              <div className="absolute inset-0 bg-teal/20 blur-xl rounded-full" />
+              <div className="absolute inset-0 bg-copper/20 blur-xl rounded-full" />
               {index === 0 ? (
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center shadow-[0_0_20px_rgba(252,211,77,0.5)]">
                   <Award className="h-8 w-8 text-yellow-950" />
@@ -41,7 +41,7 @@ export default function RecognitionWall() {
                 </div>
               ) : (
                 <div className="h-14 w-14 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center">
-                  <Award className="h-7 w-7 text-amber-100" />
+                  <Award className="h-7 w-7 text-copper-100" />
                 </div>
               )}
               {/* Rank badge */}
@@ -53,9 +53,9 @@ export default function RecognitionWall() {
             <h3 className="text-lg font-bold text-white mb-1">{ward.name}</h3>
             <div className="flex items-center gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-3 w-3 fill-amber text-amber" />
+                <Star key={i} className="h-3 w-3 fill-amber text-copper" />
               ))}
-              <span className="text-xs font-bold text-teal ml-1">{ward.score}/100</span>
+              <span className="text-xs font-bold text-copper ml-1">{ward.score}/100</span>
             </div>
             
             <p className="text-sm text-slate-400 mb-6 flex-1 bg-white/[0.03] px-3 py-2 rounded-lg border border-white/[0.05]">

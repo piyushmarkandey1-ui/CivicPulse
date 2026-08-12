@@ -41,7 +41,7 @@ export function GradientButton({
   const baseStyles = cn(
     "relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
     "cursor-pointer select-none transition-all duration-200",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#070B14]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0C]",
     sizeMap[size],
     disabled && "opacity-40 cursor-not-allowed pointer-events-none",
     className
@@ -49,21 +49,21 @@ export function GradientButton({
 
   const content = (
     <>
-      {/* Primary: solid teal, clean */}
+      {/* Primary: solid copper, clean */}
       {variant === "primary" && (
         <span
           aria-hidden
           className="absolute inset-0 rounded-lg"
-          style={{ background: "#4FD1A5" }}
+          style={{ background: "#D98B52" }}
         />
       )}
 
-      {/* Primary hover: slightly brighter teal */}
+      {/* Primary hover: slightly brighter copper */}
       {variant === "primary" && (
         <span
           aria-hidden
           className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{ background: "#7BE3BE" }}
+          style={{ background: "#E5A878" }}
         />
       )}
 
@@ -71,7 +71,7 @@ export function GradientButton({
       {variant === "outline" && (
         <span
           aria-hidden
-          className="absolute inset-0 rounded-lg border border-slate-600 bg-transparent group-hover:border-teal/50 group-hover:bg-teal/[0.04] transition-all duration-200"
+          className="absolute inset-0 rounded-lg border border-border-strong bg-transparent group-hover:border-copper/50 group-hover:bg-surface-elevated transition-all duration-200"
         />
       )}
 
@@ -79,7 +79,7 @@ export function GradientButton({
       {variant === "ghost" && (
         <span
           aria-hidden
-          className="absolute inset-0 rounded-lg bg-transparent group-hover:bg-white/[0.04] transition-colors duration-200"
+          className="absolute inset-0 rounded-lg bg-transparent group-hover:bg-surface transition-colors duration-200"
         />
       )}
 
@@ -87,7 +87,7 @@ export function GradientButton({
       <span
         className={cn(
           "relative z-10 flex items-center gap-2",
-          variant === "primary" ? "text-[#070B14] font-semibold" : "text-slate-200"
+          variant === "primary" ? "text-[#0D0D0C] font-semibold" : "text-text-secondary"
         )}
       >
         {icon && <span className="flex-shrink-0">{icon}</span>}

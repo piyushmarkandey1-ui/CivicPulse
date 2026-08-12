@@ -56,8 +56,8 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
                 className={cn(
                   "h-6 w-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold",
                   done
-                    ? "border-teal bg-teal text-navy"
-                    : "border-white/20 bg-navy text-slate-500"
+                    ? "border-copper bg-copper text-navy"
+                    : "border-white/20 bg-background text-slate-500"
                 )}
                 animate={active ? { scale: [1, 1.15, 1] } : {}}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -66,7 +66,7 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
               </motion.div>
               <span className={cn(
                 "text-[9px] font-semibold text-center leading-tight max-w-[50px]",
-                done ? "text-teal-light" : "text-slate-600"
+                done ? "text-copper-light" : "text-slate-600"
               )}>
                 {step}
               </span>
@@ -79,18 +79,18 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
 }
 
 // ─── Category badge map ────────────────────────────────────────────────────────
-const CAT_VARIANT: Record<Issue["category"], "teal" | "amber" | "red" | "green" | "slate"> = {
-  "Pothole":       "amber",
-  "Water Clogging":"teal",
-  "Crack":         "red",
-  "Road Damage":   "amber",
-  "Other":         "slate",
+const CAT_VARIANT: Record<Issue["category"], "copper" | "warning" | "critical" | "success" | "neutral"> = {
+  "Pothole":       "warning",
+  "Water Clogging":"copper",
+  "Crack":         "critical",
+  "Road Damage":   "warning",
+  "Other":         "neutral",
 };
 
-const SEV_VARIANT: Record<Issue["severity"], "red" | "amber" | "green"> = {
-  critical: "red",
-  moderate: "amber",
-  resolved: "green",
+const SEV_VARIANT: Record<Issue["severity"], "critical" | "warning" | "success"> = {
+  critical: "critical",
+  moderate: "warning",
+  resolved: "success",
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
       {/* ── Close button ── */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+        className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-white/10 text-text-muted hover:text-white transition-colors"
         aria-label="Close panel"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -189,7 +189,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
       <div className="flex flex-col flex-1 overflow-y-auto">
 
         {/* Photo */}
-        <div className="relative h-48 w-full flex-shrink-0 bg-navy-muted overflow-hidden">
+        <div className="relative h-48 w-full flex-shrink-0 bg-background-muted overflow-hidden">
           <img
             src={`https://picsum.photos/seed/${issue.photoSeed}/760/400`}
             alt={issue.title}
@@ -222,12 +222,12 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           {/* Badges */}
           <div className="flex flex-wrap gap-2">
             <Badge label={issue.category}     variant={CAT_VARIANT[issue.category]} />
-            <Badge label={issue.ward}         variant="slate" />
-            <Badge label={`Reported ${reportDate}`} variant="slate" />
+            <Badge label={issue.ward}         variant="neutral" />
+            <Badge label={`Reported ${reportDate}`} variant="neutral" />
           </div>
 
           {/* Description */}
-          <p className="text-body-sm text-slate-400 leading-relaxed">{issue.description}</p>
+          <p className="text-body-sm text-text-muted leading-relaxed">{issue.description}</p>
 
           {/* Status timeline */}
           <StatusTimeline current={issue.status} />
@@ -238,7 +238,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
               "flex items-center gap-3 rounded-xl p-3 border",
               escl.isOverdue
                 ? "bg-red-500/10 border-red-500/25"
-                : "bg-amber/10 border-amber/25"
+                : "bg-warning/10 border-amber/25"
             )}>
               <div className={cn(
                 "text-xl",
@@ -250,7 +250,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                 <p className="text-caption text-slate-500 normal-case tracking-normal">SLA Deadline</p>
                 <p className={cn(
                   "text-body-sm font-bold",
-                  escl.isOverdue ? "text-red-400" : "text-amber-light"
+                  escl.isOverdue ? "text-danger" : "text-warning-light"
                 )}>
                   {escl.label}
                 </p>
@@ -275,12 +275,12 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           {/* Action buttons based on Role */}
           {role === "government" ? (
             <div className="flex flex-col gap-3 pt-2 border-t border-white/[0.06]">
-              <p className="text-caption text-slate-400 normal-case">Government Actions</p>
+              <p className="text-caption text-text-muted normal-case">Government Actions</p>
               <div className="flex gap-2">
                 <button
                   disabled={isUpdating || issue.status === "In Progress" || issue.status === "Resolved"}
                   onClick={() => handleStatusUpdate("In Progress")}
-                  className="flex-1 py-2 rounded-lg bg-amber-600/20 text-amber-500 text-sm font-semibold hover:bg-amber-600/30 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2 rounded-lg bg-warning-600/20 text-amber-500 text-sm font-semibold hover:bg-warning-600/30 transition-colors disabled:opacity-50"
                 >
                   Mark In Progress
                 </button>
@@ -295,7 +295,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                 <button
                   disabled={isUpdating || issue.status === "Resolved"}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 py-2 rounded-lg bg-teal/20 text-teal-light text-sm font-semibold hover:bg-teal/30 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2 rounded-lg bg-copper/20 text-copper-light text-sm font-semibold hover:bg-copper/30 transition-colors disabled:opacity-50"
                 >
                   {isUpdating ? "Saving..." : "Resolve + Photo"}
                 </button>
@@ -310,8 +310,8 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200",
                   hasUpvoted
-                    ? "bg-teal/20 border-teal/40 text-teal-light cursor-default"
-                    : "bg-white/[0.04] border-white/10 text-slate-300 hover:bg-teal/10 hover:border-teal/30 hover:text-teal"
+                    ? "bg-copper/20 border-copper/40 text-copper-light cursor-default"
+                    : "bg-white/[0.04] border-white/10 text-text-secondary hover:bg-copper/10 hover:border-copper/30 hover:text-copper"
                 )}
               >
                 <span aria-hidden>👍</span>

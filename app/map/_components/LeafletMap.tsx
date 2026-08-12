@@ -157,7 +157,7 @@ export default function LeafletMap({
           justify-content: center;
           font-weight: 700;
           font-size: 13px;
-          color: #14B8A6;
+          color: #D98B52;
           font-family: 'Sora', sans-serif;
           backdrop-filter: blur(6px);
           box-shadow: 0 0 16px rgba(20,184,166,0.3);
@@ -177,7 +177,7 @@ export default function LeafletMap({
         }
         .leaflet-control-zoom a:hover {
           background: rgba(20,184,166,0.15) !important;
-          color: #14B8A6 !important;
+          color: #D98B52 !important;
         }
         .leaflet-control-attribution {
           background: rgba(11,17,32,0.7) !important;
@@ -185,7 +185,7 @@ export default function LeafletMap({
           font-size: 10px !important;
           border-radius: 6px 0 0 0 !important;
         }
-        .leaflet-control-attribution a { color: #14B8A6 !important; }
+        .leaflet-control-attribution a { color: #D98B52 !important; }
       `}</style>
 
       <MapContainer

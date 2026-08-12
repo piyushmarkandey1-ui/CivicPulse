@@ -100,7 +100,7 @@ export function BridgeStory() {
         // Lights: left to right, quick succession
         .to(".light-bulb", { opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: "power2.out" }, 15)
         // Ambient environment tint — very subtle
-        .to(".bridge-story-bg", { backgroundColor: "rgba(79,209,165,0.025)", duration: 2 }, 15)
+        .to(".bridge-story-bg", { backgroundColor: "rgba(217,139,82,0.025)", duration: 2 }, 15)
 
         // Hold
         .to({}, { duration: 3 });
@@ -112,7 +112,7 @@ export function BridgeStory() {
     <section
       ref={container}
       className="bridge-story-bg relative w-full h-screen overflow-hidden"
-      style={{ background: "#070B14" }}
+      style={{ background: "#0D0D0C" }}
     >
       {/* Barely-visible top vignette */}
       <div
@@ -120,13 +120,13 @@ export function BridgeStory() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 50% at 50% 10%, rgba(79,209,165,0.04) 0%, transparent 65%)",
+            "radial-gradient(ellipse 70% 50% at 50% 10%, rgba(217,139,82,0.04) 0%, transparent 65%)",
         }}
       />
 
       {/* Story Text */}
       <div className="absolute top-20 inset-x-0 z-20 flex flex-col items-center text-center pointer-events-none px-6">
-        <p className="text-label text-teal mb-6 tracking-[0.18em]">The CivicPulse Story</p>
+        <p className="text-label text-copper mb-6 tracking-[0.18em]">The CivicPulse Story</p>
 
         <div className="relative w-full max-w-xl h-28 flex justify-center">
           {STAGES.map((stage, i) => (
@@ -138,12 +138,12 @@ export function BridgeStory() {
               <h3
                 className="text-h2 mb-2 font-semibold"
                 style={{
-                  color: stage.warning ? "#F2B84B" : stage.resolved ? "#4FD1A5" : "#F1F5F9",
+                  color: stage.warning ? "#D3A34A" : stage.resolved ? "#829C76" : "#F5F1EA",
                 }}
               >
                 {stage.label}
               </h3>
-              <p className="text-base text-slate-400 font-normal">{stage.copy}</p>
+              <p className="text-base text-text-muted font-normal">{stage.copy}</p>
             </div>
           ))}
         </div>
@@ -154,23 +154,23 @@ export function BridgeStory() {
         {["Ward Authority", "Department", "Senior Authority"].map((node, i) => (
           <div key={node} className="flex items-center gap-3">
             <div
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-slate-300"
+              className="px-3 py-1.5 rounded-md text-xs font-medium"
               style={{
-                background: "rgba(15,23,38,0.8)",
+                background: "rgba(25,23,21,0.8)",
                 border: i === 2
-                  ? "1px solid rgba(242,184,75,0.3)"
-                  : "1px solid rgba(148,163,184,0.10)",
-                color: i === 2 ? "#F2B84B" : "#94A3B8",
+                  ? "1px solid rgba(211,163,74,0.3)"
+                  : "1px solid rgba(48,44,40,0.6)",
+                color: i === 2 ? "#D3A34A" : "#A49D95",
                 backdropFilter: "blur(12px)",
               }}
             >
               {node}
             </div>
             {i < 2 && (
-              <div className="relative w-10 h-px" style={{ background: "rgba(148,163,184,0.12)" }}>
+              <div className="relative w-10 h-px" style={{ background: "rgba(48,44,40,0.6)" }}>
                 <div
                   className="absolute inset-0 escalation-glow"
-                  style={{ background: "#F2B84B" }}
+                  style={{ background: "#D3A34A" }}
                 />
               </div>
             )}

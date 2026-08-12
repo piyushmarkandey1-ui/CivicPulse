@@ -28,7 +28,7 @@ export default function CollapsibleSidebar({
         onClick={onToggle}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="absolute left-4 top-[calc(50%-28px)] z-30 h-10 w-10 flex items-center justify-center rounded-xl glass border border-white/10 text-slate-400 hover:text-teal hover:border-teal/30 transition-colors shadow-lg"
+        className="absolute left-4 top-[calc(50%-28px)] z-30 h-10 w-10 flex items-center justify-center rounded-xl glass border border-white/10 text-text-muted hover:text-copper hover:border-copper/30 transition-colors shadow-lg"
         aria-label={isOpen ? "Collapse sidebar" : "Open sidebar"}
         style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}
       >
@@ -78,7 +78,7 @@ export default function CollapsibleSidebar({
                   className={cn(
                     "w-full flex items-center justify-between p-3.5 rounded-xl border transition-all duration-300",
                     showHeatmap
-                      ? "bg-teal/15 border-teal/40"
+                      ? "bg-copper/15 border-copper/40"
                       : "bg-white/[0.03] border-white/10 hover:bg-white/[0.06]"
                   )}
                 >
@@ -87,7 +87,7 @@ export default function CollapsibleSidebar({
                     <div className="text-left">
                       <p className={cn(
                         "text-body-sm font-semibold",
-                        showHeatmap ? "text-teal-light" : "text-slate-300"
+                        showHeatmap ? "text-copper-light" : "text-text-secondary"
                       )}>
                         Hotspot Heatmap
                       </p>
@@ -99,7 +99,7 @@ export default function CollapsibleSidebar({
                   {/* Toggle switch */}
                   <div className={cn(
                     "relative h-5 w-9 rounded-full transition-colors duration-300 flex-shrink-0",
-                    showHeatmap ? "bg-teal" : "bg-slate-700"
+                    showHeatmap ? "bg-copper" : "bg-slate-700"
                   )}>
                     <motion.div
                       className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-md"
@@ -151,7 +151,7 @@ export default function CollapsibleSidebar({
                   ].map(({ label, value }) => (
                     <div key={label} className="rounded-lg bg-white/[0.04] border border-white/[0.05] p-2.5 text-center">
                       <p className="text-caption text-slate-500 normal-case tracking-normal leading-tight mb-1">{label}</p>
-                      <p className="text-sm font-bold text-teal">{value}</p>
+                      <p className="text-sm font-bold text-copper">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -181,12 +181,12 @@ function LeaderboardRow({
           <span className="text-[10px] font-black w-4 flex-shrink-0 text-slate-500">
             {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index+1}`}
           </span>
-          <p className="text-[11px] font-medium text-slate-300 truncate">{ward.name}</p>
+          <p className="text-[11px] font-medium text-text-secondary truncate">{ward.name}</p>
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className={cn(
             "text-[10px] font-semibold",
-            ward.delta.startsWith("+") ? "text-green-400" : "text-red-400"
+            ward.delta.startsWith("+") ? "text-green-400" : "text-danger"
           )}>{ward.delta}</span>
           <span className="text-xs font-bold text-white">{ward.score}</span>
         </div>
@@ -196,8 +196,8 @@ function LeaderboardRow({
           className="h-full rounded-full"
           style={{
             background: index === 0
-              ? "linear-gradient(90deg,#14B8A6,#F59E0B)"
-              : "linear-gradient(90deg,#334155,#14B8A6)",
+              ? "linear-gradient(90deg,#D98B52,#F59E0B)"
+              : "linear-gradient(90deg,#334155,#D98B52)",
           }}
           initial={{ width: 0 }}
           animate={inView ? { width: `${ward.score}%` } : {}}

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate" | "blue";
+type BadgeVariant = "copper" | "critical" | "warning" | "success" | "neutral" | "legacy-slate" | "legacy-blue";
 
 interface BadgeProps {
   label: string;
@@ -13,46 +13,55 @@ interface BadgeProps {
   pulse?: boolean;
 }
 
+// Map variants to new color tokens.
+// Note: tailwind needs classes to exist, but since these use arbitrary values, we map them directly to our css vars.
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: string; border: string }> = {
-  blue: {
-    bg:     "bg-blue-muted",
-    text:   "text-blue-dark",
-    dot:    "bg-blue",
-    border: "border-blue/20",
+  copper: {
+    bg:     "bg-copper/[0.08]",
+    text:   "text-copper",
+    dot:    "bg-copper",
+    border: "border-copper/20",
   },
-  teal: {
-    bg:     "bg-teal/[0.08]",
-    text:   "text-teal",
-    dot:    "bg-teal",
-    border: "border-teal/20",
-  },
-  amber: {
-    bg:     "bg-warning/[0.08]",
-    text:   "text-warning",
-    dot:    "bg-warning",
-    border: "border-warning/20",
-  },
-  red: {
+  critical: {
     bg:     "bg-danger/[0.08]",
     text:   "text-danger",
     dot:    "bg-danger",
     border: "border-danger/20",
   },
-  green: {
-    bg:     "bg-teal/[0.08]",
-    text:   "text-teal",
-    dot:    "bg-teal",
-    border: "border-teal/20",
+  warning: {
+    bg:     "bg-warning/[0.08]",
+    text:   "text-warning",
+    dot:    "bg-warning",
+    border: "border-warning/20",
   },
-  slate: {
+  success: {
+    bg:     "bg-success/[0.08]",
+    text:   "text-success",
+    dot:    "bg-success",
+    border: "border-success/20",
+  },
+  neutral: {
     bg:     "bg-white/[0.04]",
-    text:   "text-slate-400",
-    dot:    "bg-slate-500",
-    border: "border-white/[0.08]",
+    text:   "text-text-muted",
+    dot:    "bg-text-subtle",
+    border: "border-border-strong",
+  },
+  // temporary fallbacks to prevent immediate breaks
+  "legacy-slate": {
+    bg:     "bg-white/[0.04]",
+    text:   "text-text-muted",
+    dot:    "bg-text-subtle",
+    border: "border-border-strong",
+  },
+  "legacy-blue": {
+    bg:     "bg-copper/[0.08]",
+    text:   "text-copper",
+    dot:    "bg-copper",
+    border: "border-copper/20",
   },
 };
 
-export function Badge({ label, variant = "teal", dot = true, className, pulse = false }: BadgeProps) {
+export function Badge({ label, variant = "copper", dot = true, className, pulse = false }: BadgeProps) {
   const styles = variantStyles[variant];
 
   return (

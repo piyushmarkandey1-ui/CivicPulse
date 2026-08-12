@@ -40,7 +40,7 @@ export default function EscalationAlerts({ escalations }: { escalations: Escalat
                   <div className="flex items-center gap-4">
                     {/* Pulsing indicator */}
                     <div className="relative flex h-3 w-3 flex-shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </div>
                     

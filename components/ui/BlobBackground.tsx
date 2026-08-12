@@ -2,7 +2,7 @@
 
 /**
  * BlobBackground — dramatically reduced.
- * One single very subtle teal atmospheric gradient.
+ * One single very subtle copper atmospheric gradient.
  * The amber blob is gone. No bouncing/floating.
  */
 export function BlobBackground() {
@@ -16,12 +16,12 @@ export function BlobBackground() {
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
-      {/* Single subtle teal atmospheric glow — top center */}
+      {/* Single subtle copper atmospheric glow — top center */}
       <div
         className="absolute -top-60 left-1/2 -translate-x-1/2 h-[700px] w-[900px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle at 50% 30%, rgba(79,209,165,0.06) 0%, transparent 65%)",
+            "radial-gradient(circle at 50% 30%, rgba(217,139,82,0.04) 0%, transparent 65%)",
           filter: "blur(80px)",
         }}
       />

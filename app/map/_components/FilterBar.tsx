@@ -50,10 +50,10 @@ function Chip({
       onClick={onClick}
       className={cn(
         "relative px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 select-none",
-        "border focus:outline-none focus:ring-1 focus:ring-teal",
+        "border focus:outline-none focus:ring-1 focus:ring-copper",
         active
           ? "text-navy border-transparent"
-          : "text-slate-400 border-white/10 hover:border-white/20 hover:text-slate-200 bg-white/[0.03]"
+          : "text-text-muted border-white/10 hover:border-white/20 hover:text-text-primary bg-white/[0.03]"
       )}
       style={
         active
@@ -65,7 +65,7 @@ function Chip({
                   ? "linear-gradient(135deg,#F59E0B,#FCD34D)"
                   : color === "green"
                   ? "linear-gradient(135deg,#22C55E,#4ADE80)"
-                  : "linear-gradient(135deg,#14B8A6,#2DD4BF)",
+                  : "linear-gradient(135deg,#D98B52,#2DD4BF)",
               boxShadow:
                 color === "red"   ? "0 0 12px rgba(239,68,68,0.4)"
                 : color === "amber" ? "0 0 12px rgba(245,158,11,0.4)"
@@ -105,7 +105,7 @@ export default function FilterBar({ filters, onChange, issueCount }: FilterBarPr
               />
             ))}
             <span className="ml-2 px-2.5 py-1 rounded-full text-xs font-bold text-navy flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#14B8A6,#F59E0B)" }}>
+              style={{ background: "linear-gradient(135deg,#D98B52,#F59E0B)" }}>
               {issueCount}
             </span>
           </div>

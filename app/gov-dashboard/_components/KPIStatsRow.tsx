@@ -48,7 +48,7 @@ function KPICard({
       animate={{ opacity: 1, y: 0 }}
       className="rounded-xl p-5"
       style={{
-        background: "#0F1726",
+        background: "#191715",
         border: "1px solid rgba(148,163,184,0.10)",
       }}
     >
@@ -58,7 +58,7 @@ function KPICard({
           className={cn(
             "text-xs font-semibold px-2 py-0.5 rounded-md",
             trendIsGood
-              ? "text-teal"
+              ? "text-copper"
               : "text-danger"
           )}
           style={{
@@ -109,7 +109,7 @@ export default function KPIStatsRow({ kpi }: { kpi: any }) {
         trend="+4.2%"
         trendUpIsGood
         sparklineData={SPARKLINE_RESOLUTION}
-        accentColor="#4FD1A5"
+        accentColor="#D98B52"
       />
       <KPICard
         title="Avg Response Time"
@@ -119,7 +119,7 @@ export default function KPIStatsRow({ kpi }: { kpi: any }) {
         trend="-0.8d"
         trendUpIsGood={false}
         sparklineData={SPARKLINE_RESPONSE}
-        accentColor="#4FD1A5"
+        accentColor="#D98B52"
       />
       <KPICard
         title="Pending Escalations"
@@ -137,7 +137,7 @@ export default function KPIStatsRow({ kpi }: { kpi: any }) {
         trend="+0.4"
         trendUpIsGood
         sparklineData={SPARKLINE_TRUST}
-        accentColor="#4FD1A5"
+        accentColor="#D98B52"
       />
     </div>
   );

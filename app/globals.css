@@ -3,55 +3,58 @@
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 @theme {
   /* ── Backgrounds ── */
-  --color-bg:             #070B14;
-  --color-bg-secondary:   #0B1220;
-  --color-surface:        #0F1726;
-  --color-surface-raised: #121C2D;
-
-  /* ── Legacy aliases (keep for backward compat) ── */
-  --color-navy:           #0B1220;
-  --color-navy-light:     #0F1726;
-  --color-navy-muted:     #1A2540;
+  --color-bg:             #0D0D0C;
+  --color-bg-secondary:   #121110;
+  --color-surface:        #191715;
+  --color-surface-raised: #211D19;
 
   /* ── Border ── */
-  --color-border:         rgba(148,163,184,0.12);
-  --color-border-subtle:  rgba(148,163,184,0.07);
+  --color-border:         #302C28;
+  --color-border-strong:  #403932;
 
   /* ── Text ── */
-  --color-text-primary:   #F1F5F9;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted:     #475569;
+  --color-text-primary:   #F5F1EA;
+  --color-text-secondary: #E9E4DC;
+  --color-text-muted:     #A49D95;
+  --color-text-subtle:    #77716A;
 
-  /* ── CivicPulse Brand Accent (ONE accent) ── */
-  --color-teal:           #4FD1A5;
-  --color-teal-light:     #7BE3BE;
-  --color-teal-dark:      #2DB886;
-  --color-teal-dim:       rgba(79,209,165,0.08);
+  /* ── CivicPulse Brand Accent (Copper) ── */
+  --color-copper:         #D98B52;
+  --color-copper-light:   #E5A878;
+  
+  /* ── Semantic Status Colors (Restrained) ── */
+  --color-danger:         #D85C52;
+  --color-warning:        #D3A34A;
+  --color-success:        #829C76;
 
-  /* ── Semantic Status Colors (use ONLY for meaning, not decoration) ── */
-  --color-danger:         #F05252;
-  --color-danger-dim:     rgba(240,82,82,0.08);
-  --color-warning:        #F2B84B;
-  --color-warning-dim:    rgba(242,184,75,0.08);
-  --color-success:        #4FD1A5;
+  /* ── Legacy aliases for backward compatibility (Mapped to new colors) ── */
+  --color-teal:           #D98B52;
+  --color-teal-light:     #E5A878;
+  --color-teal-dark:      #D98B52;
+  --color-teal-dim:       rgba(217, 139, 82, 0.08);
 
-  /* ── Legacy color aliases ── */
-  --color-amber:          #F2B84B;
-  --color-amber-light:    #F6CA72;
-  --color-amber-dark:     #D4973A;
-  --color-red-400:        #F87171;
-  --color-red-500:        #F05252;
-  --color-green-400:      #4FD1A5;
-  --color-green-500:      #2DB886;
-  --color-slate-50:       #F8FAFC;
-  --color-slate-200:      #E2E8F0;
-  --color-slate-300:      #CBD5E1;
-  --color-slate-400:      #94A3B8;
-  --color-slate-500:      #64748B;
-  --color-slate-600:      #475569;
-  --color-slate-700:      #334155;
-  --color-slate-800:      #1E293B;
-  --color-slate-900:      #0F172A;
+  --color-navy:           #121110;
+  --color-navy-light:     #191715;
+  --color-navy-muted:     #211D19;
+
+  --color-amber:          #D3A34A;
+  --color-amber-light:    #D3A34A;
+  --color-amber-dark:     #D3A34A;
+
+  --color-red-400:        #D85C52;
+  --color-red-500:        #D85C52;
+  --color-green-400:      #829C76;
+  --color-green-500:      #829C76;
+
+  --color-slate-50:       #F5F1EA;
+  --color-slate-200:      #E9E4DC;
+  --color-slate-300:      #A49D95;
+  --color-slate-400:      #77716A;
+  --color-slate-500:      #403932;
+  --color-slate-600:      #302C28;
+  --color-slate-700:      #211D19;
+  --color-slate-800:      #191715;
+  --color-slate-900:      #121110;
 
   /* ── Typography ── */
   --font-sora: "Sora", sans-serif;
@@ -65,11 +68,11 @@
   --radius-2xl:   1.25rem;
   --radius-glass: 1rem;
 
-  /* ── Shadows — very restrained ── */
-  --shadow-card:      0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.25);
-  --shadow-panel:     0 2px 8px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.3);
-  --shadow-glow-teal: 0 0 20px rgba(79,209,165,0.12), 0 0 40px rgba(79,209,165,0.06);
-  --shadow-glass:     0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  /* ── Shadows — physical, dark surfaces ── */
+  --shadow-card:      0 2px 4px rgba(0,0,0,0.4), 0 8px 16px rgba(0,0,0,0.2);
+  --shadow-panel:     0 4px 8px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.4);
+  --shadow-glow-copper: 0 0 20px rgba(217, 139, 82, 0.08), 0 0 40px rgba(217, 139, 82, 0.04);
+  --shadow-glass:     0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02);
 
   /* ── Motion ── */
   --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -88,13 +91,6 @@
   to   { opacity: 1; }
 }
 
-@keyframes blob-float {
-  0%   { transform: translate(0px,  0px)   scale(1);     }
-  33%  { transform: translate(24px, -16px) scale(1.03);  }
-  66%  { transform: translate(-12px, 12px) scale(0.99);  }
-  100% { transform: translate(0px,  0px)   scale(1);     }
-}
-
 @keyframes pulse-ring {
   0%   { transform: scale(0.9); opacity: 0.7; }
   70%  { transform: scale(1.4); opacity: 0;   }
@@ -103,7 +99,7 @@
 
 /* ─── Base Reset ─────────────────────────────────────────────────────────────── */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 *, *::before, *::after {
@@ -117,8 +113,8 @@ html, body {
 }
 
 body {
-  background-color: #070B14;
-  color: #F1F5F9;
+  background-color: #0D0D0C;
+  color: #F5F1EA;
   font-family: "Sora", sans-serif;
   font-size: 1rem;
   line-height: 1.65;
@@ -202,72 +198,70 @@ body {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #94A3B8;
+  color: #A49D95;
 }
 
 /* ─── Brand Accent Text ─────────────────────────────────────────────────────── */
-/* Use sparingly — only for CivicPulse brand moments */
 .accent-text {
-  color: #4FD1A5;
+  color: #D98B52;
 }
 
-/* Replaces the old teal-amber gradient — now single teal accent */
 .gradient-text {
-  color: #4FD1A5;
+  color: #D98B52;
 }
 
 .gradient-text-teal {
-  color: #4FD1A5;
+  color: #D98B52;
 }
 
 /* ─── Surface / Card System ─────────────────────────────────────────────────── */
 .surface {
-  background: #0F1726;
-  border: 1px solid rgba(148,163,184,0.12);
+  background: #191715;
+  border: 1px solid #302C28;
   border-radius: 0.875rem;
 }
 
 .surface-raised {
-  background: #121C2D;
-  border: 1px solid rgba(148,163,184,0.10);
+  background: #211D19;
+  border: 1px solid #403932;
   border-radius: 0.875rem;
 }
 
-/* ─── Glass Utility — more restrained ──────────────────────────────────────── */
+/* ─── Glass Utility ──────────────────────────────────────────────────────── */
 .glass {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(148,163,184,0.10);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+  background: rgba(25, 23, 21, 0.7);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border: 1px solid #302C28;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
 .glass-light {
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(148,163,184,0.10);
+  background: rgba(33, 29, 25, 0.85);
+  border: 1px solid #403932;
 }
 
-/* ─── Subtle ambient glow — one, teal only ──────────────────────────────────── */
-.glow-teal-ambient {
-  box-shadow: 0 0 20px rgba(79,209,165,0.10), 0 0 40px rgba(79,209,165,0.05);
+/* ─── Subtle ambient glow ──────────────────────────────────────────────────── */
+.glow-copper-ambient {
+  box-shadow: 0 0 20px rgba(217, 139, 82, 0.06), 0 0 40px rgba(217, 139, 82, 0.03);
 }
 
 /* ─── Institutional scoreboard table ───────────────────────────────────────── */
 .scoreboard {
-  background: #0F1726;
-  border: 1px solid rgba(148,163,184,0.12);
+  background: #191715;
+  border: 1px solid #302C28;
   border-radius: 0.5rem;
   overflow: hidden;
 }
 
 .scoreboard-header {
-  background: #121C2D;
-  border-bottom: 1px solid rgba(148,163,184,0.12);
+  background: #211D19;
+  border-bottom: 1px solid #403932;
 }
 
 .scoreboard-row {
-  border-bottom: 1px solid rgba(148,163,184,0.07);
-  transition: opacity 0.2s var(--ease-out-quad);
+  border-bottom: 1px solid #302C28;
+  transition: background-color 0.2s var(--ease-out-quad);
 }
 
 .scoreboard-row:last-child {
@@ -275,28 +269,27 @@ body {
 }
 
 .scoreboard-row:hover {
-  opacity: 0.85;
-  background: #121C2D;
+  background: #211D19;
 }
 
 /* ─── Divider variants ──────────────────────────────────────────────────────── */
 .divider {
   border: none;
   height: 1px;
-  background: rgba(148,163,184,0.10);
+  background: #302C28;
 }
 
-.divider-teal {
+.divider-copper {
   width: 100%;
   height: 1px;
-  background: rgba(79,209,165,0.10);
+  background: rgba(217, 139, 82, 0.15);
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #070B14; }
-::-webkit-scrollbar-thumb { background: #1A2540; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4FD1A5; }
+::-webkit-scrollbar-track { background: #0D0D0C; }
+::-webkit-scrollbar-thumb { background: #302C28; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #D98B52; }
 ::-webkit-scrollbar-corner { background: transparent; }
 
 .scrollbar-none {
@@ -307,15 +300,15 @@ body {
 
 /* ─── Focus Ring ─────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #4FD1A5;
+  outline: 2px solid rgba(217, 139, 82, 0.4);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* ─── Selection ──────────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(79,209,165,0.2);
-  color: #F1F5F9;
+  background: rgba(217, 139, 82, 0.2);
+  color: #F5F1EA;
 }
 
 /* ─── Layout helpers ────────────────────────────────────────────────────────── */

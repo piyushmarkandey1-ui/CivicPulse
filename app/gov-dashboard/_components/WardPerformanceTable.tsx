@@ -31,19 +31,19 @@ export default function WardPerformanceTable({ data }: { data: WardPerformance[]
 
   const getStatusBadge = (status: WardPerformance["status"]) => {
     switch (status) {
-      case "Excellent": return <Badge label={status} variant="green" />;
-      case "Good": return <Badge label={status} variant="teal" />;
-      case "Needs Improvement": return <Badge label={status} variant="amber" />;
-      case "Critical": return <Badge label={status} variant="red" pulse />;
-      default: return <Badge label={status} variant="slate" />;
+      case "Excellent": return <Badge label={status} variant="success" />;
+      case "Good": return <Badge label={status} variant="copper" />;
+      case "Needs Improvement": return <Badge label={status} variant="warning" />;
+      case "Critical": return <Badge label={status} variant="critical" pulse />;
+      default: return <Badge label={status} variant="neutral" />;
     }
   };
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <ArrowUpDown className="h-3 w-3 text-slate-600 ml-1 inline" />;
     return sortOrder === "asc" ? 
-      <ChevronUp className="h-3 w-3 text-teal inline ml-1" /> : 
-      <ChevronDown className="h-3 w-3 text-teal inline ml-1" />;
+      <ChevronUp className="h-3 w-3 text-copper inline ml-1" /> : 
+      <ChevronDown className="h-3 w-3 text-copper inline ml-1" />;
   };
 
   return (
@@ -105,7 +105,7 @@ export default function WardPerformanceTable({ data }: { data: WardPerformance[]
                     <div className="flex items-center gap-3">
                       <span className={cn(
                         "font-bold w-9",
-                        ward.resolvedPercent > 80 ? "text-teal-light" : ward.resolvedPercent > 60 ? "text-amber-light" : "text-red-400"
+                        ward.resolvedPercent > 80 ? "text-copper-light" : ward.resolvedPercent > 60 ? "text-copper-light" : "text-red-400"
                       )}>
                         {ward.resolvedPercent}%
                       </span>
@@ -118,10 +118,10 @@ export default function WardPerformanceTable({ data }: { data: WardPerformance[]
                           transition={{ duration: 1, delay: 0.2 + (index * 0.05) }}
                           style={{
                             background: ward.resolvedPercent > 80 
-                              ? "linear-gradient(90deg, #14B8A6, #2DD4BF)" 
+                              ? "linear-gradient(90deg, #D98B52, #2DD4BF)" 
                               : ward.resolvedPercent > 60 
-                                ? "linear-gradient(90deg, #F59E0B, #FCD34D)" 
-                                : "linear-gradient(90deg, #ef4444, #f87171)"
+                                ? "linear-gradient(90deg, #D3A34A, #FCD34D)" 
+                                : "linear-gradient(90deg, #D85C52, #f87171)"
                           }}
                         />
                       </div>

@@ -6,13 +6,13 @@ import dynamic from "next/dynamic";
 const MapDashboard = dynamic(() => import("./MapDashboard"), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center w-full h-full bg-navy">
+    <div className="flex items-center justify-center w-full h-full bg-background">
       <div className="flex flex-col items-center gap-4">
         <div
-          className="h-10 w-10 rounded-full border-2 border-teal border-t-transparent animate-spin"
+          className="h-10 w-10 rounded-full border-2 border-copper border-t-transparent animate-spin"
           aria-label="Loading map"
         />
-        <p className="text-slate-400 text-sm font-medium tracking-wide">
+        <p className="text-text-muted text-sm font-medium tracking-wide">
           Loading live map…
         </p>
       </div>

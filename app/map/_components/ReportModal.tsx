@@ -55,9 +55,9 @@ function ProgressStepper({ current, total }: { current: number; total: number })
             className={cn(
               "h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 flex-shrink-0",
               i < current
-                ? "bg-teal border-teal text-navy"
+                ? "bg-copper border-copper text-navy"
                 : i === current
-                ? "border-teal bg-teal/20 text-teal"
+                ? "border-copper bg-copper/20 text-copper"
                 : "border-white/20 text-slate-600 bg-transparent"
             )}
             animate={i === current ? { scale: [1, 1.12, 1] } : { scale: 1 }}
@@ -68,7 +68,7 @@ function ProgressStepper({ current, total }: { current: number; total: number })
           {i < total - 1 && (
             <div className="flex-1 h-0.5 mx-1 rounded-full overflow-hidden bg-white/[0.07]">
               <motion.div
-                className="h-full bg-teal rounded-full"
+                className="h-full bg-copper rounded-full"
                 animate={{ width: i < current ? "100%" : "0%" }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
               />
@@ -96,7 +96,7 @@ function StepPhoto({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Parti
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-h3 text-white mb-1">Upload Photo</h3>
-        <p className="text-body-sm text-slate-400">Take or upload a clear photo of the issue.</p>
+        <p className="text-body-sm text-text-muted">Take or upload a clear photo of the issue.</p>
       </div>
 
       {draft.photoFile ? (
@@ -118,14 +118,14 @@ function StepPhoto({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Parti
           )}
           <button
             onClick={() => { onUpdate({ photoFile: null }); setDetected(false); }}
-            className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/60 text-slate-300 hover:text-white text-xs"
+            className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/60 text-text-secondary hover:text-white text-xs"
           >✕</button>
         </motion.div>
       ) : (
         <motion.div
           className={cn(
             "relative h-48 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200",
-            dragging ? "border-teal bg-teal/10" : "border-white/20 hover:border-teal/50 hover:bg-white/[0.03]"
+            dragging ? "border-copper bg-copper/10" : "border-white/20 hover:border-copper/50 hover:bg-white/[0.03]"
           )}
           whileHover={{ scale: 1.01 }}
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -146,14 +146,14 @@ function StepPhoto({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Parti
           />
           <span className="text-4xl" aria-hidden>📷</span>
           <div className="text-center">
-            <p className="text-body-sm text-slate-300 font-medium">Drop photo here or click to browse</p>
+            <p className="text-body-sm text-text-secondary font-medium">Drop photo here or click to browse</p>
             <p className="text-caption text-slate-500 normal-case tracking-normal mt-1">
               JPEG, PNG, HEIC up to 10 MB
             </p>
           </div>
           {dragging && (
-            <div className="absolute inset-0 rounded-xl border-2 border-teal bg-teal/10 flex items-center justify-center">
-              <p className="text-teal font-semibold">Drop to upload</p>
+            <div className="absolute inset-0 rounded-xl border-2 border-copper bg-copper/10 flex items-center justify-center">
+              <p className="text-copper font-semibold">Drop to upload</p>
             </div>
           )}
         </motion.div>
@@ -168,7 +168,7 @@ function StepLocation({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-h3 text-white mb-1">Confirm Location</h3>
-        <p className="text-body-sm text-slate-400">Location auto-detected from photo. Adjust if needed.</p>
+        <p className="text-body-sm text-text-muted">Location auto-detected from photo. Adjust if needed.</p>
       </div>
 
       {/* Mock mini-map visual */}
@@ -188,7 +188,7 @@ function StepLocation({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="w-8 h-8 rounded-full border-4 border-teal flex items-center justify-center text-sm"
+            <div className="w-8 h-8 rounded-full border-4 border-copper flex items-center justify-center text-sm"
               style={{ background: "rgba(20,184,166,0.2)", boxShadow: "0 0 20px rgba(20,184,166,0.4)" }}>
               📍
             </div>
@@ -197,7 +197,7 @@ function StepLocation({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
           <div className="w-4 h-1 mx-auto rounded-full bg-black/40 mt-1 blur-sm" />
         </div>
         <div className="absolute top-3 right-3">
-          <Badge label="Location Detected" variant="green" />
+          <Badge label="Location Detected" variant="success" />
         </div>
       </div>
 
@@ -208,7 +208,7 @@ function StepLocation({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
           type="text"
           value={draft.address}
           onChange={(e) => onUpdate({ address: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal"
+          className="w-full px-4 py-2.5 rounded-xl text-sm font-medium text-text-primary focus:outline-none focus:ring-2 focus:ring-copper"
           style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
         />
       </div>
@@ -222,7 +222,7 @@ function StepLocation({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
           <div key={label} className="flex-1 px-3 py-2 rounded-lg text-xs"
             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
             <p className="text-slate-500 mb-0.5">{label}</p>
-            <p className="font-mono font-bold text-teal">{value}</p>
+            <p className="font-mono font-bold text-copper">{value}</p>
           </div>
         ))}
       </div>
@@ -236,7 +236,7 @@ function StepCategory({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
     <div className="flex flex-col gap-5">
       <div>
         <h3 className="text-h3 text-white mb-1">Category & Severity</h3>
-        <p className="text-body-sm text-slate-400">What type of issue is this?</p>
+        <p className="text-body-sm text-text-muted">What type of issue is this?</p>
       </div>
 
       {/* Category grid */}
@@ -251,8 +251,8 @@ function StepCategory({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
               className={cn(
                 "flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200",
                 draft.category === cat
-                  ? "border-teal bg-teal/15 text-teal-light"
-                  : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-slate-200"
+                  ? "border-copper bg-copper/15 text-copper-light"
+                  : "border-white/10 bg-white/[0.03] text-text-muted hover:border-white/20 hover:text-text-primary"
               )}
             >
               <span className="text-lg" aria-hidden>{CAT_ICON[cat]}</span>
@@ -275,7 +275,7 @@ function StepCategory({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d: Pa
                 "flex-1 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200",
                 draft.severity === value
                   ? "text-navy"
-                  : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20"
+                  : "border-white/10 bg-white/[0.03] text-text-muted hover:border-white/20"
               )}
               style={draft.severity === value ? {
                 background: `linear-gradient(135deg,${color},${color}cc)`,
@@ -299,7 +299,7 @@ function StepDescription({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d:
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-h3 text-white mb-1">Add Description</h3>
-        <p className="text-body-sm text-slate-400">Describe the issue clearly so officials can act quickly.</p>
+        <p className="text-body-sm text-text-muted">Describe the issue clearly so officials can act quickly.</p>
       </div>
       <div className="relative">
         <textarea
@@ -308,12 +308,12 @@ function StepDescription({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d:
           value={draft.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="e.g. Large pothole near the bus stop — about 2 feet wide and 8 inches deep. Multiple vehicles have been damaged. No warning signs in place..."
-          className="w-full px-4 py-3 rounded-xl text-sm text-slate-200 placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-teal leading-relaxed"
+          className="w-full px-4 py-3 rounded-xl text-sm text-text-primary placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-copper leading-relaxed"
           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}
         />
         <p className={cn(
           "absolute bottom-3 right-3 text-[10px] font-mono",
-          draft.description.length > MAX * 0.9 ? "text-amber" : "text-slate-600"
+          draft.description.length > MAX * 0.9 ? "text-warning" : "text-slate-600"
         )}>
           {draft.description.length}/{MAX}
         </p>
@@ -328,7 +328,7 @@ function StepDescription({ draft, onUpdate }: { draft: DraftIssue; onUpdate: (d:
             <button
               key={prompt}
               onClick={() => onUpdate({ description: draft.description ? `${draft.description} ${prompt}.` : `${prompt}.` })}
-              className="px-2.5 py-1 rounded-lg text-xs text-slate-400 border border-white/10 hover:border-teal/30 hover:text-teal transition-colors"
+              className="px-2.5 py-1 rounded-lg text-xs text-text-muted border border-white/10 hover:border-copper/30 hover:text-copper transition-colors"
             >
               + {prompt}
             </button>
@@ -345,7 +345,7 @@ function StepReview({ draft }: { draft: DraftIssue }) {
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-h3 text-white mb-1">Review & Submit</h3>
-        <p className="text-body-sm text-slate-400">Check your report before submitting.</p>
+        <p className="text-body-sm text-text-muted">Check your report before submitting.</p>
       </div>
 
       <div className="rounded-xl overflow-hidden border border-white/10">
@@ -369,7 +369,7 @@ function StepReview({ draft }: { draft: DraftIssue }) {
           ].map(({ label, value }) => (
             <div key={label} className="flex gap-3">
               <span className="text-caption text-slate-500 normal-case tracking-normal w-24 flex-shrink-0">{label}</span>
-              <span className="text-body-sm text-slate-200 flex-1">{value}</span>
+              <span className="text-body-sm text-text-primary flex-1">{value}</span>
             </div>
           ))}
         </div>
@@ -487,11 +487,11 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                   ✅
                 </motion.div>
                 <h3 className="text-h2 text-white">Report Submitted!</h3>
-                <p className="text-body-sm text-slate-400 max-w-xs">
+                <p className="text-body-sm text-text-muted max-w-xs">
                   Your issue has been logged and assigned to the ward office.
                   You'll receive updates as the status changes.
                 </p>
-                <Badge label="Report ID: ISS-019" variant="teal" />
+                <Badge label="Report ID: ISS-019" variant="copper" />
               </motion.div>
             ) : (
               <motion.div
@@ -516,7 +516,7 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
           <div className="px-6 py-4 border-t border-white/[0.06] flex gap-3 flex-shrink-0">
             <button
               onClick={() => step > 0 ? setStep(step - 1) : onClose()}
-              className="flex-1 py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+              className="flex-1 py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-text-muted hover:text-white hover:border-white/20 transition-colors"
             >
               {step === 0 ? "Cancel" : "← Back"}
             </button>

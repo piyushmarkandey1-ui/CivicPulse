@@ -28,12 +28,12 @@ export default function ChartsSection() {
               <XAxis dataKey="month" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#0B1120', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: '#191715', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
                 itemStyle={{ color: '#fff' }}
               />
               <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
               <Line type="monotone" name="Submitted" dataKey="submitted" stroke="#334155" strokeWidth={3} dot={{ r: 4, fill: '#334155', strokeWidth: 0 }} />
-              <Line type="monotone" name="Resolved" dataKey="resolved" stroke="#14B8A6" strokeWidth={3} dot={{ r: 4, fill: '#14B8A6', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#14B8A6', strokeWidth: 0 }} />
+              <Line type="monotone" name="Resolved" dataKey="resolved" stroke="#D98B52" strokeWidth={3} dot={{ r: 4, fill: '#D98B52', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#D98B52', strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -58,13 +58,13 @@ export default function ChartsSection() {
               <YAxis dataKey="dept" type="category" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} width={110} />
               <Tooltip 
                 cursor={{ fill: 'rgba(255,255,255,0.03)' }}
-                contentStyle={{ backgroundColor: '#0B1120', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                itemStyle={{ color: '#14B8A6' }}
+                contentStyle={{ backgroundColor: '#191715', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                itemStyle={{ color: '#D98B52' }}
               />
-              <Bar dataKey="rate" name="Resolution %" fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={24}>
+              <Bar dataKey="rate" name="Resolution %" fill="#D3A34A" radius={[0, 4, 4, 0]} barSize={24}>
                 {
                   DEPT_RESOLUTION_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.rate > 80 ? '#14B8A6' : entry.rate > 60 ? '#F59E0B' : '#ef4444'} />
+                    <Cell key={`cell-${index}`} fill={entry.rate > 80 ? '#D98B52' : entry.rate > 60 ? '#D3A34A' : '#D85C52'} />
                   ))
                 }
               </Bar>

@@ -142,14 +142,14 @@ export default function MapDashboard() {
         id="report-issue-btn"
         aria-label="Report a new civic issue"
         onClick={() => setReportModalOpen(true)}
-        className="absolute bottom-6 right-6 z-30 flex items-center justify-center h-14 w-14 rounded-full transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-teal focus:ring-offset-2 focus:ring-offset-[#070B14]"
+        className="absolute bottom-6 right-6 z-30 flex items-center justify-center h-14 w-14 rounded-full transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 focus:ring-offset-[#0D0D0C]"
         style={{
-          background: "#4FD1A5",
-          boxShadow:  "0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(79,209,165,0.2)",
+          background: "#D98B52",
+          boxShadow:  "0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(217,139,82,0.2)",
         }}
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M12 5v14M5 12h14" stroke="#070B14" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M12 5v14M5 12h14" stroke="#0D0D0C" strokeWidth="2.5" strokeLinecap="round"/>
         </svg>
       </button>
 
