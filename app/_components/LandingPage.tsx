@@ -14,6 +14,7 @@ import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/Badge";
+import { BridgeStory } from "./BridgeStory";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Utility: Count-Up Hook
@@ -1156,6 +1157,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
       <HeroSection />
+      <BridgeStory />
 
       {/* Thin divider with gradient */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />

@@ -6,6 +6,7 @@ import { Footer } from "@/components/ui/Footer";
 import { BlobBackground } from "@/components/ui/BlobBackground";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SmoothScroller } from "@/components/ui/SmoothScroller";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -38,16 +39,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${sora.variable} h-full`} suppressHydrationWarning>
       <body className="h-full flex flex-col min-h-screen bg-navy text-slate-200 font-sora antialiased">
-        <AuthProvider>
-          <BlobBackground />
-          <Navbar />
-          <main className="relative z-10 flex flex-col flex-1 pt-20">
-            <PageTransition>
-              {children}
-            </PageTransition>
-          </main>
-          <Footer />
-        </AuthProvider>
+        <SmoothScroller>
+          <AuthProvider>
+            <BlobBackground />
+            <Navbar />
+            <main className="relative z-10 flex flex-col flex-1 pt-20">
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </main>
+            <Footer />
+          </AuthProvider>
+        </SmoothScroller>
       </body>
     </html>
   );
