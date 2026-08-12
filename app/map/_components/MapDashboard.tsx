@@ -10,8 +10,9 @@ import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import FilterBar from "./FilterBar";
 import IssueSidePanel from "@/components/ui/IssueSidePanel";
-import CollapsibleSidebar from "./CollapsibleSidebar";
+import CivicNewsFeed from "./CivicNewsFeed";
 import ReportModal from "./ReportModal";
+import { MOCK_ISSUES } from "./mockData";
 
 // Leaflet map loaded client-only (window/document APIs)
 const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
@@ -19,91 +20,149 @@ const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
 export type Filters = {
   category: Category | "all";
   severity: Severity | "all";
-  status:   IssueStatus | "all";
+  status: IssueStatus | "all";
 };
 
 const DEFAULT_FILTERS: Filters = { category: "all", severity: "all", status: "all" };
 
 export default function MapDashboard() {
-  const { user } = useAuth();
-  const [issues, setIssues]                   = useState<Issue[]>([]);
-  const [selectedIssue, setSelectedIssue]     = useState<Issue | null>(null);
-  const [filters, setFilters]                 = useState<Filters>(DEFAULT_FILTERS);
-  const [showHeatmap, setShowHeatmap]         = useState(false);
-  const [sidebarOpen, setSidebarOpen]         = useState(false);
+  const { user, role } = useAuth();
+  const [issues, setIssues] = useState<Issue[]>(MOCK_ISSUES);
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [newsFeedOpen, setNewsFeedOpen] = useState(true);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+
+  // Listen for global open-report-modal events (from Navbar or URL params)
+  useEffect(() => {
+    const handleOpenModal = () => setReportModalOpen(true);
+    window.addEventListener("open-report-modal", handleOpenModal);
+
+    // Check if ?report=true is in URL
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("report") === "true") {
+        setReportModalOpen(true);
+      }
+    }
+
+    return () => window.removeEventListener("open-report-modal", handleOpenModal);
+  }, []);
 
   // Derived: filter issues based on chips
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (filters.category !== "all" && issue.category !== filters.category) return false;
       if (filters.severity !== "all" && issue.severity !== filters.severity) return false;
-      if (filters.status   !== "all" && issue.status   !== filters.status)   return false;
+      if (filters.status !== "all" && issue.status !== filters.status) return false;
       return true;
     });
   }, [issues, filters]);
 
-  const handleSelectIssue  = useCallback((issue: Issue | null) => setSelectedIssue(issue), []);
+  const handleSelectIssue = useCallback((issue: Issue | null) => setSelectedIssue(issue), []);
+
   const handleUpvote = useCallback(async (id: string) => {
     try {
+      // Optimistic local update
+      setIssues((prev) =>
+        prev.map((it) => (it.id === id ? { ...it, upvotes: (it.upvotes || 0) + 1 } : it))
+      );
       const issueRef = doc(db, "issues", id);
       await updateDoc(issueRef, { upvotes: increment(1) });
     } catch (error) {
-      console.error("Error upvoting issue:", error);
+      console.warn("Upvote saved locally (demo mode):", error);
     }
   }, []);
 
-  // Listen for real-time issue updates
+  // Listen for real-time Firestore issue updates & merge with demo points
   useEffect(() => {
-    const q = collection(db, "issues");
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedIssues: Issue[] = [];
-      snapshot.forEach((doc) => {
-        updatedIssues.push({ id: doc.id, ...doc.data() } as Issue);
-      });
-      setIssues(updatedIssues);
-      
-      // Update selected issue if it changed
-      setSelectedIssue((prev) => {
-        if (!prev) return null;
-        const updated = updatedIssues.find(i => i.id === prev.id);
-        return updated || prev;
-      });
-    });
+    try {
+      const q = collection(db, "issues");
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const dbIssues: Issue[] = [];
+          snapshot.forEach((docSnap) => {
+            dbIssues.push({ id: docSnap.id, ...docSnap.data() } as Issue);
+          });
 
-    return () => unsubscribe();
+          // Merge db issues with mock issues so demo map is always rich
+          const merged = [
+            ...dbIssues,
+            ...MOCK_ISSUES.filter((m) => !dbIssues.some((d) => d.id === m.id)),
+          ];
+          setIssues(merged);
+
+          // Update selected issue if it changed
+          setSelectedIssue((prev) => {
+            if (!prev) return null;
+            const updated = merged.find((i) => i.id === prev.id);
+            return updated || prev;
+          });
+        },
+        (err) => {
+          console.warn("Firestore listener fallback to mock data:", err);
+          setIssues(MOCK_ISSUES);
+        }
+      );
+
+      return () => unsubscribe();
+    } catch {
+      setIssues(MOCK_ISSUES);
+    }
   }, []);
 
-  const handleNewIssueSubmit = useCallback(async (issue: any) => {
-    try {
-      const issueId = `ISS-${Date.now()}`;
-      let photoUrl = "";
+  const handleNewIssueSubmit = useCallback(
+    async (issue: any) => {
+      try {
+        const issueId = `ISS-${Date.now()}`;
+        let photoUrl = "";
 
-      if (issue.photoFile) {
-        // Upload base64 string to Firebase Storage
-        const storageRef = ref(storage, `issues/${issueId}.jpg`);
-        await uploadString(storageRef, issue.photoFile, "data_url");
-        photoUrl = await getDownloadURL(storageRef);
+        if (issue.photoFile && issue.photoFile.startsWith("data:")) {
+          try {
+            const storageRef = ref(storage, `issues/${issueId}.jpg`);
+            await uploadString(storageRef, issue.photoFile, "data_url");
+            photoUrl = await getDownloadURL(storageRef);
+          } catch (storageErr) {
+            console.warn("Storage upload fallback:", storageErr);
+            photoUrl = issue.photoFile;
+          }
+        } else if (issue.photoFile) {
+          photoUrl = issue.photoFile;
+        }
+
+        const newIssue: Issue = {
+          ...issue,
+          id: issueId,
+          upvotes: 1,
+          status: "Reported",
+          title: issue.title || `${issue.category} Issue Reported`,
+          description: issue.description || "Reported by citizen via CivicPulse mobile web.",
+          ward: issue.ward || "Ward 12 — Andheri East",
+          reportedAt: new Date().toISOString(),
+          photoSeed: Math.floor(Math.random() * 100),
+          photoUrl,
+          reporterUid: user?.id || "anonymous",
+        };
+
+        // Prepend to local state immediately for instant feedback
+        setIssues((prev) => [newIssue, ...prev]);
+        setSelectedIssue(newIssue);
+
+        try {
+          await setDoc(doc(db, "issues", issueId), newIssue);
+        } catch (dbErr) {
+          console.warn("Saved to local demo store:", dbErr);
+        }
+
+        setReportModalOpen(false);
+      } catch (error) {
+        console.error("Error submitting issue:", error);
       }
-
-      const newIssue: Issue = {
-        ...issue,
-        id:          issueId,
-        upvotes:     0,
-        status:      "Reported",
-        title:       issue.category + " Issue",
-        reportedAt:  new Date().toISOString(),
-        photoSeed:   Math.floor(Math.random() * 100), // Fallback if no photo
-        photoUrl,
-        reporterUid: user?.id || "anonymous",
-      };
-
-      await setDoc(doc(db, "issues", issueId), newIssue);
-      setReportModalOpen(false);
-    } catch (error) {
-      console.error("Error submitting issue:", error);
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -115,15 +174,24 @@ export default function MapDashboard() {
         showHeatmap={showHeatmap}
       />
 
-      {/* ── Filter bar (top center floating) ── */}
-      <FilterBar filters={filters} onChange={setFilters} issueCount={filteredIssues.length} />
+      {/* ── Filter bar (top center floating) with Report Issue button ── */}
+      <FilterBar
+        filters={filters}
+        onChange={setFilters}
+        issueCount={filteredIssues.length}
+        onOpenReportModal={() => setReportModalOpen(true)}
+      />
 
-      {/* ── Left collapsible sidebar ── */}
-      <CollapsibleSidebar
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((v) => !v)}
+      {/* ── Left Live Civic Pulse News & Critical Issues Bulletin ── */}
+      <CivicNewsFeed
+        issues={filteredIssues}
+        selectedIssue={selectedIssue}
+        onSelectIssue={handleSelectIssue}
         showHeatmap={showHeatmap}
         onToggleHeatmap={() => setShowHeatmap((v) => !v)}
+        isOpen={newsFeedOpen}
+        onToggle={() => setNewsFeedOpen((v) => !v)}
+        onOpenReportModal={() => setReportModalOpen(true)}
       />
 
       {/* ── Right issue detail panel ── */}
@@ -136,22 +204,6 @@ export default function MapDashboard() {
           />
         )}
       </AnimatePresence>
-
-      {/* ── Floating report button ── */}
-      <button
-        id="report-issue-btn"
-        aria-label="Report a new civic issue"
-        onClick={() => setReportModalOpen(true)}
-        className="absolute bottom-6 right-6 z-30 flex items-center justify-center h-14 w-14 rounded-full transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 focus:ring-offset-[#0D0D0C]"
-        style={{
-          background: "#D98B52",
-          boxShadow:  "0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(217,139,82,0.2)",
-        }}
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M12 5v14M5 12h14" stroke="#0D0D0C" strokeWidth="2.5" strokeLinecap="round"/>
-        </svg>
-      </button>
 
       {/* ── New issue report modal ── */}
       <AnimatePresence>
