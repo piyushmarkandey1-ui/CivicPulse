@@ -8,6 +8,7 @@ import {
   useInView,
   useMotionValue,
   animate,
+  AnimatePresence,
 } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -44,7 +45,7 @@ function useCountUp(to: number, duration = 2.2, decimals = 0) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Sub-component: Pulsing Map Pin
+   Sub-component: Animated Pulsing Map Pin with Concentric Ripples
 ───────────────────────────────────────────────────────────────────────────── */
 interface PinProps {
   cx: number;
@@ -57,7 +58,7 @@ interface PinProps {
 function PulsingPin({ cx, cy, color, glowColor, delay = 0, size = 8 }: PinProps) {
   return (
     <g>
-      {[1, 2].map((i) => (
+      {[1, 2, 3].map((i) => (
         <motion.circle
           key={i}
           cx={cx}
@@ -66,25 +67,25 @@ function PulsingPin({ cx, cy, color, glowColor, delay = 0, size = 8 }: PinProps)
           fill="none"
           stroke={color}
           strokeWidth={1.5 / i}
-          initial={{ scale: 0.6, opacity: 0.7 }}
-          animate={{ scale: 1 + i * 0.7, opacity: 0 }}
+          initial={{ scale: 0.5, opacity: 0.85 }}
+          animate={{ scale: 1 + i * 0.85, opacity: 0 }}
           transition={{
-            duration: 2.4,
+            duration: 2.2,
             repeat: Infinity,
-            delay: delay + i * 0.6,
+            delay: delay + i * 0.5,
             ease: "easeOut",
           }}
         />
       ))}
-      <circle cx={cx} cy={cy} r={size * 1.3} fill={glowColor} opacity={0.2} />
-      <circle cx={cx} cy={cy} r={size * 0.6} fill={color} />
-      <circle cx={cx - size * 0.2} cy={cy - size * 0.2} r={size * 0.2} fill="white" opacity={0.7} />
+      <circle cx={cx} cy={cy} r={size * 1.6} fill={glowColor} opacity={0.22} />
+      <circle cx={cx} cy={cy} r={size * 0.65} fill={color} />
+      <circle cx={cx - size * 0.2} cy={cy - size * 0.2} r={size * 0.22} fill="white" opacity={0.8} />
     </g>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Sub-component: Floating Municipal GIS Map Illustration
+   Sub-component: Restored Animated GIS Radar Map Illustration
 ───────────────────────────────────────────────────────────────────────────── */
 function MapIllustration() {
   const id = useId();
@@ -96,18 +97,33 @@ function MapIllustration() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Floating Map card */}
-      <div
-        className="relative w-full h-full rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md border border-[#DED8CD]/70 shadow-[0_16px_48px_rgba(36,34,34,0.08),0_1px_3px_rgba(36,34,34,0.03)]"
-      >
+      {/* Floating Map container */}
+      <div className="relative w-full h-full rounded-3xl overflow-hidden bg-white/90 backdrop-blur-md border border-[#DED8CD]/70 shadow-[0_16px_48px_rgba(36,34,34,0.08),0_1px_3px_rgba(36,34,34,0.03)]">
+        {/* Animated Radar Sweep */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background: `conic-gradient(from 0deg at 55% 45%, transparent 330deg, rgba(139,38,53,0.08) 355deg, transparent 360deg)`,
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
+        />
+
         <svg
           viewBox="0 0 560 420"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
           preserveAspectRatio="xMidYMid meet"
         >
-          {/* Subtle background tint */}
-          <rect width="560" height="420" fill="#F4EEE5" />
+          <defs>
+            <radialGradient id={`${id}-glow`} cx="55%" cy="45%" r="50%">
+              <stop offset="0%" stopColor="#F0E5D8" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#F7F4ED" stopOpacity="1" />
+            </radialGradient>
+          </defs>
+
+          {/* Canvas fill */}
+          <rect width="560" height="420" fill={`url(#${id}-glow)`} />
 
           {/* City blocks */}
           {[
@@ -162,7 +178,61 @@ function MapIllustration() {
             />
           ))}
 
-          {/* Location Pins */}
+          {/* Animated Road Traffic Flow Lines */}
+          <motion.line
+            x1={0}
+            y1={180}
+            x2={560}
+            y2={180}
+            stroke="#8B2635"
+            strokeWidth={1.5}
+            opacity={0.35}
+            strokeDasharray="6 12"
+            animate={{ strokeDashoffset: [0, -72] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.line
+            x1={220}
+            y1={0}
+            x2={220}
+            y2={420}
+            stroke="#8B2635"
+            strokeWidth={1.5}
+            opacity={0.3}
+            strokeDasharray="6 12"
+            animate={{ strokeDashoffset: [0, -72] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+          />
+
+          {/* Animated Connection Lines Between Incident Pins */}
+          {[
+            [165, 135, 307, 225],
+            [307, 225, 420, 140],
+            [307, 225, 165, 310],
+            [420, 140, 495, 225],
+          ].map(([x1, y1, x2, y2], i) => (
+            <motion.line
+              key={i}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="#8B2635"
+              strokeWidth={1.2}
+              opacity={0.35}
+              strokeDasharray="4 8"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: [0, 1, 1, 0] }}
+              transition={{
+                duration: 4.5,
+                repeat: Infinity,
+                delay: 0.4 + i * 0.35,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Animated Location Pins */}
           <PulsingPin cx={165} cy={135} color="#B83A3A" glowColor="#B83A3A" delay={0} size={7} />
           <PulsingPin cx={307} cy={225} color="#C58B32" glowColor="#C58B32" delay={0.6} size={8} />
           <PulsingPin cx={420} cy={140} color="#5E8061" glowColor="#5E8061" delay={1.1} size={6} />
@@ -172,7 +242,7 @@ function MapIllustration() {
         </svg>
 
         {/* Legend */}
-        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 text-[10px] font-semibold bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[#DED8CD]/80 shadow-xs">
+        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 text-[10px] font-semibold bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl border border-[#DED8CD]/80 shadow-xs z-20">
           {[
             { color: "bg-[#B83A3A]", label: "Critical Hazard" },
             { color: "bg-[#C58B32]", label: "Reported / Active" },
@@ -185,14 +255,14 @@ function MapIllustration() {
           ))}
         </div>
 
-        {/* Live badge */}
-        <div className="absolute top-4 right-4">
+        {/* Live GIS Badge */}
+        <div className="absolute top-4 right-4 z-20">
           <Badge label="GIS RADAR ACTIVE" variant="sand" pulse />
         </div>
 
         {/* Floating status pill */}
         <motion.div
-          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-xs font-bold text-[#242222] bg-white/95 backdrop-blur-md border border-[#DED8CD]/80 shadow-xs whitespace-nowrap"
+          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-xs font-bold text-[#242222] bg-white/95 backdrop-blur-md border border-[#DED8CD]/80 shadow-xs whitespace-nowrap z-20"
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.45 }}
@@ -206,11 +276,21 @@ function MapIllustration() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Section 1: HERO SECTION
+   Section 1: HERO SECTION with Dynamic Rotating Word
 ───────────────────────────────────────────────────────────────────────────── */
+const HERO_WORDS = ["Transparency", "Accountability", "Resolution", "Action"];
+
 function HeroSection() {
   const { scrollY } = useScroll();
   const mapY = useTransform(scrollY, [0, 600], [0, 60]);
+
+  const [wordIndex, setWordIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % HERO_WORDS.length);
+    }, 2600);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-12 overflow-hidden bg-transparent">
@@ -233,9 +313,24 @@ function HeroSection() {
             </span>
           </div>
 
-          {/* Heading */}
+          {/* Heading with Dynamic Word Animation */}
           <h1 className="text-hero text-[#242222] tracking-tight">
-            Civic <span className="text-[#8B2635]">Transparency</span>.
+            Civic{" "}
+            <span className="inline-block relative overflow-visible text-[#8B2635]">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={HERO_WORDS[wordIndex]}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="inline-block"
+                >
+                  {HERO_WORDS[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            .
             <br />
             Powered by You.
           </h1>
@@ -296,7 +391,7 @@ function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* Right: Map Illustration */}
+        {/* Right: Map Illustration with Radar & Traffic Animation */}
         <motion.div
           style={{ y: mapY }}
           className="relative h-[380px] lg:h-[450px] z-10"
