@@ -98,9 +98,9 @@ export function GradientButton({
   );
 
   const motionProps = {
-    whileHover: disabled ? undefined : { scale: 1.04 },
-    whileTap:   disabled ? undefined : { scale: 0.97 },
-    transition: { type: "spring" as const, stiffness: 400, damping: 20 },
+    whileHover: disabled ? undefined : { scale: 1.02 },
+    whileTap:   disabled ? undefined : { scale: 0.96 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 25 },
   };
 
   if (href) {

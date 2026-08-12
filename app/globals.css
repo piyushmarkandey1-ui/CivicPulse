@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap");
 
 /* ─── Design Tokens ────────────────────────────────────────────────────────── */
 @theme {
@@ -21,7 +20,9 @@
   --color-slate-700:   #334155;
   --color-slate-800:   #1E293B;
   --color-slate-900:   #0F172A;
+  --color-red-400:     #F87171;
   --color-red-500:     #EF4444;
+  --color-green-400:   #4ADE80;
   --color-green-500:   #22C55E;
 
   /* Typography */
@@ -37,11 +38,8 @@
   --shadow-glass:      0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.08);
   --shadow-card:       0 4px 24px rgba(0, 0, 0, 0.3);
 
-  /* Keyframes */
-  --animate-blob:          blob-float 20s ease-in-out infinite;
-  --animate-blob-delayed:  blob-float 26s ease-in-out infinite 6s;
+  /* Custom animations (used via Tailwind animate-* utilities) */
   --animate-fade-slide-in: fade-slide-in 0.35s ease-out forwards;
-  --animate-pulse-slow:    pulse 4s ease-in-out infinite;
 }
 
 @keyframes blob-float {
