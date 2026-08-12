@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/ui/Navbar";
-import { Footer } from "@/components/ui/Footer";
 import { BlobBackground } from "@/components/ui/BlobBackground";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -52,7 +51,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="relative z-10 flex flex-col flex-1">
               <PageTransition>{children}</PageTransition>
             </main>
-            <Footer />
           </AuthProvider>
         </SmoothScroller>
       </body>

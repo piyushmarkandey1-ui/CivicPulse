@@ -48,7 +48,7 @@ export default function CivicNewsFeed({
   });
 
   const criticalCount = issues.filter((i) => i.severity === "critical").length;
-  const inProgressCount = issues.filter((i) => i.status === "In Progress").length;
+  const inProgressCount = issues.filter((i) => i.status === "In Progress" || i.status === "Verified").length;
   const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
 
   useEffect(() => {
@@ -70,49 +70,53 @@ export default function CivicNewsFeed({
 
   return (
     <>
-      {/* ── Toggle button on left ── */}
-      <motion.button
-        onClick={onToggle}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        className="absolute left-4 top-24 z-30 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all duration-200 bg-white border-[#DED8CD] text-[#242222] shadow-[0_4px_16px_rgba(36,34,34,0.08)]"
-        aria-label={isOpen ? "Collapse Civic Bulletin" : "Open Civic Bulletin"}
-      >
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B83A3A] opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B83A3A]"></span>
-        </span>
-        <span>{isOpen ? "Hide Bulletin" : "Live Civic Radar"}</span>
-        <motion.svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.25 }}
+      {/* ── Toggle button (ONLY VISIBLE WHEN SIDEBAR IS CLOSED) ── */}
+      {!isOpen && (
+        <motion.button
+          onClick={onToggle}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          className="absolute left-4 top-20 z-30 flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold border transition-all duration-200 bg-white/95 backdrop-blur-md border-[#DED8CD] text-[#242222] shadow-[0_8px_24px_rgba(36,34,34,0.12)] cursor-pointer"
+          aria-label="Open Civic Bulletin"
         >
-          <path d="M9 18l6-6-6-6" />
-        </motion.svg>
-      </motion.button>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B83A3A] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B83A3A]"></span>
+          </span>
+          <span>Live Civic Radar</span>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </motion.button>
+      )}
 
       {/* ── Sidebar Panel ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.aside
-            initial={{ x: -360, opacity: 0 }}
+            initial={{ x: -380, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -360, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            exit={{ x: -380, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 340, damping: 34 }}
             className="absolute left-0 top-0 h-full w-84 sm:w-96 z-20 flex flex-col overflow-hidden bg-[#F7F4ED] border-r border-[#DED8CD] shadow-[0_8px_36px_rgba(36,34,34,0.12)]"
             aria-label="Civic Pulse Bulletin"
           >
-            {/* Header with Live Ticker */}
-            <div className="pt-20 pb-4 px-5 border-b border-[#DED8CD] bg-white">
-              <div className="flex items-center justify-between gap-2 mb-2.5">
+            {/* Header */}
+            <div className="pt-20 pb-3.5 px-5 border-b border-[#DED8CD] bg-white">
+              {/* Top Title Row with integrated collapse button */}
+              <div className="flex items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B83A3A] opacity-75"></span>
@@ -122,23 +126,37 @@ export default function CivicNewsFeed({
                     Civic Pulse Live Radar
                   </h2>
                 </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F0E5D8] text-[#8B2635] border border-[#D6C2A3]">
-                  REAL-TIME STREAM
-                </span>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#F0E5D8] text-[#8B2635] border border-[#D6C2A3]">
+                    LIVE
+                  </span>
+                  {/* Clean Collapse button inside header */}
+                  <button
+                    onClick={onToggle}
+                    className="p-1 rounded-lg hover:bg-[#F0E5D8] text-[#625E59] hover:text-[#242222] transition-colors cursor-pointer"
+                    title="Hide bulletin sidebar"
+                    aria-label="Hide bulletin sidebar"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              {/* Role-based Banner */}
+              {/* Action Banner */}
               {role === "government" ? (
                 <div className="mb-3 p-2.5 rounded-xl border border-[#D6C2A3] bg-[#F0E5D8] flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs text-[#242222]">
                     <span>🛡️</span>
-                    <span className="font-bold">
-                      Official Ops: {profile?.department || "Municipal Command"}
+                    <span className="font-bold truncate max-w-[170px]">
+                      {profile?.department || "Municipal Command"}
                     </span>
                   </div>
                   <Link
                     href="/gov-dashboard"
-                    className="text-[11px] font-bold text-[#8B2635] hover:underline"
+                    className="text-[11px] font-bold text-[#8B2635] hover:underline whitespace-nowrap"
                   >
                     Dashboard →
                   </Link>
@@ -147,7 +165,7 @@ export default function CivicNewsFeed({
                 <div className="mb-3 flex items-center gap-2">
                   <button
                     onClick={onOpenReportModal}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-white bg-[#8B2635] hover:bg-[#641B27] transition-all shadow-xs"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold text-white bg-[#8B2635] hover:bg-[#641B27] transition-all shadow-xs cursor-pointer"
                   >
                     <span>📢</span>
                     <span>Report New Issue</span>
@@ -155,7 +173,7 @@ export default function CivicNewsFeed({
                   {role === "citizen" && (
                     <Link
                       href="/profile"
-                      className="py-2 px-3 rounded-lg text-xs font-semibold text-[#625E59] hover:text-[#242222] bg-[#F7F4ED] border border-[#DED8CD] hover:border-[#8B2635] transition-all"
+                      className="py-2 px-3 rounded-xl text-xs font-semibold text-[#625E59] hover:text-[#242222] bg-[#F7F4ED] border border-[#DED8CD] hover:border-[#8B2635] transition-all"
                     >
                       My Reports
                     </Link>
@@ -163,24 +181,24 @@ export default function CivicNewsFeed({
                 </div>
               )}
 
-              {/* Metrics Summary Bar */}
+              {/* Metrics Summary Row */}
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-2 rounded-lg bg-[#FDEDED] border border-[#B83A3A]/25">
+                <div className="p-2 rounded-xl bg-[#FDEDED] border border-[#B83A3A]/20">
                   <span className="block text-[10px] font-bold text-[#B83A3A] uppercase">Critical</span>
                   <span className="text-sm font-bold font-mono text-[#B83A3A]">{criticalCount}</span>
                 </div>
-                <div className="p-2 rounded-lg bg-[#FEF6E9] border border-[#C58B32]/25">
+                <div className="p-2 rounded-xl bg-[#FEF6E9] border border-[#C58B32]/20">
                   <span className="block text-[10px] font-bold text-[#C58B32] uppercase">Active</span>
                   <span className="text-sm font-bold font-mono text-[#C58B32]">{inProgressCount}</span>
                 </div>
-                <div className="p-2 rounded-lg bg-[#EEF5EE] border border-[#5E8061]/25">
+                <div className="p-2 rounded-xl bg-[#EEF5EE] border border-[#5E8061]/20">
                   <span className="block text-[10px] font-bold text-[#5E8061] uppercase">Resolved</span>
                   <span className="text-sm font-bold font-mono text-[#5E8061]">{resolvedCount}</span>
                 </div>
               </div>
 
               {/* Heatmap Toggle */}
-              <div className="mt-3 flex items-center justify-between p-2.5 rounded-lg bg-[#F7F4ED] border border-[#DED8CD]">
+              <div className="mt-2.5 flex items-center justify-between p-2 rounded-xl bg-[#F7F4ED] border border-[#DED8CD]">
                 <div className="flex items-center gap-2 text-xs font-medium text-[#625E59]">
                   <span>🌡️</span>
                   <span>Hotspot Heatmap Overlay</span>
@@ -189,7 +207,7 @@ export default function CivicNewsFeed({
                   type="button"
                   onClick={onToggleHeatmap}
                   className={cn(
-                    "relative h-5 w-9 rounded-full transition-colors duration-200",
+                    "relative h-5 w-9 rounded-full transition-colors duration-200 cursor-pointer",
                     showHeatmap ? "bg-[#8B2635]" : "bg-[#C9C0B3]"
                   )}
                   aria-label="Toggle Heatmap"
@@ -203,122 +221,96 @@ export default function CivicNewsFeed({
               </div>
             </div>
 
-            {/* Scrolling Feed Container */}
+            {/* Scrolling Feed Container without annoying popup info */}
             <div
               className="relative flex-1 overflow-hidden"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              {/* Paused indicator */}
-              <AnimatePresence>
-                {isPaused && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded-full text-[10px] font-bold bg-[#242222] text-[#F7F4ED] shadow-md pointer-events-none"
-                  >
-                    ⏸️ SCROLL PAUSED (HOVERING)
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Top fade gradient */}
-              <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-[#F7F4ED] to-transparent z-10 pointer-events-none" />
-
-              {/* Auto-scrolling List */}
               <div
                 ref={scrollRef}
-                className="h-full overflow-y-auto px-4 py-3 space-y-2.5 scrollbar-none"
+                className="h-full overflow-y-auto p-4 space-y-3 scrollbar-none"
               >
                 {sortedIssues.map((issue) => {
                   const isSelected = selectedIssue?.id === issue.id;
                   const isCritical = issue.severity === "critical";
-                  const reportTime = new Date(issue.reportedAt).toLocaleDateString("en-IN", {
-                    month: "short",
-                    day: "numeric",
-                  });
 
                   return (
                     <motion.div
                       key={issue.id}
-                      onClick={() => onSelectIssue(isSelected ? null : issue)}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
+                      onClick={() => onSelectIssue(issue)}
+                      whileHover={{ scale: 1.015, y: -2 }}
+                      transition={{ duration: 0.15 }}
                       className={cn(
-                        "p-3.5 rounded-xl cursor-pointer transition-all duration-150 border text-left bg-white",
+                        "rounded-2xl p-4 transition-all duration-200 cursor-pointer border",
                         isSelected
-                          ? "border-[#8B2635] bg-[#F0E5D8]/70 shadow-[0_4px_16px_rgba(139,38,53,0.15)] ring-1 ring-[#8B2635]"
+                          ? "bg-white border-[#8B2635] shadow-[0_8px_24px_rgba(139,38,53,0.12)] ring-1 ring-[#8B2635]"
                           : isCritical
-                          ? "border-[#B83A3A]/30 bg-[#FDEDED]/40 hover:border-[#B83A3A]/60"
-                          : "border-[#DED8CD] hover:border-[#C9C0B3] hover:bg-[#F0E5D8]/20"
+                          ? "bg-white border-[#B83A3A]/30 hover:border-[#8B2635] shadow-xs"
+                          : "bg-white border-[#DED8CD] hover:border-[#8B2635] shadow-xs"
                       )}
                     >
-                      {/* Top Badges */}
+                      {/* Top Row: Category & Status */}
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-base" role="img" aria-label={issue.category}>
-                            {CAT_EMOJIS[issue.category] || "⚠️"}
+                          <span className="text-sm">
+                            {CAT_EMOJIS[issue.category] || "📍"}
                           </span>
                           <span className="text-xs font-bold text-[#242222]">
                             {issue.category}
                           </span>
                         </div>
-                        {isCritical ? (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FDEDED] text-[#B83A3A] border border-[#B83A3A]/30">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#B83A3A]" />
-                            CRITICAL
-                          </span>
-                        ) : (
-                          <span
-                            className={cn(
-                              "px-1.5 py-0.5 rounded text-[10px] font-semibold border",
-                              issue.status === "Resolved"
-                                ? "bg-[#EEF5EE] text-[#5E8061] border-[#5E8061]/25"
-                                : issue.status === "In Progress"
-                                ? "bg-[#FEF6E9] text-[#C58B32] border-[#C58B32]/25"
-                                : "bg-[#F7F4ED] text-[#625E59] border-[#DED8CD]"
-                            )}
-                          >
-                            {issue.status}
-                          </span>
-                        )}
+                        <Badge
+                          label={issue.status}
+                          variant={
+                            issue.status === "Resolved"
+                              ? "success"
+                              : isCritical
+                              ? "critical"
+                              : "sand"
+                          }
+                        />
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-xs font-bold text-[#242222] line-clamp-1 mb-1">
+                      <h4 className="text-xs font-bold text-[#242222] mb-1 line-clamp-1">
                         {issue.title}
-                      </h3>
+                      </h4>
 
-                      {/* Description summary */}
+                      {/* Description */}
                       <p className="text-[11px] text-[#625E59] line-clamp-2 leading-relaxed mb-2">
                         {issue.description}
                       </p>
 
-                      {/* Footer Details */}
-                      <div className="flex items-center justify-between text-[10px] text-[#88827A] pt-2 border-t border-[#DED8CD]">
-                        <div className="flex items-center gap-1 truncate max-w-[170px]">
+                      {/* Meta Footer */}
+                      <div className="flex items-center justify-between text-[10px] text-[#88827A] pt-2 border-t border-[#DED8CD]/60">
+                        <span className="flex items-center gap-1 text-[#625E59] font-medium truncate max-w-[180px]">
                           <span className="text-[#8B2635]">📍</span>
-                          <span className="truncate font-medium">{issue.ward || issue.address}</span>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 font-mono">
-                          <span>▲ {issue.upvotes || 0}</span>
-                          <span>{reportTime}</span>
+                          <span>{issue.ward}</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-[#8B2635]">
+                            ▲ {issue.upvotes || 0}
+                          </span>
+                          <span>
+                            {new Date(issue.reportedAt).toLocaleDateString(undefined, {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
                   );
                 })}
               </div>
-
-              {/* Bottom fade gradient */}
-              <div className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-[#F7F4ED] to-transparent z-10 pointer-events-none" />
             </div>
 
-            {/* Footer Notice */}
-            <div className="p-3 border-t border-[#DED8CD] text-center bg-white">
-              <p className="text-[10px] text-[#88827A]">
-                💡 Click any incident to fly GIS map & view SLA telemetry
+            {/* Bottom Telemetry Bar */}
+            <div className="p-3 border-t border-[#DED8CD] bg-white text-center">
+              <p className="text-[11px] text-[#625E59] flex items-center justify-center gap-1.5">
+                <span>💡</span>
+                <span>Click any incident to fly GIS map & view SLA telemetry</span>
               </p>
             </div>
           </motion.aside>

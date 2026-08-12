@@ -142,8 +142,6 @@ export default function ProfileClient() {
           />
         )}
       </AnimatePresence>
-
-      <Footer />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/Badge";
 import { BridgeStory } from "./BridgeStory";
+import { Footer } from "@/components/ui/Footer";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Utility: Count-Up Hook
@@ -890,6 +891,7 @@ export default function LandingPage() {
       <LeaderboardSection />
       <RecognitionWallSection />
       <CTASection />
+      <Footer />
     </div>
   );
 }
