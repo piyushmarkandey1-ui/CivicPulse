@@ -100,7 +100,7 @@ export function BridgeStory() {
         // Lights: left to right, quick succession
         .to(".light-bulb", { opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: "power2.out" }, 15)
         // Ambient environment tint — very subtle
-        .to(".bridge-story-bg", { backgroundColor: "rgba(217,139,82,0.025)", duration: 2 }, 15)
+        .to(container.current, { backgroundColor: "rgba(217,139,82,0.025)", duration: 2 }, 15)
 
         // Hold
         .to({}, { duration: 3 });
