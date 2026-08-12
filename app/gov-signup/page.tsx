@@ -50,27 +50,20 @@ export default function GovSignupPage() {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: {
+          data: {
+            name,
+            role: "government",
+            department,
+            ward: ward || null,
+          },
+        },
       });
 
       if (signUpError) throw signUpError;
       if (!data.user) throw new Error("Signup failed. Please try again.");
 
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: data.user.id,
-        name,
-        role: "government",
-        department,
-        ward: ward || null,
-        reputation_score: 0,
-        total_reports: 0,
-        join_date: new Date().toLocaleDateString(undefined, {
-          month: "long",
-          year: "numeric",
-        }),
-      });
-
-      if (profileError) throw profileError;
+      // Profile is auto-created by database trigger — no manual insert needed
 
       router.push("/gov-dashboard");
       router.refresh();
