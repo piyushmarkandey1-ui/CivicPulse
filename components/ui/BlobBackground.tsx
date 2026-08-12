@@ -6,6 +6,11 @@
  * The amber blob is gone. No bouncing/floating.
  */
 export function BlobBackground() {
+  const prefersReduced =
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
+
   return (
     <div
       aria-hidden

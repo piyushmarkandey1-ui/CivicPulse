@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate";
+type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate" | "blue";
 
 interface BadgeProps {
   label: string;
@@ -14,6 +14,12 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: string; border: string }> = {
+  blue: {
+    bg:     "bg-blue-muted",
+    text:   "text-blue-dark",
+    dot:    "bg-blue",
+    border: "border-blue/20",
+  },
   teal: {
     bg:     "bg-teal/[0.08]",
     text:   "text-teal",

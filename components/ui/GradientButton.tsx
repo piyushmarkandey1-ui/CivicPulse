@@ -1,21 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
+
+const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
 
 interface GradientButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   href?: string;
   variant?: "primary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
   icon?: React.ReactNode;
+  "aria-label"?: string;
 }
 
 const sizeMap = {
+  xs: "px-3 py-1.5 text-xs",
   sm: "px-4 py-2 text-sm",
   md: "px-5 py-2.5 text-sm",
   lg: "px-7 py-3 text-base",
@@ -26,16 +31,17 @@ export function GradientButton({
   onClick,
   href,
   variant = "primary",
-  size = "md",
+  size    = "md",
   className,
   disabled,
   type = "button",
   icon,
+  "aria-label": ariaLabel,
 }: GradientButtonProps) {
   const baseStyles = cn(
     "relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
     "cursor-pointer select-none transition-all duration-200",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-[#070B14]",
     sizeMap[size],
     disabled && "opacity-40 cursor-not-allowed pointer-events-none",
     className
@@ -98,9 +104,11 @@ export function GradientButton({
 
   if (href) {
     return (
-      <motion.a href={href} className={cn(baseStyles, "group")} {...motionProps}>
-        {content}
-      </motion.a>
+      <motion.span className="inline-flex group" {...motionProps}>
+        <Link href={href} className={baseStyles} aria-label={ariaLabel}>
+          {content}
+        </Link>
+      </motion.span>
     );
   }
 
@@ -109,6 +117,7 @@ export function GradientButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
       className={cn(baseStyles, "group")}
       {...motionProps}
     >

@@ -34,9 +34,9 @@ function HamburgerIcon({ open }: { open: boolean }) {
 }
 
 export function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
+  const pathname     = usePathname();
+  const router       = useRouter();
+  const [scrolled, setScrolled]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, role, loading } = useAuth();
 
@@ -77,7 +77,7 @@ export function Navbar() {
             : undefined
         }
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="CivicPulse home">
@@ -161,7 +161,7 @@ export function Navbar() {
             className="md:hidden p-2 rounded-md hover:bg-white/[0.04] transition-colors"
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
-            aria-label="Toggle mobile menu"
+            aria-label="Toggle navigation menu"
           >
             <HamburgerIcon open={mobileOpen} />
           </button>
@@ -210,7 +210,7 @@ export function Navbar() {
                   </div>
                 )}
                 {!loading && user && (
-                  <div className="flex flex-col gap-2">
+                  <>
                     {role === "citizen" && (
                       <Link href="/map" className="block text-center py-2.5 text-sm font-semibold rounded-lg bg-teal text-[#070B14] hover:bg-teal-light transition-colors">
                         Report Issue
@@ -219,7 +219,7 @@ export function Navbar() {
                     <button onClick={handleLogout} className="block w-full text-center py-2.5 text-sm text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] rounded-md transition-colors">
                       Sign out
                     </button>
-                  </div>
+                  </>
                 )}
               </li>
             </ul>

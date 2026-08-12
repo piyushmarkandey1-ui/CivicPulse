@@ -16,8 +16,8 @@ export function EmptyState({ title, description, icon, className, action }: Empt
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "flex flex-col items-center justify-center text-center p-10 py-16",
-        "glass border border-white/10 rounded-3xl",
+        "flex flex-col items-center justify-center text-center p-8 md:p-12 py-12 md:py-16",
+        "glass border border-white/[0.07] rounded-2xl",
         className
       )}
     >
