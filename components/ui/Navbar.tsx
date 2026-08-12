@@ -46,7 +46,7 @@ function HamburgerIcon({ open }: { open: boolean }) {
   );
 }
 
-// ─── Dual Portal Auth Dropdowns ──────────────────────────────────────────────
+// ─── Dual Portal Auth Dropdowns (Floating Pill Style) ─────────────────────────
 export function DualPortalAuthDropdowns() {
   const [openDropdown, setOpenDropdown] = useState<"citizen" | "officer" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,25 +62,25 @@ export function DualPortalAuthDropdowns() {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex items-center gap-2.5">
+    <div ref={containerRef} className="flex items-center gap-2">
       {/* ─── OPTION 1: FOR CITIZENS ─── */}
       <div className="relative">
         <button
           type="button"
           onClick={() => setOpenDropdown((cur) => (cur === "citizen" ? null : "citizen"))}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 select-none border",
+            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none border shadow-xs",
             openDropdown === "citizen"
-              ? "bg-[#8B2635] text-white border-[#8B2635] shadow-sm"
-              : "bg-white text-[#242222] border-[#DED8CD] hover:border-[#8B2635] hover:text-[#8B2635]"
+              ? "bg-[#8B2635] text-white border-[#8B2635]"
+              : "bg-white/80 backdrop-blur-sm text-[#242222] border-[#DED8CD] hover:border-[#8B2635] hover:text-[#8B2635] hover:bg-white"
           )}
           aria-expanded={openDropdown === "citizen"}
         >
           <span>👤</span>
           <span>For Citizens</span>
           <motion.svg
-            width="12"
-            height="12"
+            width="11"
+            height="11"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -101,7 +101,7 @@ export function DualPortalAuthDropdowns() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.97 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 top-full mt-2 w-56 p-1.5 rounded-xl border border-[#DED8CD] shadow-[0_10px_30px_rgba(36,34,34,0.12)] z-50 bg-white"
+              className="absolute right-0 top-full mt-2 w-56 p-1.5 rounded-2xl border border-[#DED8CD]/80 shadow-[0_12px_36px_rgba(36,34,34,0.12)] z-50 bg-white/95 backdrop-blur-md"
             >
               <div className="px-3 py-2 border-b border-[#DED8CD]/60 mb-1">
                 <p className="text-[10px] font-bold tracking-wider uppercase text-[#8B2635]">
@@ -113,7 +113,7 @@ export function DualPortalAuthDropdowns() {
               <Link
                 href="/login"
                 onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
               >
                 <span className="text-sm">🔑</span>
                 <div>
@@ -125,7 +125,7 @@ export function DualPortalAuthDropdowns() {
               <Link
                 href="/signup"
                 onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
               >
                 <span className="text-sm">📝</span>
                 <div>
@@ -144,18 +144,18 @@ export function DualPortalAuthDropdowns() {
           type="button"
           onClick={() => setOpenDropdown((cur) => (cur === "officer" ? null : "officer"))}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 select-none border",
+            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none border shadow-xs",
             openDropdown === "officer"
-              ? "bg-[#242222] text-[#F7F4ED] border-[#242222] shadow-sm font-bold"
-              : "bg-[#F0E5D8] text-[#8B2635] border-[#D6C2A3] hover:border-[#8B2635] hover:bg-[#EBDDCB]"
+              ? "bg-[#242222] text-[#F7F4ED] border-[#242222]"
+              : "bg-[#F0E5D8]/80 backdrop-blur-sm text-[#8B2635] border-[#D6C2A3] hover:border-[#8B2635] hover:bg-[#EBDDCB]"
           )}
           aria-expanded={openDropdown === "officer"}
         >
           <span>🛡️</span>
           <span>For Officers</span>
           <motion.svg
-            width="12"
-            height="12"
+            width="11"
+            height="11"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -176,7 +176,7 @@ export function DualPortalAuthDropdowns() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.97 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 top-full mt-2 w-60 p-1.5 rounded-xl border border-[#D6C2A3] shadow-[0_10px_30px_rgba(36,34,34,0.12)] z-50 bg-white"
+              className="absolute right-0 top-full mt-2 w-60 p-1.5 rounded-2xl border border-[#D6C2A3]/80 shadow-[0_12px_36px_rgba(36,34,34,0.12)] z-50 bg-white/95 backdrop-blur-md"
             >
               <div className="px-3 py-2 border-b border-[#DED8CD]/60 mb-1">
                 <p className="text-[10px] font-bold tracking-wider uppercase text-[#8B2635]">
@@ -188,7 +188,7 @@ export function DualPortalAuthDropdowns() {
               <Link
                 href="/gov-login"
                 onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
               >
                 <span className="text-sm">🛡️</span>
                 <div>
@@ -200,7 +200,7 @@ export function DualPortalAuthDropdowns() {
               <Link
                 href="/gov-signup"
                 onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
               >
                 <span className="text-sm">📋</span>
                 <div>
@@ -264,7 +264,7 @@ export function Navbar() {
         className={cn(
           "fixed top-0 inset-x-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-[#F7F4ED]/95 backdrop-blur-md border-b border-[#DED8CD] py-3 shadow-[0_2px_12px_rgba(36,34,34,0.04)]"
+            ? "bg-[#F7F4ED]/80 backdrop-blur-md border-b border-[#DED8CD]/50 py-3 shadow-[0_2px_16px_rgba(36,34,34,0.03)]"
             : "bg-transparent py-4"
         )}
       >
@@ -282,7 +282,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links (Clean, No Box Enclosing) */}
           <ul className="hidden md:flex items-center gap-1" role="navigation">
             {navLinks.map((link) => {
               const active = pathname === link.href;
@@ -291,10 +291,10 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
+                      "relative px-3.5 py-1.5 text-sm font-medium transition-colors duration-200",
                       active
-                        ? "text-[#8B2635] font-semibold bg-[#F0E5D8]/70"
-                        : "text-[#625E59] hover:text-[#8B2635] hover:bg-[#F0E5D8]/40"
+                        ? "text-[#8B2635] font-bold"
+                        : "text-[#625E59] hover:text-[#8B2635]"
                     )}
                   >
                     {link.label}
@@ -311,7 +311,7 @@ export function Navbar() {
             })}
           </ul>
 
-          {/* Desktop Auth Controls — TWO CLEAR OPTIONS: CITIZENS & OFFICERS */}
+          {/* Desktop Auth Controls */}
           <div className="hidden md:flex flex-shrink-0 items-center gap-3">
             {!loading && !user && <DualPortalAuthDropdowns />}
 
@@ -319,12 +319,12 @@ export function Navbar() {
               <div className="flex items-center gap-3">
                 {/* Role Badge Indicator */}
                 {role === "government" ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#F0E5D8] border border-[#D6C2A3] text-[#8B2635]">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0E5D8] border border-[#D6C2A3] text-[#8B2635] shadow-xs">
                     <span>🛡️</span>
                     <span className="max-w-[140px] truncate">{profile?.department || "Official"}</span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8B2635]/10 border border-[#8B2635]/20 text-[#8B2635]">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#8B2635]/10 border border-[#8B2635]/20 text-[#8B2635]">
                     <span>👤</span>
                     <span>Citizen</span>
                   </span>
@@ -334,7 +334,7 @@ export function Navbar() {
                 {role === "government" ? (
                   <Link
                     href="/gov-dashboard"
-                    className="text-xs font-bold px-3.5 py-2 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-sm"
+                    className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs"
                   >
                     Ops Dashboard →
                   </Link>
@@ -342,7 +342,7 @@ export function Navbar() {
                   <Link
                     href="/map?report=true"
                     onClick={handleReportClick}
-                    className="text-xs font-bold px-3.5 py-2 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-sm flex items-center gap-1.5"
+                    className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs flex items-center gap-1.5"
                   >
                     <span>📢</span>
                     <span>Report Issue</span>
@@ -352,7 +352,7 @@ export function Navbar() {
                 {/* Logout */}
                 <button
                   onClick={handleLogout}
-                  className="text-xs text-[#88827A] hover:text-[#242222] transition-colors px-2 py-1.5"
+                  className="text-xs text-[#88827A] hover:text-[#242222] transition-colors px-2 py-1"
                   title="Sign out"
                 >
                   Sign out
@@ -382,7 +382,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed top-[56px] inset-x-0 z-40 border-b border-[#DED8CD] px-4 py-4 md:hidden bg-[#F7F4ED] shadow-xl"
+            className="fixed top-[56px] inset-x-0 z-40 border-b border-[#DED8CD] px-4 py-4 md:hidden bg-[#F7F4ED]/95 backdrop-blur-md shadow-xl"
           >
             <ul className="flex flex-col gap-1">
               {navLinks.map((link) => {
@@ -404,12 +404,10 @@ export function Navbar() {
                 );
               })}
 
-              {/* Mobile Auth Sections */}
               <li className="pt-3 mt-2 border-t border-[#DED8CD] space-y-2">
                 {!loading && !user && (
                   <div className="flex flex-col gap-2.5">
-                    {/* Citizen Accordion */}
-                    <div className="rounded-xl border border-[#DED8CD] bg-white overflow-hidden shadow-sm">
+                    <div className="rounded-xl border border-[#DED8CD] bg-white overflow-hidden shadow-xs">
                       <button
                         type="button"
                         onClick={() => setMobileCitizenOpen((v) => !v)}
@@ -439,8 +437,7 @@ export function Navbar() {
                       )}
                     </div>
 
-                    {/* Officer Accordion */}
-                    <div className="rounded-xl border border-[#D6C2A3] bg-[#F0E5D8]/50 overflow-hidden shadow-sm">
+                    <div className="rounded-xl border border-[#D6C2A3] bg-[#F0E5D8]/50 overflow-hidden shadow-xs">
                       <button
                         type="button"
                         onClick={() => setMobileOfficerOpen((v) => !v)}

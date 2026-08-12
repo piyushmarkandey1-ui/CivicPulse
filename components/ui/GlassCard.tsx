@@ -33,18 +33,18 @@ export function GlassCard({
 
   const animProps = animate
     ? {
-        initial: { opacity: 0, y: 12 },
+        initial: { opacity: 0, y: 14 },
         whileInView: { opacity: 1, y: 0 },
         viewport: { once: true, margin: "-40px" },
-        transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+        transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
         whileHover: hover
           ? {
-              y: -2,
-              borderColor: "#C9C0B3",
+              y: -3,
+              borderColor: "rgba(139, 38, 53, 0.25)",
               boxShadow:
                 glow === "maroon" || glow === "copper"
-                  ? "0 8px 30px rgba(139, 38, 53, 0.08), 0 2px 8px rgba(36, 34, 34, 0.04)"
-                  : "0 8px 30px rgba(36, 34, 34, 0.08)",
+                  ? "0 16px 40px rgba(139, 38, 53, 0.1), 0 4px 12px rgba(36, 34, 34, 0.04)"
+                  : "0 16px 40px rgba(36, 34, 34, 0.08), 0 2px 8px rgba(36, 34, 34, 0.03)",
               transition: { duration: 0.2, ease: EASE_OUT_QUAD },
             }
           : undefined,
@@ -52,12 +52,12 @@ export function GlassCard({
     : {
         whileHover: hover
           ? {
-              y: -2,
-              borderColor: "#C9C0B3",
+              y: -3,
+              borderColor: "rgba(139, 38, 53, 0.25)",
               boxShadow:
                 glow === "maroon" || glow === "copper"
-                  ? "0 8px 30px rgba(139, 38, 53, 0.08), 0 2px 8px rgba(36, 34, 34, 0.04)"
-                  : "0 8px 30px rgba(36, 34, 34, 0.08)",
+                  ? "0 16px 40px rgba(139, 38, 53, 0.1), 0 4px 12px rgba(36, 34, 34, 0.04)"
+                  : "0 16px 40px rgba(36, 34, 34, 0.08), 0 2px 8px rgba(36, 34, 34, 0.03)",
               transition: { duration: 0.2, ease: EASE_OUT_QUAD },
             }
           : undefined,
@@ -67,9 +67,9 @@ export function GlassCard({
     <Wrapper
       {...(animProps as any)}
       className={cn(
-        "relative rounded-xl overflow-hidden",
-        "bg-white border border-[#DED8CD]",
-        "shadow-[0_4px_20px_rgba(36,34,34,0.06)]",
+        "relative rounded-2xl overflow-hidden",
+        "bg-white/85 backdrop-blur-md border border-[#DED8CD]/60",
+        "shadow-[0_8px_30px_rgba(36,34,34,0.06),0_1px_3px_rgba(36,34,34,0.03)]",
         "transition-all duration-300",
         paddingMap[padding],
         className

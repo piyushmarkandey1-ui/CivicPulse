@@ -48,7 +48,7 @@ export function BridgeStory() {
       gsap.set(".light-bulb", { opacity: 0, scale: 0 });
       gsap.set(".report-2, .report-3", { opacity: 0, scale: 0 });
       gsap.set(".hotspot-ring", { opacity: 0, scale: 0, transformOrigin: "center center" });
-      gsap.set(".escalation-ui", { opacity: 0, y: 24 });
+      gsap.set(".escalation-ui", { opacity: 0, y: 20 });
       gsap.set(".escalation-glow", { scaleX: 0, transformOrigin: "left center" });
       gsap.set(textRefs.current.slice(1), { opacity: 0, y: 20 });
 
@@ -56,7 +56,7 @@ export function BridgeStory() {
         scrollTrigger: {
           trigger: container.current,
           start: "top top",
-          end: "+=3600",
+          end: "+=3200",
           scrub: 1.2,
           pin: true,
           anticipatePin: 1,
@@ -94,7 +94,6 @@ export function BridgeStory() {
         .to(".railing-center", { opacity: 1, scaleX: 1, duration: 1.2, ease: "power2.out" }, 14.2)
         .to(".report, .hotspot-ring", { opacity: 0, scale: 0, duration: 0.8 }, 14)
         .to(".light-bulb", { opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: "power2.out" }, 15)
-        .to(container.current, { backgroundColor: "#F0E5D8", duration: 2 }, 15)
 
         // Hold
         .to({}, { duration: 3 });
@@ -105,12 +104,15 @@ export function BridgeStory() {
   return (
     <section
       ref={container}
-      className="bridge-story-bg relative w-full h-screen overflow-hidden"
-      style={{ background: "#F7F4ED", borderTop: "1px solid #DED8CD", borderBottom: "1px solid #DED8CD" }}
+      className="bridge-story-bg relative w-full h-screen overflow-hidden bg-transparent"
+      style={{
+        maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+      }}
     >
-      {/* Story Text */}
-      <div className="absolute top-16 inset-x-0 z-20 flex flex-col items-center text-center pointer-events-none px-6">
-        <p className="text-xs font-bold uppercase text-[#8B2635] tracking-[0.16em] mb-4">
+      {/* Story Text Header */}
+      <div className="absolute top-14 inset-x-0 z-20 flex flex-col items-center text-center pointer-events-none px-6">
+        <p className="text-xs font-bold uppercase text-[#8B2635] tracking-[0.18em] mb-3">
           Public Infrastructure Lifecycle
         </p>
 
@@ -122,34 +124,36 @@ export function BridgeStory() {
               className="absolute inset-x-0"
             >
               <h3
-                className="text-xl md:text-2xl font-bold mb-1.5"
+                className="text-xl md:text-2xl font-bold mb-1 tracking-tight"
                 style={{
                   color: stage.warning ? "#B83A3A" : stage.resolved ? "#5E8061" : "#242222",
                 }}
               >
                 {stage.label}
               </h3>
-              <p className="text-sm text-[#625E59] font-normal leading-relaxed">{stage.copy}</p>
+              <p className="text-sm text-[#625E59] font-normal leading-relaxed max-w-lg mx-auto">
+                {stage.copy}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Escalation Chain UI */}
-      <div className="absolute top-[36%] left-1/2 -translate-x-1/2 z-20 escalation-ui pointer-events-none flex items-center gap-3">
+      {/* Escalation Chain UI (Floating Glass Cards) */}
+      <div className="absolute top-[34%] left-1/2 -translate-x-1/2 z-20 escalation-ui pointer-events-none flex items-center gap-3">
         {["Ward Office", "Department Directorate", "Municipal Commissioner"].map((node, i) => (
           <div key={node} className="flex items-center gap-3">
             <div
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-sm bg-white"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-[0_4px_16px_rgba(36,34,34,0.06)] bg-white/90 backdrop-blur-md"
               style={{
-                border: i === 2 ? "1px solid #8B2635" : "1px solid #DED8CD",
+                border: i === 2 ? "1.5px solid #8B2635" : "1px solid rgba(222,216,205,0.8)",
                 color: i === 2 ? "#8B2635" : "#625E59",
               }}
             >
               {node}
             </div>
             {i < 2 && (
-              <div className="relative w-10 h-0.5" style={{ background: "#DED8CD" }}>
+              <div className="relative w-8 h-0.5" style={{ background: "rgba(222,216,205,0.7)" }}>
                 <div
                   className="absolute inset-0 escalation-glow"
                   style={{ background: "#8B2635" }}
@@ -160,9 +164,9 @@ export function BridgeStory() {
         ))}
       </div>
 
-      {/* Bridge */}
-      <div className="absolute inset-0 flex items-center justify-center pt-28 px-4">
-        <BridgeSVG className="w-full max-w-[1250px] h-auto" />
+      {/* Bridge Visual (Perfect Center in Viewport) */}
+      <div className="absolute inset-0 flex items-center justify-center pt-8 pb-4 px-4 pointer-events-none">
+        <BridgeSVG className="w-full max-w-[1150px] h-auto" />
       </div>
     </section>
   );

@@ -22,7 +22,13 @@ export const metadata: Metadata = {
   },
   description:
     "Report potholes, water clogging, and unsafe civic infrastructure with geotagged photos. Track government response. Score accountability publicly in real time.",
-  keywords: ["civic issues", "pothole reporting", "infrastructure", "geospatial", "government accountability"],
+  keywords: [
+    "civic issues",
+    "pothole reporting",
+    "infrastructure",
+    "geospatial",
+    "government accountability",
+  ],
   openGraph: {
     title: "CivicPulse — Geospatial Infrastructure Accountability",
     description:
@@ -38,15 +44,13 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${sora.variable} h-full`} suppressHydrationWarning>
-      <body className="h-full flex flex-col min-h-screen bg-gray-soft text-gray-dark font-sora antialiased">
+      <body className="h-full flex flex-col min-h-screen font-sora antialiased selection:bg-[#8B2635]/20 selection:text-[#8B2635]">
         <SmoothScroller>
           <AuthProvider>
             <BlobBackground />
             <Navbar />
-            <main className="relative z-10 flex flex-col flex-1 pt-20">
-              <PageTransition>
-                {children}
-              </PageTransition>
+            <main className="relative z-10 flex flex-col flex-1">
+              <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
           </AuthProvider>
