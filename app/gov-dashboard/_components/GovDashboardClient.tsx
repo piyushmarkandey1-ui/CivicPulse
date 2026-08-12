@@ -15,7 +15,7 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { type Issue } from "@/lib/types";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
+import Link from "next/link";
 
 export type TabType = "Overview" | "Departments" | "Wards" | "Escalations" | "Recognition";
 
@@ -26,10 +26,9 @@ export default function GovDashboardClient() {
   const { role, loading: authLoading, user } = useAuth();
   const router = useRouter();
 
-  // Redirect non-government users
   useEffect(() => {
     if (!authLoading && (!user || role !== "government")) {
-      router.replace("/login?error=unauthorized");
+      router.replace("/gov-login");
     }
   }, [authLoading, user, role, router]);
 
@@ -45,52 +44,70 @@ export default function GovDashboardClient() {
     return () => unsubscribe();
   }, []);
 
-  // Compute live KPIs
-  const resolvedCount = issues.filter(i => i.status === "Resolved").length;
-  const pendingCount = issues.filter(i => i.status !== "Resolved").length;
-  const resolutionRate = issues.length > 0 ? Math.round((resolvedCount / issues.length) * 100) : 0;
+  // Live KPIs
+  const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
+  const pendingCount = issues.filter((i) => i.status !== "Resolved").length;
+  const resolutionRate =
+    issues.length > 0 ? Math.round((resolvedCount / issues.length) * 100) : 0;
 
   const KPI_DATA = {
     resolutionRate: issues.length > 0 ? resolutionRate : MOCK_KPI.resolutionRate,
-    avgResponseTime: MOCK_KPI.avgResponseTime, // complex to compute without resolution timestamps
+    avgResponseTime: MOCK_KPI.avgResponseTime,
     pendingEscalations: issues.length > 0 ? pendingCount : MOCK_KPI.pendingEscalations,
     trustScore: MOCK_KPI.trustScore,
   };
 
   return (
-    <div className="min-h-screen bg-background text-text-primary flex overflow-hidden selection:bg-copper/30">
+    <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex overflow-hidden">
       {/* Sidebar Navigation */}
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto px-6 py-8 md:px-10 scrollbar-none">
-        
+      <main className="flex-1 h-screen overflow-y-auto px-6 py-8 md:px-10 scrollbar-none bg-[#F7F4ED]">
         {/* Header */}
         <header className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-h2 text-white">Government Dashboard</h1>
-            <p className="text-body-sm text-slate-400 mt-1">Live tracking and accountability for civic operations.</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/10">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-copper opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-copper"></span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#8B2635]">
+                Municipal Command Center
               </span>
-              <span className="text-xs font-semibold text-text-secondary">Live Data Sync</span>
+            </div>
+            <h1 className="text-2xl font-bold text-[#242222] mt-0.5">
+              Operations & SLA Triage Dashboard
+            </h1>
+            <p className="text-xs text-[#625E59] mt-0.5">
+              Live ward telemetry, statutory response tracking, and photographic resolution index.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/map"
+              className="text-xs font-bold px-3.5 py-2 rounded-lg bg-white border border-[#DED8CD] hover:border-[#8B2635] text-[#242222] transition-colors shadow-xs flex items-center gap-1.5"
+            >
+              <span>🗺️</span>
+              <span>Open GIS Radar</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-[#DED8CD] shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5E8061] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5E8061]"></span>
+              </span>
+              <span className="text-xs font-semibold text-[#625E59]">Live Telemetry Active</span>
             </div>
           </div>
         </header>
 
-        {/* Dashboard Content based on Tab */}
-        <div className="max-w-7xl mx-auto space-y-10 pb-20">
-          
+        {/* Content */}
+        <div className="max-w-7xl mx-auto space-y-8 pb-20">
           {loading ? (
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-28 rounded-xl bg-white border border-[#DED8CD]" />
+                ))}
               </div>
-              <Skeleton className="h-96 w-full rounded-3xl" />
+              <Skeleton className="h-96 w-full rounded-2xl bg-white border border-[#DED8CD]" />
             </div>
           ) : (
             <>
@@ -100,46 +117,68 @@ export default function GovDashboardClient() {
                   <ChartsSection />
                 </>
               )}
+
+              {(activeTab === "Overview" || activeTab === "Wards") && (
+                <div>
+                  <div className="mb-4">
+                    <h2 className="text-base font-bold text-[#242222]">
+                      Ward Performance & Accountability Roster
+                    </h2>
+                    <p className="text-xs text-[#625E59]">
+                      Comparative turnaround and closure rate metrics across all 40 municipal wards.
+                    </p>
+                  </div>
+                  <WardPerformanceTable data={WARD_DATA} />
+                </div>
+              )}
+
+              {(activeTab === "Overview" || activeTab === "Escalations") && (
+                <div>
+                  <div className="mb-4">
+                    <h2 className="text-base font-bold text-[#242222]">
+                      Active SLA Escalations
+                    </h2>
+                    <p className="text-xs text-[#625E59]">
+                      Complaints exceeding statutory resolution turnaround limits requiring immediate directorate intervention.
+                    </p>
+                  </div>
+                  <EscalationAlerts escalations={ESCALATIONS} />
+                </div>
+              )}
+
+              {activeTab === "Overview" && (
+                <div>
+                  <div className="mb-4">
+                    <h2 className="text-base font-bold text-[#242222]">
+                      Verified Field Resolutions
+                    </h2>
+                    <p className="text-xs text-[#625E59]">
+                      Before and after repair photo validations uploaded by municipal engineering crews.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {BEFORE_AFTER_EXAMPLES.map((example) => (
+                      <BeforeAfterSlider key={example.id} data={example} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "Recognition" && (
+                <div>
+                  <div className="mb-6 text-center max-w-xl mx-auto">
+                    <h2 className="text-xl font-bold text-[#242222]">
+                      Municipal Ward Hall of Excellence
+                    </h2>
+                    <p className="text-xs text-[#625E59] mt-1">
+                      Quarterly recognition awarded to ward administrations leading Mumbai in public service responsiveness.
+                    </p>
+                  </div>
+                  <RecognitionWall />
+                </div>
+              )}
             </>
           )}
-
-          {(activeTab === "Overview" || activeTab === "Wards") && (
-            <section>
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-h3 text-white">Ward Performance</h2>
-              </div>
-              <WardPerformanceTable data={WARD_DATA} />
-            </section>
-          )}
-
-          {(activeTab === "Overview" || activeTab === "Escalations") && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <section>
-                <h2 className="text-h3 text-white mb-5">Escalation Alerts</h2>
-                <EscalationAlerts escalations={ESCALATIONS} />
-              </section>
-              
-              <section>
-                <h2 className="text-h3 text-white mb-5">Resolved Spotlights</h2>
-                <div className="space-y-6">
-                  {BEFORE_AFTER_EXAMPLES.map((example) => (
-                    <BeforeAfterSlider key={example.id} data={example} />
-                  ))}
-                </div>
-              </section>
-            </div>
-          )}
-
-          {(activeTab === "Overview" || activeTab === "Recognition") && (
-            <section>
-              <div className="mb-5 text-center">
-                <h2 className="text-h2 text-white">Recognition Wall</h2>
-                <p className="text-body-sm text-slate-400 mt-1">Celebrating top performing wards and rapid resolutions this month.</p>
-              </div>
-              <RecognitionWall />
-            </section>
-          )}
-
         </div>
       </main>
     </div>

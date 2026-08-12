@@ -9,7 +9,7 @@ interface GlassCardProps {
   children: React.ReactNode;
   className?: string;
   hover?: boolean;
-  glow?: "copper" | "none";
+  glow?: "maroon" | "copper" | "none";
   padding?: "none" | "sm" | "md" | "lg";
   animate?: boolean;
 }
@@ -24,8 +24,8 @@ const paddingMap = {
 export function GlassCard({
   children,
   className,
-  hover   = true,
-  glow    = "none",
+  hover = true,
+  glow = "none",
   padding = "md",
   animate = true,
 }: GlassCardProps) {
@@ -33,53 +33,48 @@ export function GlassCard({
 
   const animProps = animate
     ? {
-        initial:    { opacity: 0, y: 12 },
+        initial: { opacity: 0, y: 12 },
         whileInView: { opacity: 1, y: 0 },
-        viewport:   { once: true, margin: "-40px" },
+        viewport: { once: true, margin: "-40px" },
         transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-        whileHover: hover ? { 
-          y: -2, 
-          backgroundColor: "#211D19", // surface-raised
-          borderColor: "#403932", // border-strong
-          boxShadow: glow === "copper"
-                  ? "0 0 20px rgba(217,139,82,0.08), 0 0 40px rgba(217,139,82,0.04), 0 4px 24px rgba(0,0,0,0.4)"
-                  : "0 4px 24px rgba(0,0,0,0.45)",
-          transition: { duration: 0.2, ease: EASE_OUT_QUAD } 
-        } : undefined,
+        whileHover: hover
+          ? {
+              y: -2,
+              borderColor: "#C9C0B3",
+              boxShadow:
+                glow === "maroon" || glow === "copper"
+                  ? "0 8px 30px rgba(139, 38, 53, 0.08), 0 2px 8px rgba(36, 34, 34, 0.04)"
+                  : "0 8px 30px rgba(36, 34, 34, 0.08)",
+              transition: { duration: 0.2, ease: EASE_OUT_QUAD },
+            }
+          : undefined,
       }
     : {
-        whileHover: hover ? { 
-          y: -2, 
-          backgroundColor: "#211D19", // surface-raised
-          borderColor: "#403932", // border-strong
-          boxShadow: glow === "copper"
-                  ? "0 0 20px rgba(217,139,82,0.08), 0 0 40px rgba(217,139,82,0.04), 0 4px 24px rgba(0,0,0,0.4)"
-                  : "0 4px 24px rgba(0,0,0,0.45)",
-          transition: { duration: 0.2, ease: EASE_OUT_QUAD } 
-        } : undefined,
+        whileHover: hover
+          ? {
+              y: -2,
+              borderColor: "#C9C0B3",
+              boxShadow:
+                glow === "maroon" || glow === "copper"
+                  ? "0 8px 30px rgba(139, 38, 53, 0.08), 0 2px 8px rgba(36, 34, 34, 0.04)"
+                  : "0 8px 30px rgba(36, 34, 34, 0.08)",
+              transition: { duration: 0.2, ease: EASE_OUT_QUAD },
+            }
+          : undefined,
       };
 
   return (
     <Wrapper
-      {...animProps as any}
+      {...(animProps as any)}
       className={cn(
-        /* unified surface */
         "relative rounded-xl overflow-hidden",
-        "bg-surface border border-border",
+        "bg-white border border-[#DED8CD]",
+        "shadow-[0_4px_20px_rgba(36,34,34,0.06)]",
         "transition-all duration-300",
         paddingMap[padding],
         className
       )}
     >
-      {/* Very subtle top highlight — barely visible */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 50%, transparent)",
-        }}
-      />
       {children}
     </Wrapper>
   );

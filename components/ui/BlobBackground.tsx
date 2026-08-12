@@ -1,40 +1,33 @@
 "use client";
 
 /**
- * BlobBackground — dramatically reduced.
- * One single very subtle copper atmospheric gradient.
- * The amber blob is gone. No bouncing/floating.
+ * BlobBackground — Subtle institutional atmospheric background
  */
 export function BlobBackground() {
-  const prefersReduced =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
-
   return (
     <div
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
-      {/* Single subtle copper atmospheric glow — top center */}
+      {/* Subtle Sand atmospheric glow at top */}
       <div
-        className="absolute -top-60 left-1/2 -translate-x-1/2 h-[700px] w-[900px] rounded-full"
+        className="absolute -top-60 left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle at 50% 30%, rgba(217,139,82,0.04) 0%, transparent 65%)",
-          filter: "blur(80px)",
+            "radial-gradient(circle at 50% 30%, rgba(214,194,163,0.18) 0%, transparent 70%)",
+          filter: "blur(90px)",
         }}
       />
 
-      {/* Very subtle grid texture */}
+      {/* Subtle municipal grid lines */}
       <div
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 opacity-[0.035] pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(36,34,34,0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(36,34,34,0.12) 1px, transparent 1px)
           `,
-          backgroundSize: "72px 72px",
+          backgroundSize: "64px 64px",
         }}
       />
     </div>

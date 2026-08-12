@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
-
 interface GradientButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
@@ -23,7 +21,7 @@ const sizeMap = {
   xs: "px-3 py-1.5 text-xs",
   sm: "px-4 py-2 text-sm",
   md: "px-5 py-2.5 text-sm",
-  lg: "px-7 py-3 text-base",
+  lg: "px-7 py-3.5 text-base",
 };
 
 export function GradientButton({
@@ -31,7 +29,7 @@ export function GradientButton({
   onClick,
   href,
   variant = "primary",
-  size    = "md",
+  size = "md",
   className,
   disabled,
   type = "button",
@@ -39,76 +37,45 @@ export function GradientButton({
   "aria-label": ariaLabel,
 }: GradientButtonProps) {
   const baseStyles = cn(
-    "relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
+    "group relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
     "cursor-pointer select-none transition-all duration-200",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0C]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B2635] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F4ED]",
     sizeMap[size],
+    variant === "primary" &&
+      "bg-[#8B2635] text-white hover:bg-[#641B27] shadow-[0_2px_8px_rgba(139,38,53,0.2)] hover:shadow-[0_4px_16px_rgba(139,38,53,0.3)]",
+    variant === "outline" &&
+      "bg-white text-[#242222] border border-[#C9C0B3] hover:bg-[#F0E5D8] hover:border-[#8B2635] hover:text-[#8B2635] shadow-sm",
+    variant === "ghost" &&
+      "bg-transparent text-[#625E59] hover:bg-[#F0E5D8]/60 hover:text-[#8B2635]",
     disabled && "opacity-40 cursor-not-allowed pointer-events-none",
     className
   );
 
   const content = (
-    <>
-      {/* Primary: solid copper, clean */}
-      {variant === "primary" && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-lg"
-          style={{ background: "#D98B52" }}
-        />
-      )}
-
-      {/* Primary hover: slightly brighter copper */}
-      {variant === "primary" && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{ background: "#E5A878" }}
-        />
-      )}
-
-      {/* Outline variant */}
-      {variant === "outline" && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-lg border border-border-strong bg-transparent group-hover:border-copper/50 group-hover:bg-surface-elevated transition-all duration-200"
-        />
-      )}
-
-      {/* Ghost variant */}
-      {variant === "ghost" && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-lg bg-transparent group-hover:bg-surface transition-colors duration-200"
-        />
-      )}
-
-      {/* Text */}
-      <span
-        className={cn(
-          "relative z-10 flex items-center gap-2",
-          variant === "primary" ? "text-[#0D0D0C] font-semibold" : "text-text-secondary"
-        )}
-      >
-        {icon && <span className="flex-shrink-0">{icon}</span>}
-        {children}
-      </span>
-    </>
+    <span className="relative z-10 flex items-center gap-2">
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      {children}
+    </span>
   );
 
   const motionProps = {
-    whileHover: disabled ? undefined : { scale: 1.015 },
-    whileTap: disabled ? undefined : { scale: 0.97 },
-    transition: { type: "spring" as const, stiffness: 500, damping: 30 },
+    whileHover: disabled ? undefined : { scale: 1.01 },
+    whileTap: disabled ? undefined : { scale: 0.98 },
+    transition: { duration: 0.15 },
   };
 
   if (href) {
     return (
-      <motion.span className="inline-flex group" {...motionProps}>
-        <Link href={href} className={baseStyles} aria-label={ariaLabel}>
+      <motion.div {...motionProps} className="inline-flex">
+        <Link
+          href={href}
+          className={baseStyles}
+          aria-label={ariaLabel}
+          onClick={onClick}
+        >
           {content}
         </Link>
-      </motion.span>
+      </motion.div>
     );
   }
 
@@ -118,7 +85,7 @@ export function GradientButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className={cn(baseStyles, "group")}
+      className={baseStyles}
       {...motionProps}
     >
       {content}

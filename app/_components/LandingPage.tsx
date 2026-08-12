@@ -8,7 +8,6 @@ import {
   useInView,
   useMotionValue,
   animate,
-  AnimatePresence,
 } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -48,43 +47,44 @@ function useCountUp(to: number, duration = 2.2, decimals = 0) {
    Sub-component: Pulsing Map Pin
 ───────────────────────────────────────────────────────────────────────────── */
 interface PinProps {
-  cx: number; cy: number;
-  color: string; glowColor: string;
-  delay?: number; size?: number;
+  cx: number;
+  cy: number;
+  color: string;
+  glowColor: string;
+  delay?: number;
+  size?: number;
 }
-function PulsingPin({ cx, cy, color, glowColor, delay = 0, size = 10 }: PinProps) {
+function PulsingPin({ cx, cy, color, glowColor, delay = 0, size = 8 }: PinProps) {
   return (
     <g>
-      {[1, 2, 3].map((i) => (
+      {[1, 2].map((i) => (
         <motion.circle
           key={i}
-          cx={cx} cy={cy}
+          cx={cx}
+          cy={cy}
           r={size}
           fill="none"
           stroke={color}
           strokeWidth={1.5 / i}
-          initial={{ scale: 0.5, opacity: 0.8 }}
-          animate={{ scale: 1 + i * 0.8, opacity: 0 }}
+          initial={{ scale: 0.6, opacity: 0.7 }}
+          animate={{ scale: 1 + i * 0.7, opacity: 0 }}
           transition={{
-            duration: 2.2,
+            duration: 2.4,
             repeat: Infinity,
-            delay: delay + i * 0.55,
+            delay: delay + i * 0.6,
             ease: "easeOut",
           }}
         />
       ))}
-      {/* Glow disc */}
-      <circle cx={cx} cy={cy} r={size * 1.5} fill={glowColor} opacity={0.18} />
-      {/* Pin dot */}
-      <circle cx={cx} cy={cy} r={size * 0.55} fill={color} />
-      {/* Pin highlight */}
-      <circle cx={cx - size * 0.18} cy={cy - size * 0.18} r={size * 0.18} fill="white" opacity={0.6} />
+      <circle cx={cx} cy={cy} r={size * 1.3} fill={glowColor} opacity={0.2} />
+      <circle cx={cx} cy={cy} r={size * 0.6} fill={color} />
+      <circle cx={cx - size * 0.2} cy={cy - size * 0.2} r={size * 0.2} fill="white" opacity={0.7} />
     </g>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Sub-component: Animated Map Illustration
+   Sub-component: Municipal GIS Map Illustration
 ───────────────────────────────────────────────────────────────────────────── */
 function MapIllustration() {
   const id = useId();
@@ -96,42 +96,19 @@ function MapIllustration() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Very subtle border glow — barely visible */}
-
       {/* Map card */}
       <div
-        className="relative w-full h-full rounded-2xl overflow-hidden"
-        style={{ background: "#121110", border: "1px solid rgba(64,57,50,0.6)" }}
+        className="relative w-full h-full rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(36,34,34,0.08)]"
+        style={{ background: "#EFE9DE", border: "1px solid #DED8CD" }}
       >
-
-        {/* Radar sweep — very subtle */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `conic-gradient(from 0deg at 55% 45%, transparent 340deg, rgba(217,139,82,0.04) 355deg, transparent 360deg)`,
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        />
-
         <svg
           viewBox="0 0 560 420"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
           preserveAspectRatio="xMidYMid meet"
         >
-          <defs>
-            <radialGradient id={`${id}-glow`} cx="55%" cy="45%" r="50%">
-              <stop offset="0%" stopColor="#D98B52" stopOpacity="0.04" />
-              <stop offset="100%" stopColor="#0D0D0C" stopOpacity="0" />
-            </radialGradient>
-            <filter id={`${id}-blur`}>
-              <feGaussianBlur stdDeviation="1.5" />
-            </filter>
-          </defs>
-
           {/* Background fill */}
-          <rect width="560" height="420" fill="url(#${id}-glow)" />
+          <rect width="560" height="420" fill="#EFE9DE" />
 
           {/* ── City blocks ── */}
           {[
@@ -146,102 +123,83 @@ function MapIllustration() {
             [14, 372, 76, 34], [110, 372, 100, 34],[220, 372, 130, 34],
             [370, 372, 80, 34],[460, 372, 86, 34],
           ].map(([x, y, w, h], i) => (
-            <rect key={i} x={x} y={y} width={w} height={h} rx={3}
-              fill="#191715"
-              opacity={0.85} />
+            <rect
+              key={i}
+              x={x}
+              y={y}
+              width={w}
+              height={h}
+              rx={3}
+              fill={i % 3 === 0 ? "#F0E5D8" : "#FFFFFF"}
+              stroke="#DED8CD"
+              strokeWidth={0.75}
+            />
           ))}
 
-          {/* Water block */}
-          <rect x={110} y={90} width={100} height={82} rx={4}
-            fill="#121110" opacity={0.8} />
+          {/* Water body */}
+          <rect x={110} y={90} width={100} height={82} rx={4} fill="#E2DAD0" stroke="#D6CFC3" />
 
           {/* ── Road grid ── */}
-          {/* Horizontals */}
           {[80, 180, 282, 362].map((y) => (
-            <line key={y} x1={0} y1={y} x2={560} y2={y}
-              stroke="#302C28" strokeWidth={y === 80 || y === 180 ? 10 : 7} opacity={0.6} />
+            <line
+              key={y}
+              x1={0}
+              y1={y}
+              x2={560}
+              y2={y}
+              stroke={y === 80 || y === 180 ? "#C1B8AA" : "#D6CFC3"}
+              strokeWidth={y === 80 || y === 180 ? 9 : 6}
+            />
           ))}
-          {/* Verticals */}
           {[100, 220, 360, 460].map((x) => (
-            <line key={x} x1={x} y1={0} x2={x} y2={420}
-              stroke="#302C28" strokeWidth={x === 220 ? 10 : 7} opacity={0.6} />
-          ))}
-
-          {/* ── Animated road highlight ── */}
-          <motion.line
-            x1={0} y1={180} x2={560} y2={180}
-            stroke="#D98B52" strokeWidth={1} opacity={0.15}
-            strokeDasharray="6 12"
-            animate={{ strokeDashoffset: [0, -72] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.line
-            x1={220} y1={0} x2={220} y2={420}
-            stroke="#D98B52" strokeWidth={1} opacity={0.12}
-            strokeDasharray="6 12"
-            animate={{ strokeDashoffset: [0, -72] }}
-            transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
-          />
-
-          {/* ── Connection lines between pins ── */}
-          {[
-            [165, 135, 307, 225], [307, 225, 420, 140],
-            [307, 225, 165, 310], [420, 140, 495, 225],
-          ].map(([x1, y1, x2, y2], i) => (
-            <motion.line key={i}
-              x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="#A49D95" strokeWidth={1} opacity={0.2}
-              strokeDasharray="4 8"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, delay: 0.5 + i * 0.3, ease: "easeInOut" }}
+            <line
+              key={x}
+              x1={x}
+              y1={0}
+              x2={x}
+              y2={420}
+              stroke={x === 220 ? "#C1B8AA" : "#D6CFC3"}
+              strokeWidth={x === 220 ? 9 : 6}
             />
           ))}
 
           {/* ── Location Pins ── */}
-          {/* Critical — semantic red */}
-          <PulsingPin cx={165} cy={135} color="#D85C52" glowColor="#D85C52" delay={0} size={6} />
-          {/* Warning — semantic amber */}
-          <PulsingPin cx={307} cy={225} color="#D3A34A" glowColor="#D3A34A" delay={0.6} size={7} />
-          {/* Resolved — brand teal */}
-          <PulsingPin cx={420} cy={140} color="#829C76" glowColor="#829C76" delay={1.1} size={5} />
-          {/* Resolved */}
-          <PulsingPin cx={165} cy={310} color="#829C76" glowColor="#829C76" delay={0.3} size={5} />
-          {/* Critical */}
-          <PulsingPin cx={495} cy={225} color="#D85C52" glowColor="#D85C52" delay={1.5} size={4} />
-          {/* Resolved */}
-          <PulsingPin cx={400} cy={330} color="#829C76" glowColor="#829C76" delay={1.8} size={4} />
+          <PulsingPin cx={165} cy={135} color="#B83A3A" glowColor="#B83A3A" delay={0} size={7} />
+          <PulsingPin cx={307} cy={225} color="#C58B32" glowColor="#C58B32" delay={0.6} size={8} />
+          <PulsingPin cx={420} cy={140} color="#5E8061" glowColor="#5E8061" delay={1.1} size={6} />
+          <PulsingPin cx={165} cy={310} color="#5E8061" glowColor="#5E8061" delay={0.3} size={6} />
+          <PulsingPin cx={495} cy={225} color="#B83A3A" glowColor="#B83A3A" delay={1.5} size={5} />
+          <PulsingPin cx={400} cy={330} color="#5E8061" glowColor="#5E8061" delay={1.8} size={5} />
         </svg>
 
         {/* Legend */}
-        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 text-[10px] font-semibold tracking-wide">
+        <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 text-[10px] font-semibold bg-white/95 px-3 py-2 rounded-lg border border-[#DED8CD] shadow-sm">
           {[
-            { color: "bg-danger",   label: "Critical" },
-            { color: "bg-warning",     label: "Reported" },
-            { color: "bg-success",      label: "Resolved" },
+            { color: "bg-[#B83A3A]", label: "Critical Hazard" },
+            { color: "bg-[#C58B32]", label: "Reported / In Progress" },
+            { color: "bg-[#5E8061]", label: "Resolved by BMC" },
           ].map(({ color, label }) => (
-            <div key={label} className="flex items-center gap-1.5 text-slate-400">
+            <div key={label} className="flex items-center gap-1.5 text-[#625E59]">
               <span className={`inline-block h-2 w-2 rounded-full ${color}`} />
-              {label}
+              <span>{label}</span>
             </div>
           ))}
         </div>
 
         {/* Live badge */}
         <div className="absolute top-4 right-4">
-          <Badge label="LIVE" variant="copper" pulse />
+          <Badge label="GIS RADAR ACTIVE" variant="sand" pulse />
         </div>
 
-        {/* Status popup — no emoji, clean */}
+        {/* Status popup */}
         <motion.div
-          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-md px-3 py-1.5 text-xs font-medium text-slate-300 whitespace-nowrap"
-          style={{ background: "rgba(33,29,25,0.9)", border: "1px solid rgba(64,57,50,0.6)", backdropFilter: "blur(12px)" }}
+          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-md px-3 py-1.5 text-xs font-semibold text-[#242222] bg-white border border-[#DED8CD] shadow-sm whitespace-nowrap"
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.45 }}
+          transition={{ delay: 1.5, duration: 0.45 }}
         >
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-danger mr-1.5 align-middle" style={{ animation: "pulse-ring 2s ease-out infinite" }} />
-          3 new reports · Ward 12
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#B83A3A] mr-1.5 align-middle animate-pulse" />
+          Ward 12 · 3 new verified reports
         </motion.div>
       </div>
     </motion.div>
@@ -249,164 +207,103 @@ function MapIllustration() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Section 1: HERO
+   Section 1: HERO SECTION
 ───────────────────────────────────────────────────────────────────────────── */
-const HERO_WORDS = ["Accountability", "Transparency", "Action"];
-
 function HeroSection() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 60]);
-  const mapY  = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  const [wordIndex, setWordIndex] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setWordIndex((i) => (i + 1) % HERO_WORDS.length), 2800);
-    return () => clearInterval(t);
-  }, []);
+  const { scrollY } = useScroll();
+  const mapY = useTransform(scrollY, [0, 600], [0, 80]);
 
   return (
-    <section
-      ref={ref}
-      className="relative min-h-[92vh] flex items-center px-4 sm:px-6 lg:px-8 pt-8 pb-20"
-    >
-      {/* Section gradient tint */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(217,139,82,0.08) 0%, transparent 70%)",
-        }}
-      />
-
-      <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        {/* ── Left: Text ── */}
-        <motion.div style={{ y: textY, opacity }} className="flex flex-col gap-6 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Badge label="Now Live in 38 Wards" variant="copper" pulse />
-          </motion.div>
-
-          <motion.h1
-            className="text-hero text-white"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          >
-            Civic{" "}
-            <span
-              className="relative inline-block text-copper"
-            >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={wordIndex}
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  className="inline-block"
-                >
-                  {HERO_WORDS[wordIndex]}
-                </motion.span>
-              </AnimatePresence>
+    <section className="relative min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-16 overflow-hidden bg-[#F7F4ED]">
+      <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
+        {/* ── Left: Headline + Actions ── */}
+        <motion.div
+          className="flex flex-col gap-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Official Indicator Badge */}
+          <div className="inline-flex">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold bg-[#F0E5D8] border border-[#D6C2A3] text-[#8B2635] shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B2635] opacity-60"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8B2635]"></span>
+              </span>
+              <span>Now Live in 38 Wards</span>
             </span>
-            ,<br />
-            Powered by{" "}
-            <span className="text-slate-300">You.</span>
-          </motion.h1>
+          </div>
 
-          <motion.p
-            className="text-body text-slate-400 max-w-lg leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          >
-            Report potholes, water clogging, and unsafe structures with geotagged
-            photos. Track government response in real time. Hold officials
-            accountable — publicly, transparently, together.
-          </motion.p>
+          {/* Heading */}
+          <h1 className="text-hero text-[#242222] tracking-tight">
+            Civic <span className="text-[#8B2635]">Transparency</span>.
+            <br />
+            Powered by You.
+          </h1>
 
+          {/* Subtitle */}
+          <p className="text-body text-[#625E59] max-w-lg leading-relaxed">
+            Report municipal infrastructure failures with precise geolocation and
+            verified photographic evidence. Track government SLA response times
+            in real time and hold ward administrations accountable.
+          </p>
+
+          {/* Clean, Non-Repetitive Action Buttons */}
           <motion.div
-            className="flex flex-col sm:flex-row flex-wrap gap-3.5 items-stretch sm:items-center"
-            initial={{ opacity: 0, y: 20 }}
+            className="flex flex-wrap gap-4 items-center pt-2"
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* For Citizens Button with quick action */}
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/[0.04] border border-copper/30">
-              <Link
-                href="/signup"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-copper text-[#0D0D0C] hover:bg-copper-light transition-all shadow-md"
-              >
-                <span>👤</span>
-                <span>For Citizens (Sign Up)</span>
-              </Link>
-              <Link
-                href="/login"
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-text-secondary hover:text-white transition-colors"
-              >
-                Sign In →
-              </Link>
-            </div>
+            <GradientButton href="/map?report=true" size="lg" variant="primary">
+              <span className="flex items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
+                    fill="currentColor"
+                    fillOpacity="0.25"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <circle cx="12" cy="9" r="2.5" fill="currentColor" />
+                </svg>
+                Report an Issue
+              </span>
+            </GradientButton>
 
-            {/* For Officers Button with quick action */}
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-amber-500/[0.05] border border-amber-500/30">
-              <Link
-                href="/gov-login"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-400 text-[#0D0D0C] hover:bg-amber-300 transition-all shadow-md"
-              >
-                <span>🛡️</span>
-                <span>For Officers (Sign In)</span>
-              </Link>
-              <Link
-                href="/gov-signup"
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 transition-colors"
-              >
-                Register →
-              </Link>
-            </div>
-
-            <Link
-              href="/map"
-              className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-text-muted hover:text-copper transition-colors"
-            >
-              <span>Explore Live Map</span>
-              <span>→</span>
-            </Link>
+            <GradientButton href="/map" variant="outline" size="lg">
+              View Live Map →
+            </GradientButton>
           </motion.div>
 
           {/* Trust strip */}
           <motion.div
-            className="flex flex-wrap items-center gap-6 pt-4 border-t border-white/[0.06]"
+            className="flex flex-wrap items-center gap-8 pt-6 border-t border-[#DED8CD]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.7 }}
           >
             {[
-              { value: "9,800+", label: "Citizens" },
-              { value: "1,240",  label: "Resolved" },
-              { value: "4.2d",   label: "Avg Response" },
+              { value: "2,458", label: "Issues Reported" },
+              { value: "1,842", label: "Issues Resolved" },
+              { value: "38", label: "Active Wards" },
+              { value: "92%", label: "Avg. Response Rate" },
             ].map(({ value, label }) => (
               <div key={label} className="flex flex-col">
-                <span className="text-base font-semibold text-slate-100">{value}</span>
-                <span className="text-caption text-text-subtle">{label}</span>
+                <span className="text-lg font-bold text-[#8B2635] font-mono">{value}</span>
+                <span className="text-xs text-[#625E59]">{label}</span>
               </div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* ── Right: Map ── */}
+        {/* ── Right: Map Illustration ── */}
         <motion.div
           style={{ y: mapY }}
           className="relative h-[380px] lg:h-[460px] z-10"
-          initial={{ opacity: 0, x: 40 }}
+          initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
           <MapIllustration />
         </motion.div>
@@ -414,14 +311,14 @@ function HeroSection() {
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
       >
-        <span className="text-caption text-text-subtle">Scroll to explore</span>
+        <span className="text-caption text-[#88827A]">Scroll to inspect framework</span>
         <motion.div
-          className="h-8 w-px bg-copper/60"
+          className="h-6 w-0.5 bg-[#8B2635]"
           animate={{ scaleY: [0.4, 1, 0.4] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -437,44 +334,38 @@ const HOW_STEPS = [
   {
     step: "01",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-          stroke="#D98B52" strokeWidth="1.8" fill="rgba(217, 139, 82, 0.15)"/>
-        <circle cx="12" cy="9" r="2.5" fill="#D98B52"/>
-        <path d="M9 22h6M12 18v4" stroke="#D98B52" strokeWidth="1.5" strokeLinecap="round"/>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B2635" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" />
+        <circle cx="12" cy="9" r="2.5" />
       </svg>
     ),
-    title: "Report",
+    title: "1. Capture & Geo-Pin",
     description:
-      "Snap a photo of any civic issue — pothole, waterlogging, or crumbling infrastructure. Pin it on the live map with one tap and submit in under 30 seconds.",
-    badge: "Step 1",
+      "Photograph the hazard (pothole, waterlogging, or structural crack). The system captures exact GPS coordinates and tags the administrative ward automatically.",
   },
   {
     step: "02",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="12" r="9" stroke="#D98B52" strokeWidth="1.8" fill="rgba(217, 139, 82, 0.1)"/>
-        <path d="M12 7v5l3 3" stroke="#D98B52" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M3 12H1M23 12h-2M12 1V3M12 21v2" stroke="#D98B52" strokeWidth="1.5" strokeLinecap="round"/>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B2635" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    title: "Track",
+    title: "2. Department SLA Tracking",
     description:
-      "Your report enters the official workflow. Watch it get assigned, acknowledged, and actioned — with live status updates pushed directly to you.",
-    badge: "Step 2",
+      "Your report enters the official municipal queue with a transparent SLA countdown. Watch your complaint progress from Verified to In Progress with real-time logs.",
   },
   {
     step: "03",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="12" r="9" stroke="#D98B52" strokeWidth="1.8" fill="rgba(217, 139, 82, 0.1)"/>
-        <path d="M8 12l3 3 5-5" stroke="#D98B52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B2635" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
       </svg>
     ),
-    title: "Resolve",
+    title: "3. Verified Public Resolution",
     description:
-      "Government resolves the issue and uploads proof. Their response time and quality score are publicly logged — building a permanent accountability record.",
-    badge: "Step 3",
+      "Field engineers upload photographic proof of the repair. Ward scores and turnaround metrics update publicly on the permanent civic leaderboard.",
   },
 ];
 
@@ -483,82 +374,45 @@ function HowItWorksSection() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24">
-      {/* Background accent */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 100%, rgba(217,139,82,0.05) 0%, transparent 70%)",
-        }}
-      />
-
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24 bg-[#F7F4ED]">
       <div className="max-w-7xl mx-auto">
-        {/* Heading */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-14"
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6 }}
         >
-          <p className="text-caption text-copper mb-3">How It Works</p>
-          <h2 className="text-h1 text-white mb-4">
-            Three Steps to{" "}
-            <span className="text-copper">Real Change</span>
+          <p className="text-caption text-[#8B2635] mb-2 font-bold">Standard Operating Procedure</p>
+          <h2 className="text-h1 text-[#242222] mb-3">
+            Structured Accountability in Three Steps
           </h2>
-          <p className="text-body text-slate-400 max-w-xl mx-auto">
-            CivicPulse turns citizen frustration into structured accountability —
-            fast, transparent, and permanently on record.
+          <p className="text-body text-[#625E59] max-w-xl mx-auto">
+            Transforming public grievances into verifiable, auditable municipal workflows.
           </p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="relative grid md:grid-cols-3 gap-6">
-
-
+        <div className="grid md:grid-cols-3 gap-6">
           {HOW_STEPS.map((step, i) => (
             <motion.div
               key={step.step}
-              initial={{ opacity: 0, y: 36 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.65, delay: 0.2 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.15 + i * 0.12 }}
             >
-              <GlassCard
-                className="h-full group"
-                padding="lg"
-                hover
-                glow="none"
-              >
-                {/* Step number */}
+              <GlassCard className="h-full bg-white" padding="lg">
                 <div className="flex items-start justify-between mb-5">
-                  <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+                  <div className="p-3 rounded-lg bg-[#F0E5D8] border border-[#D6C2A3]">
                     {step.icon}
                   </div>
-                  <span
-                    className="text-5xl font-black opacity-[0.08] select-none"
-                    style={{ fontVariantNumeric: "tabular-nums" }}
-                  >
+                  <span className="text-3xl font-bold font-mono text-[#D6C2A3]">
                     {step.step}
                   </span>
                 </div>
 
-
-
-                <h3 className="text-h3 text-white mb-3 group-hover:text-copper-light transition-colors duration-300">
-                  {step.title}
-                </h3>
-                <p className="text-body-sm text-slate-400 leading-relaxed">
+                <h3 className="text-h3 text-[#242222] mb-2">{step.title}</h3>
+                <p className="text-body-sm text-[#625E59] leading-relaxed">
                   {step.description}
                 </p>
-
-                {/* Bottom bar accent */}
-                <div
-                  className="absolute bottom-0 inset-x-0 h-px rounded-b-2xl"
-                  style={{
-                    background: "linear-gradient(90deg, transparent, rgba(217,139,82,0.5), transparent)",
-                  }}
-                />
               </GlassCard>
             </motion.div>
           ))}
@@ -573,57 +427,56 @@ function HowItWorksSection() {
 ───────────────────────────────────────────────────────────────────────────── */
 const STATS = [
   {
-    value: 1240,
+    value: 2458,
     suffix: "",
     decimals: 0,
-    label: "Reports Resolved",
-    caption: "This calendar year",
+    label: "Issues Reported",
+    caption: "Across municipal zones",
   },
   {
-    value: 4.2,
-    suffix: "d",
-    decimals: 1,
-    label: "Avg Response Time",
-    caption: "Down 38% vs last year",
+    value: 1842,
+    suffix: "",
+    decimals: 0,
+    label: "Issues Resolved",
+    caption: "With photographic validation",
   },
   {
     value: 38,
     suffix: "",
     decimals: 0,
     label: "Active Wards",
-    caption: "Across 3 municipalities",
+    caption: "Monitored 24/7 on live GIS",
   },
   {
-    value: 9800,
-    suffix: "+",
+    value: 92,
+    suffix: "%",
     decimals: 0,
-    label: "Citizens Engaged",
-    caption: "And growing daily",
+    label: "Avg. Response Rate",
+    caption: "Within statutory SLA limit",
   },
 ];
 
-function StatItem({ stat, index }: { stat: typeof STATS[number]; index: number }) {
+function StatItem({ stat }: { stat: typeof STATS[number] }) {
   const { display, ref } = useCountUp(stat.value, 2.2, stat.decimals);
 
   return (
-    <div className="flex flex-col items-center text-center p-4">
-      <div className="flex items-end justify-center gap-1 mb-2">
+    <div className="flex flex-col items-center text-center p-6 bg-white rounded-xl border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.04)]">
+      <div className="flex items-baseline justify-center gap-0.5 mb-2">
         <span
           ref={ref}
-          className="font-black leading-none text-white"
-          style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}
+          className="text-4xl font-bold font-mono text-[#8B2635]"
         >
           {display}
         </span>
         {stat.suffix && (
-          <span className="text-xl font-bold mb-1 text-white">
+          <span className="text-2xl font-bold text-[#8B2635] font-mono">
             {stat.suffix}
           </span>
         )}
       </div>
-      <div className="w-6 h-1 bg-copper rounded-full mb-3" />
-      <p className="text-body-sm font-semibold text-white mb-1">{stat.label}</p>
-      <p className="text-caption text-slate-500">{stat.caption}</p>
+      <div className="w-8 h-0.5 bg-[#D6C2A3] rounded-full mb-2" />
+      <p className="text-sm font-bold text-[#242222] mb-1">{stat.label}</p>
+      <p className="text-xs text-[#88827A]">{stat.caption}</p>
     </div>
   );
 }
@@ -633,46 +486,26 @@ function StatsSection() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 20% 50%, rgba(217,139,82,0.06) 0%, transparent 70%)",
-        }}
-      />
-
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-20 bg-[#F0E5D8]/40 border-y border-[#DED8CD]">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 24 }}
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-caption text-copper mb-3">Real Numbers. Real Impact.</p>
-          <h2 className="text-h1 text-white mb-4">
-            Live <span className="text-copper">Impact Stats</span>
-          </h2>
-          <p className="text-body text-slate-400 max-w-xl mx-auto">
-            Every resolved pothole, every cleared drain — tracked, verified, and
-            scored. Here's what CivicPulse has achieved so far.
+          <p className="text-caption text-[#8B2635] mb-2 font-bold">Public Data Audit</p>
+          <h2 className="text-h1 text-[#242222] mb-3">Live City Performance Metrics</h2>
+          <p className="text-body text-[#625E59] max-w-xl mx-auto">
+            Real-time municipal health benchmarks maintained under open civic data governance.
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <GlassCard padding="lg" glow="none" className="w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
-              {STATS.map((stat, i) => (
-                <StatItem key={stat.label} stat={stat} index={i} />
-              ))}
-            </div>
-          </GlassCard>
-        </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {STATS.map((stat) => (
+            <StatItem key={stat.label} stat={stat} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -682,11 +515,11 @@ function StatsSection() {
    Section 4: ACCOUNTABILITY IN ACTION (Leaderboard)
 ───────────────────────────────────────────────────────────────────────────── */
 const WARD_DATA = [
-  { name: "Ward 12 — Andheri East",   score: 94, issues: 312, resolved: 293, trend: "+12%" },
-  { name: "Ward 7 — Bandra West",     score: 87, issues: 248, resolved: 215, trend: "+8%"  },
-  { name: "Ward 23 — Powai",          score: 81, issues: 190, resolved: 154, trend: "+21%" },
-  { name: "Ward 31 — Versova",        score: 73, issues: 176, resolved: 128, trend: "+5%"  },
-  { name: "Ward 5 — Juhu",            score: 61, issues: 143, resolved: 87,  trend: "-3%"  },
+  { name: "Ward 12 — Andheri East", score: 94, issues: 312, resolved: 293, trend: "+12%" },
+  { name: "Ward 7 — Bandra West", score: 87, issues: 248, resolved: 215, trend: "+8%" },
+  { name: "Ward 23 — Powai", score: 81, issues: 190, resolved: 154, trend: "+21%" },
+  { name: "Ward 31 — Versova", score: 73, issues: 176, resolved: 128, trend: "+5%" },
+  { name: "Ward 5 — Juhu", score: 61, issues: 143, resolved: 87, trend: "-3%" },
 ];
 
 function LeaderboardSection() {
@@ -694,165 +527,120 @@ function LeaderboardSection() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 80% 50%, rgba(217,139,82,0.05) 0%, transparent 70%)",
-        }}
-      />
-
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24 bg-[#F7F4ED]">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Left: heading + description */}
+          {/* Left: Info */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -24 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65 }}
           >
-            <p className="text-caption text-copper mb-3">Accountability in Action</p>
-            <h2 className="text-h1 text-white mb-6">
-              Ward{" "}
-              <span className="text-copper">Leaderboard</span>
+            <p className="text-caption text-[#8B2635] mb-2 font-bold">Public Index</p>
+            <h2 className="text-h1 text-[#242222] mb-4">
+              Municipal Ward <span className="text-[#8B2635]">Leaderboard</span>
             </h2>
-            <p className="text-body text-slate-400 mb-8 leading-relaxed">
-              Every ward is scored on resolution rate, response speed, and
-              citizen satisfaction. Scores update daily. Accountability has
-              never been this public — or this powerful.
+            <p className="text-body text-[#625E59] mb-8 leading-relaxed">
+              Every municipal ward is benchmarked against resolution turnaround,
+              closure quality, and citizen satisfaction ratings. Rankings refresh
+              continuously to maintain public institutional accountability.
             </p>
 
-            <div className="flex flex-col gap-4">
+            <div className="space-y-4">
               {[
                 {
-                  icon: (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-copper">
-                      <line x1="18" y1="20" x2="18" y2="10"></line>
-                      <line x1="12" y1="20" x2="12" y2="4"></line>
-                      <line x1="6" y1="20" x2="6" y2="14"></line>
-                    </svg>
-                  ),
-                  label: "Resolution Rate", desc: "Ratio of resolved to total issues"
+                  label: "Resolution Percentage",
+                  desc: "Ratio of closed complaints to total reported issues",
                 },
                 {
-                  icon: (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-copper">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                  ),
-                  label: "Response Speed",  desc: "Average time from report to action"
+                  label: "Response Velocity",
+                  desc: "Mean elapsed duration between report filing and crew dispatch",
                 },
                 {
-                  icon: (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-copper">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  ),
-                  label: "Citizen Rating",  desc: "Post-resolution satisfaction score"
+                  label: "Citizen Verification Score",
+                  desc: "Mandatory post-repair resident validation rating",
                 },
               ].map((item) => (
-                <div key={item.label} className="flex gap-3 items-start">
-                  <div className="mt-1 flex-shrink-0" aria-hidden>{item.icon}</div>
-                  <div>
-                    <p className="text-body-sm font-semibold text-slate-200">{item.label}</p>
-                    <p className="text-caption text-slate-500 normal-case tracking-normal">{item.desc}</p>
-                  </div>
+                <div key={item.label} className="p-3.5 rounded-xl bg-white border border-[#DED8CD] shadow-xs">
+                  <p className="text-sm font-bold text-[#242222]">{item.label}</p>
+                  <p className="text-xs text-[#625E59] mt-0.5">{item.desc}</p>
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* Right: Leaderboard card */}
+          {/* Right: Table Card */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 24 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65, delay: 0.1 }}
           >
-            <GlassCard padding="lg" glow="copper">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
+            <div className="p-6 rounded-2xl bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.06)]">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#DED8CD]">
                 <div>
-                  <h3 className="text-h3 text-white">Top Wards</h3>
-                  <p className="text-caption text-slate-500 mt-0.5">By Accountability Score</p>
+                  <h3 className="text-base font-bold text-[#242222]">Top Municipal Wards</h3>
+                  <p className="text-xs text-[#88827A]">Performance Audit Index</p>
                 </div>
-                <Badge label="Live Ranking" variant="copper" pulse />
+                <Badge label="Official Ranking" variant="sand" />
               </div>
 
-              {/* Rows */}
-              <div className="flex flex-col gap-5">
+              <div className="space-y-5">
                 {WARD_DATA.map((ward, i) => (
-                  <motion.div
-                    key={ward.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={inView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                  >
-                    <div className="flex items-center justify-between mb-1.5 gap-3">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                  <div key={ward.name}>
+                    <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
+                      <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs font-black w-5 text-center flex-shrink-0 ${
-                            i === 0 ? "text-copper" : i === 1 ? "text-slate-300" : "text-slate-500"
+                          className={`font-mono font-bold ${
+                            i === 0 ? "text-[#8B2635]" : "text-[#88827A]"
                           }`}
                         >
-                          {`#${i + 1}`}
+                          #{i + 1}
                         </span>
-                        <span className="text-body-sm text-slate-200 truncate font-medium">
-                          {ward.name}
-                        </span>
+                        <span className="text-[#242222]">{ward.name}</span>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2.5">
                         <span
-                          className={`text-xs font-semibold ${
-                            ward.trend.startsWith("+") ? "text-success" : "text-danger"
+                          className={`text-[11px] font-bold ${
+                            ward.trend.startsWith("+") ? "text-[#5E8061]" : "text-[#B83A3A]"
                           }`}
                         >
                           {ward.trend}
                         </span>
-                        <span className="text-body-sm font-bold text-white">
+                        <span className="font-mono font-bold text-[#8B2635] text-sm">
                           {ward.score}
                         </span>
                       </div>
                     </div>
 
-                    {/* Animated progress bar */}
-                    <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                    {/* Progress bar */}
+                    <div className="h-2 bg-[#F0E5D8] rounded-full overflow-hidden">
                       <motion.div
-                        className="h-full rounded-full"
-                        style={{
-                          background: "#D98B52",
-                        }}
+                        className="h-full rounded-full bg-[#8B2635]"
                         initial={{ width: 0 }}
                         animate={inView ? { width: `${ward.score}%` } : {}}
-                        transition={{
-                          duration: 1.1,
-                          delay: 0.4 + i * 0.1,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
+                        transition={{ duration: 1, delay: 0.2 + i * 0.1 }}
                       />
                     </div>
 
-                    {/* Sub-stats */}
-                    <div className="flex gap-4 mt-1.5">
-                      <span className="text-caption text-slate-600 normal-case tracking-normal">
-                        {ward.resolved}/{ward.issues} resolved
-                      </span>
-                      <span className="text-caption text-copper normal-case tracking-normal">
-                        {Math.round((ward.resolved / ward.issues) * 100)}% rate
+                    <div className="flex justify-between text-[10px] text-[#88827A] mt-1">
+                      <span>{ward.resolved}/{ward.issues} resolved</span>
+                      <span className="font-medium text-[#625E59]">
+                        {Math.round((ward.resolved / ward.issues) * 100)}% resolution rate
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
-              {/* CTA */}
-              <div className="mt-6 pt-5 border-t border-white/[0.06]">
-                <GradientButton href="/gov-dashboard" variant="outline" size="sm" className="w-full justify-center">
-                  View Full Dashboard →
-                </GradientButton>
+              <div className="mt-6 pt-4 border-t border-[#DED8CD]">
+                <Link
+                  href="/gov-dashboard"
+                  className="block w-full py-2.5 text-center text-xs font-bold text-[#8B2635] hover:text-[#641B27] bg-[#F0E5D8]/60 hover:bg-[#F0E5D8] rounded-lg transition-colors border border-[#D6C2A3]"
+                >
+                  View Comprehensive Ward Telemetry →
+                </Link>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -865,141 +653,81 @@ function LeaderboardSection() {
 ───────────────────────────────────────────────────────────────────────────── */
 const TOP_WARDS = [
   {
-    ward:    "Ward 12 — Andheri East",
-    title:   "Champion Ward",
-    metric:  "94 / 100",
-    caption: "Highest accountability score this quarter",
-    detail:  "293 issues resolved · 4-day avg response",
-    color:   "warning" as const,
+    ward: "Ward 12 — Andheri East",
+    title: "Highest Resolution Index",
+    metric: "94 / 100",
+    caption: "Leading municipal score across Mumbai",
+    detail: "293 verified fixes · 3.8-day average response",
+    variant: "maroon" as const,
   },
   {
-    ward:    "Ward 7 — Bandra West",
-    title:   "Fastest Responder",
-    metric:  "1.8d avg",
-    caption: "Lowest average response time this month",
-    detail:  "215 issues resolved · 1.8-day avg response",
-    color:   "success" as const,
+    ward: "Ward 7 — Bandra West",
+    title: "Fastest SLA Dispatch",
+    metric: "1.8d avg",
+    caption: "Lowest average turnaround duration",
+    detail: "215 verified fixes · rapid response team active",
+    variant: "success" as const,
   },
   {
-    ward:    "Ward 23 — Powai",
-    title:   "Zero Backlog",
-    metric:  "100%",
-    caption: "All reported issues cleared within SLA",
-    detail:  "154 issues resolved · zero pending",
-    color:   "success" as const,
+    ward: "Ward 23 — Powai",
+    title: "Zero Backlog Maintenance",
+    metric: "100%",
+    caption: "All critical hazard reports cleared on schedule",
+    detail: "154 verified fixes · zero pending escalations",
+    variant: "success" as const,
   },
   {
-    ward:    "Ward 31 — Versova",
-    title:   "Rising Star",
-    metric:  "+21%",
-    caption: "Biggest improvement in score this quarter",
-    detail:  "128 issues resolved · fastest growth",
-    color:   "neutral" as const,
+    ward: "Ward 31 — Versova",
+    title: "Most Improved Administration",
+    metric: "+21%",
+    caption: "Highest quarterly performance advancement",
+    detail: "128 verified fixes · desilting milestone met",
+    variant: "sand" as const,
   },
 ];
-
-function ShineCard({ card, index, parentInView }: {
-  card: typeof TOP_WARDS[number]; index: number; parentInView: boolean;
-}) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      animate={parentInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay: 0.1 + index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      className="relative"
-    >
-      <motion.div
-        className="relative h-full rounded-2xl overflow-hidden cursor-pointer"
-        style={{ background: "#191715", border: `1px solid rgba(148,163,184,0.12)` }}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
-        whileHover={{ y: -4, scale: 1.015 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      >
-        {/* Glass base */}
-        <div className="glass absolute inset-0 rounded-2xl" />
-
-        {/* Shine sweep on hover */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.07) 50%, transparent 70%)",
-          }}
-          initial={{ x: "-100%" }}
-          animate={hovered ? { x: "200%" } : { x: "-100%" }}
-          transition={{ duration: 0.55, ease: "easeInOut" }}
-        />
-
-
-
-        {/* Content */}
-        <div className="relative z-10 p-6 flex flex-col gap-4 h-full">
-          <div className="flex items-start justify-between gap-3">
-            <Badge label={card.title} variant={card.color} />
-          </div>
-
-          <div>
-            <div
-              className={`text-3xl font-black mb-1 ${card.color === "warning" ? "text-warning" : "text-success"}`}
-            >
-              {card.metric}
-            </div>
-            <p className="text-body-sm text-slate-200 font-semibold">{card.ward}</p>
-            <p className="text-caption text-slate-400 normal-case tracking-normal mt-1">
-              {card.caption}
-            </p>
-          </div>
-
-          <div className="mt-auto pt-3 border-t border-white/[0.06]">
-            <p className="text-caption text-slate-500 normal-case tracking-normal">
-              {card.detail}
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
 
 function RecognitionWallSection() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(217,139,82,0.04) 0%, transparent 70%)",
-        }}
-      />
-
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24 bg-[#F7F4ED] border-t border-[#DED8CD]">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-14"
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-caption text-copper mb-3">Recognition Wall</p>
-          <h2 className="text-h1 text-white mb-4">
-            Celebrating{" "}
-            <span className="text-copper">Outstanding Wards</span>
-          </h2>
-          <p className="text-body text-slate-400 max-w-xl mx-auto">
-            These wards went above and beyond. Their records are public — and
-            their citizens are proud.
+          <p className="text-caption text-[#8B2635] mb-2 font-bold">Public Commendation</p>
+          <h2 className="text-h1 text-[#242222] mb-3">Municipal Excellence Honors</h2>
+          <p className="text-body text-[#625E59] max-w-xl mx-auto">
+            Recognizing top-performing wards delivering reliable public service.
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {TOP_WARDS.map((card, i) => (
-            <ShineCard key={card.ward} card={card} index={i} parentInView={inView} />
+            <motion.div
+              key={card.ward}
+              initial={{ opacity: 0, y: 24 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
+              className="p-6 rounded-xl bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.05)] flex flex-col justify-between"
+            >
+              <div>
+                <Badge label={card.title} variant={card.variant} />
+                <div className="text-3xl font-bold font-mono text-[#8B2635] mt-4 mb-1">
+                  {card.metric}
+                </div>
+                <h3 className="text-sm font-bold text-[#242222] mb-1">{card.ward}</h3>
+                <p className="text-xs text-[#625E59] leading-relaxed">{card.caption}</p>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-[#DED8CD] text-[11px] text-[#88827A]">
+                {card.detail}
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -1015,74 +743,40 @@ function CTASection() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-28">
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-24 bg-[#F7F4ED]">
       <div className="max-w-4xl mx-auto">
         <motion.div
-          className="relative rounded-3xl overflow-hidden text-center px-8 py-16"
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative rounded-3xl text-center px-8 py-16 bg-[#F0E5D8] border border-[#D6C2A3] shadow-[0_8px_30px_rgba(36,34,34,0.06)]"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
         >
-          {/* Background */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "#191715",
-            }}
-          />
-          <div className="glass absolute inset-0 rounded-3xl border border-slate-400/10" />
+          <div className="flex flex-col items-center gap-5">
+            <Badge label="Public Infrastructure Network" variant="maroon" />
 
-          {/* Top glow */}
-          <div
-            aria-hidden
-            className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-96 rounded-full pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse at center, rgba(217,139,82,0.15), transparent 70%)",
-              filter: "blur(20px)",
-            }}
-          />
-
-          {/* Inner top border */}
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent" />
-
-          <div className="relative z-10 flex flex-col items-center gap-6">
-            <Badge label="Join the Movement" variant="copper" pulse />
-
-            <h2 className="text-h1 text-white max-w-2xl">
-              Your City Deserves{" "}
-              <span className="text-copper">Better.</span>{" "}
-              Start Today.
+            <h2 className="text-h1 text-[#242222] max-w-xl">
+              Better Governance Starts With{" "}
+              <span className="text-[#8B2635]">Public Visibility</span>
             </h2>
 
-            <p className="text-body text-slate-400 max-w-lg leading-relaxed">
-              Every report matters. Every resolved issue proves that government
-              can be held accountable. Add your voice — and your pin — to the
-              map.
+            <p className="text-body text-[#625E59] max-w-lg leading-relaxed">
+              Every citizen report strengthens data-driven municipal allocation.
+              Join thousands of residents actively monitoring and improving city infrastructure.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 mt-2">
-              <GradientButton href="/map" size="lg">
-                <span className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-                      fill="currentColor" fillOpacity="0.3" stroke="currentColor" strokeWidth="1.5"/>
-                    <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
-                  </svg>
-                  Report Your First Issue
-                </span>
+            <div className="flex flex-wrap justify-center gap-4 mt-3">
+              <GradientButton href="/map?report=true" size="lg" variant="primary">
+                Report a Municipal Issue
               </GradientButton>
-              <GradientButton href="/gov-dashboard" variant="outline" size="lg">
-                Explore the Dashboard
+              <GradientButton href="/map" variant="outline" size="lg">
+                Explore Live Map Radar →
               </GradientButton>
             </div>
 
-            {/* Mini trust strip */}
-            <p className="text-caption text-slate-600 mt-2">
-              Free to use · No account required to view · 100% open data
+            <p className="text-xs text-[#88827A] mt-2">
+              Free public service · Open civic data standards · Secure & verifiable
             </p>
           </div>
-
-
         </motion.div>
       </div>
     </section>
@@ -1094,23 +788,13 @@ function CTASection() {
 ───────────────────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
   return (
-    <div className="flex flex-col w-full overflow-x-hidden">
+    <div className="flex flex-col w-full overflow-x-hidden bg-[#F7F4ED]">
       <HeroSection />
       <BridgeStory />
-
-      {/* Thin divider with gradient */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       <HowItWorksSection />
-
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       <StatsSection />
-
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       <LeaderboardSection />
-
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
       <RecognitionWallSection />
-
       <CTASection />
     </div>
   );

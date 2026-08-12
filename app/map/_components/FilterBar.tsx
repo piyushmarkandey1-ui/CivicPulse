@@ -6,7 +6,7 @@ import { type Category, type Severity, type IssueStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_CHIPS: { label: string; value: Category | "all" }[] = [
-  { label: "All Types", value: "all" },
+  { label: "All Categories", value: "all" },
   { label: "🕳️ Pothole", value: "Pothole" },
   { label: "💧 Waterlogging", value: "Water Clogging" },
   { label: "🏗️ Crack", value: "Crack" },
@@ -15,10 +15,10 @@ const CATEGORY_CHIPS: { label: string; value: Category | "all" }[] = [
 ];
 
 const SEVERITY_CHIPS: { label: string; value: Severity | "all"; color: string }[] = [
-  { label: "All", value: "all", color: "copper" },
-  { label: "🔴 Critical", value: "critical", color: "red" },
-  { label: "🟡 Moderate", value: "moderate", color: "amber" },
-  { label: "✅ Resolved", value: "resolved", color: "green" },
+  { label: "All Severity", value: "all", color: "maroon" },
+  { label: "Critical", value: "critical", color: "red" },
+  { label: "Reported", value: "moderate", color: "amber" },
+  { label: "Resolved", value: "resolved", color: "green" },
 ];
 
 const STATUS_CHIPS: { label: string; value: IssueStatus | "all" }[] = [
@@ -39,7 +39,7 @@ interface FilterBarProps {
 function Chip({
   active,
   label,
-  color = "copper",
+  color = "maroon",
   onClick,
 }: {
   active: boolean;
@@ -49,35 +49,26 @@ function Chip({
 }) {
   return (
     <motion.button
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.96 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className={cn(
-        "relative px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 select-none",
-        "border focus:outline-none focus:ring-1 focus:ring-copper",
+        "relative px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 select-none border",
         active
-          ? "text-[#0D0D0C] border-transparent font-bold"
-          : "text-text-muted border-white/10 hover:border-white/20 hover:text-text-primary bg-white/[0.03]"
+          ? "text-white border-transparent shadow-xs font-bold"
+          : "text-[#625E59] border-[#DED8CD] hover:border-[#8B2635] hover:text-[#8B2635] bg-[#F7F4ED]"
       )}
       style={
         active
           ? {
-              background:
+              backgroundColor:
                 color === "red"
-                  ? "linear-gradient(135deg,#ef4444,#dc2626)"
+                  ? "#B83A3A"
                   : color === "amber"
-                  ? "linear-gradient(135deg,#F59E0B,#D97706)"
+                  ? "#C58B32"
                   : color === "green"
-                  ? "linear-gradient(135deg,#22C55E,#16A34A)"
-                  : "linear-gradient(135deg,#D98B52,#C27840)",
-              boxShadow:
-                color === "red"
-                  ? "0 0 12px rgba(239,68,68,0.4)"
-                  : color === "amber"
-                  ? "0 0 12px rgba(245,158,11,0.4)"
-                  : color === "green"
-                  ? "0 0 12px rgba(34,197,94,0.4)"
-                  : "0 0 12px rgba(217,139,82,0.4)",
+                  ? "#5E8061"
+                  : "#8B2635",
             }
           : undefined
       }
@@ -96,19 +87,14 @@ export default function FilterBar({
   return (
     <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none max-w-[94vw] w-fit">
       <motion.div
-        initial={{ opacity: 0, y: -16 }}
+        initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-auto flex items-center gap-3"
       >
-        {/* Glass container */}
+        {/* White institutional container */}
         <div
-          className="rounded-2xl px-4 py-2.5 flex flex-col gap-2 border border-white/[0.08]"
-          style={{
-            background: "rgba(18,17,16,0.92)",
-            backdropFilter: "blur(24px)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-          }}
+          className="rounded-2xl px-4 py-2.5 flex flex-col gap-2 border border-[#DED8CD] bg-white shadow-[0_6px_24px_rgba(36,34,34,0.08)]"
         >
           {/* Row 1: Category + count badge */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
@@ -120,16 +106,13 @@ export default function FilterBar({
                 onClick={() => onChange({ ...filters, category: chip.value })}
               />
             ))}
-            <span
-              className="ml-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-[#0D0D0C] flex-shrink-0"
-              style={{ background: "#D98B52" }}
-            >
+            <span className="ml-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F0E5D8] text-[#8B2635] border border-[#D6C2A3] flex-shrink-0 font-mono">
               {issueCount} active
             </span>
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-white/[0.06]" />
+          <div className="h-px bg-[#DED8CD]" />
 
           {/* Row 2: Severity + Status */}
           <div className="flex items-center gap-3 overflow-x-auto scrollbar-none">
@@ -144,7 +127,7 @@ export default function FilterBar({
                 />
               ))}
             </div>
-            <div className="h-4 w-px bg-white/10 flex-shrink-0" />
+            <div className="h-4 w-px bg-[#DED8CD] flex-shrink-0" />
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {STATUS_CHIPS.map((chip) => (
                 <Chip
@@ -158,17 +141,13 @@ export default function FilterBar({
           </div>
         </div>
 
-        {/* Prominent Report Issue Button in toolbar */}
+        {/* Primary Report Issue Button in toolbar */}
         {onOpenReportModal && (
           <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onOpenReportModal}
-            className="flex items-center gap-2 px-4 py-3 rounded-2xl font-bold text-xs text-[#0D0D0C] transition-all duration-200 border border-copper/40 shadow-xl flex-shrink-0"
-            style={{
-              background: "linear-gradient(135deg,#D98B52,#E6A370)",
-              boxShadow: "0 4px 24px rgba(217,139,82,0.35)",
-            }}
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl font-bold text-xs bg-[#8B2635] hover:bg-[#641B27] text-white transition-all duration-200 shadow-[0_4px_16px_rgba(139,38,53,0.25)] flex-shrink-0"
           >
             <span className="text-base leading-none">📢</span>
             <span className="whitespace-nowrap">Report an Issue</span>

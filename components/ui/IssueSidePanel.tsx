@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { type Issue, type IssueStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -21,11 +20,11 @@ function useEscalation(reportedAt: string, severity: Issue["severity"]) {
     const t = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(t);
   }, []);
-  const deadline  = new Date(new Date(reportedAt).getTime() + SLA_HOURS[severity] * 3_600_000);
-  const diffMs    = deadline.getTime() - now.getTime();
+  const deadline = new Date(new Date(reportedAt).getTime() + SLA_HOURS[severity] * 3_600_000);
+  const diffMs = deadline.getTime() - now.getTime();
   const isOverdue = diffMs < 0;
-  const hours     = Math.abs(Math.floor(Math.abs(diffMs) / 3_600_000));
-  const mins      = Math.abs(Math.floor((Math.abs(diffMs) % 3_600_000) / 60_000));
+  const hours = Math.abs(Math.floor(Math.abs(diffMs) / 3_600_000));
+  const mins = Math.abs(Math.floor((Math.abs(diffMs) % 3_600_000) / 60_000));
   return { isOverdue, label: `${hours}h ${mins}m ${isOverdue ? "overdue" : "remaining"}` };
 }
 
@@ -36,38 +35,40 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
   const currentIdx = STATUS_STEPS.indexOf(current);
   return (
     <div className="w-full">
-      <p className="text-caption text-slate-500 mb-3">Status Timeline</p>
+      <p className="text-[11px] font-bold text-[#88827A] uppercase tracking-wider mb-3">
+        Resolution Pipeline
+      </p>
       <div className="relative flex items-center justify-between">
-        {/* Connector line behind */}
-        <div className="absolute inset-x-0 top-3 h-px bg-white/[0.06]" />
+        {/* Connector line */}
+        <div className="absolute inset-x-0 top-3 h-0.5 bg-[#DED8CD]" />
         <motion.div
-          className="absolute top-3 left-0 h-px bg-gradient-to-r from-teal to-teal/40"
+          className="absolute top-3 left-0 h-0.5 bg-[#8B2635]"
           initial={{ width: 0 }}
           animate={{ width: `${(currentIdx / (STATUS_STEPS.length - 1)) * 100}%` }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         />
 
         {STATUS_STEPS.map((step, i) => {
-          const done   = i <= currentIdx;
+          const done = i <= currentIdx;
           const active = i === currentIdx;
           return (
             <div key={step} className="relative flex flex-col items-center gap-1.5 z-10">
-              <motion.div
+              <div
                 className={cn(
                   "h-6 w-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold",
                   done
-                    ? "border-copper bg-copper text-navy"
-                    : "border-white/20 bg-background text-slate-500"
+                    ? "border-[#8B2635] bg-[#8B2635] text-white"
+                    : "border-[#C9C0B3] bg-white text-[#88827A]"
                 )}
-                animate={active ? { scale: [1, 1.15, 1] } : {}}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               >
                 {done ? "✓" : i + 1}
-              </motion.div>
-              <span className={cn(
-                "text-[9px] font-semibold text-center leading-tight max-w-[50px]",
-                done ? "text-copper-light" : "text-slate-600"
-              )}>
+              </div>
+              <span
+                className={cn(
+                  "text-[10px] font-bold text-center leading-tight max-w-[55px]",
+                  done ? "text-[#8B2635]" : "text-[#88827A]"
+                )}
+              >
                 {step}
               </span>
             </div>
@@ -78,13 +79,12 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
   );
 }
 
-// ─── Category badge map ────────────────────────────────────────────────────────
-const CAT_VARIANT: Record<Issue["category"], "copper" | "warning" | "critical" | "success" | "neutral"> = {
-  "Pothole":       "warning",
-  "Water Clogging":"copper",
-  "Crack":         "critical",
-  "Road Damage":   "warning",
-  "Other":         "neutral",
+const CAT_VARIANT: Record<Issue["category"], "maroon" | "warning" | "critical" | "success" | "neutral"> = {
+  Pothole: "warning",
+  "Water Clogging": "maroon",
+  Crack: "critical",
+  "Road Damage": "warning",
+  Other: "neutral",
 };
 
 const SEV_VARIANT: Record<Issue["severity"], "critical" | "warning" | "success"> = {
@@ -93,20 +93,16 @@ const SEV_VARIANT: Record<Issue["severity"], "critical" | "warning" | "success">
   resolved: "success",
 };
 
-// ─── Props ────────────────────────────────────────────────────────────────────
 interface IssueSidePanelProps {
-  issue:    Issue;
-  onClose:  () => void;
+  issue: Issue;
+  onClose: () => void;
   onUpvote: (id: string) => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePanelProps) {
   const { role } = useAuth();
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  
-  // Ref for gov photo upload
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const escl = useEscalation(issue.reportedAt, issue.severity);
@@ -121,16 +117,15 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
   const handleStatusUpdate = async (newStatus: IssueStatus, e?: React.ChangeEvent<HTMLInputElement>) => {
     if (isUpdating) return;
     setIsUpdating(true);
-    
+
     try {
       const issueRef = doc(db, "issues", issue.id);
       const updates: any = { status: newStatus };
 
-      // Handle photo if present (for Resolved)
       if (e?.target?.files && e.target.files[0]) {
         const file = e.target.files[0];
         const reader = new FileReader();
-        
+
         const photoPromise = new Promise((resolve, reject) => {
           reader.onloadend = async () => {
             try {
@@ -138,14 +133,16 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
               await uploadString(storageRef, reader.result as string, "data_url");
               const url = await getDownloadURL(storageRef);
               resolve(url);
-            } catch (err) { reject(err); }
+            } catch (err) {
+              reject(err);
+            }
           };
           reader.readAsDataURL(file);
         });
 
         updates.resolutionPhotoUrl = await photoPromise;
       }
-      
+
       await updateDoc(issueRef, updates);
     } catch (error) {
       console.error("Error updating status:", error);
@@ -155,7 +152,9 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
   };
 
   const reportDate = new Date(issue.reportedAt).toLocaleDateString("en-IN", {
-    day: "2-digit", month: "short", year: "numeric",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 
   return (
@@ -164,94 +163,88 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
       initial={{ x: 400, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 400, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 280, damping: 30 }}
-      className="absolute right-0 top-0 h-full w-[380px] max-w-full z-30 flex flex-col"
-      style={{
-        background: "rgba(11,17,32,0.88)",
-        backdropFilter: "blur(20px)",
-        borderLeft: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "-8px 0 40px rgba(0,0,0,0.5)",
-      }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="absolute right-0 top-0 h-full w-[380px] max-w-full z-30 flex flex-col bg-white border-l border-[#DED8CD] shadow-[0_8px_40px_rgba(36,34,34,0.15)]"
       aria-label="Issue details panel"
     >
-      {/* ── Close button ── */}
+      {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-white/10 text-text-muted hover:text-white transition-colors"
+        className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-white/90 hover:bg-[#F0E5D8] text-[#625E59] hover:text-[#242222] border border-[#DED8CD] transition-colors shadow-xs"
         aria-label="Close panel"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </button>
 
-      {/* ── Scrollable content ── */}
+      {/* Scrollable content */}
       <div className="flex flex-col flex-1 overflow-y-auto">
-
         {/* Photo */}
-        <div className="relative h-48 w-full flex-shrink-0 bg-background-muted overflow-hidden">
+        <div className="relative h-48 w-full flex-shrink-0 bg-[#F0E5D8] overflow-hidden">
           <img
             src={`https://picsum.photos/seed/${issue.photoSeed}/760/400`}
             alt={issue.title}
             className="w-full h-full object-cover"
           />
-          {/* Severity overlay badge */}
           <div className="absolute top-3 left-3">
             <Badge
-              label={issue.severity.charAt(0).toUpperCase() + issue.severity.slice(1)}
+              label={issue.severity.toUpperCase()}
               variant={SEV_VARIANT[issue.severity]}
               pulse={issue.severity === "critical"}
             />
           </div>
-          {/* ID chip */}
-          <div className="absolute top-3 right-10 px-2 py-1 rounded-md text-xs font-mono font-bold text-white"
-            style={{ background: "rgba(11,17,32,0.75)", backdropFilter: "blur(6px)" }}>
+          <div className="absolute top-3 right-12 px-2.5 py-1 rounded-md text-xs font-mono font-bold text-[#242222] bg-white/90 border border-[#DED8CD] shadow-xs">
             {issue.id}
           </div>
         </div>
 
         {/* Body */}
         <div className="flex flex-col gap-5 p-5">
-
-          {/* Title + ward */}
+          {/* Title + address */}
           <div>
-            <h2 className="text-h3 text-white mb-1 pr-8">{issue.title}</h2>
-            <p className="text-caption text-slate-500 normal-case tracking-normal">{issue.address}</p>
+            <h2 className="text-lg font-bold text-[#242222] mb-1 pr-6 leading-tight">
+              {issue.title}
+            </h2>
+            <p className="text-xs text-[#625E59] flex items-center gap-1">
+              <span className="text-[#8B2635]">📍</span>
+              <span>{issue.address}</span>
+            </p>
           </div>
 
           {/* Badges */}
           <div className="flex flex-wrap gap-2">
-            <Badge label={issue.category}     variant={CAT_VARIANT[issue.category]} />
-            <Badge label={issue.ward}         variant="neutral" />
+            <Badge label={issue.category} variant={CAT_VARIANT[issue.category]} />
+            <Badge label={issue.ward} variant="neutral" />
             <Badge label={`Reported ${reportDate}`} variant="neutral" />
           </div>
 
           {/* Description */}
-          <p className="text-body-sm text-text-muted leading-relaxed">{issue.description}</p>
+          <p className="text-xs text-[#625E59] leading-relaxed bg-[#F7F4ED] p-3 rounded-xl border border-[#DED8CD]">
+            {issue.description}
+          </p>
 
           {/* Status timeline */}
           <StatusTimeline current={issue.status} />
 
-          {/* Escalation timer */}
+          {/* SLA Countdown Timer */}
           {issue.severity !== "resolved" && issue.status !== "Resolved" && (
-            <div className={cn(
-              "flex items-center gap-3 rounded-xl p-3 border",
-              escl.isOverdue
-                ? "bg-red-500/10 border-red-500/25"
-                : "bg-warning/10 border-amber/25"
-            )}>
-              <div className={cn(
-                "text-xl",
-                escl.isOverdue ? "animate-pulse" : ""
-              )} aria-hidden>
+            <div
+              className={cn(
+                "flex items-center gap-3 rounded-xl p-3 border",
+                escl.isOverdue
+                  ? "bg-[#FDEDED] border-[#B83A3A]/30 text-[#B83A3A]"
+                  : "bg-[#FEF6E9] border-[#C58B32]/30 text-[#C58B32]"
+              )}
+            >
+              <div className="text-xl" aria-hidden>
                 {escl.isOverdue ? "⚠️" : "⏱️"}
               </div>
               <div>
-                <p className="text-caption text-slate-500 normal-case tracking-normal">SLA Deadline</p>
-                <p className={cn(
-                  "text-body-sm font-bold",
-                  escl.isOverdue ? "text-danger" : "text-warning-light"
-                )}>
+                <p className="text-[10px] font-bold uppercase tracking-wider">
+                  Official SLA Countdown
+                </p>
+                <p className="text-xs font-bold font-mono">
                   {escl.label}
                 </p>
               </div>
@@ -259,67 +252,70 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           )}
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { label: "Upvotes",  value: issue.upvotes },
-              { label: "Status",   value: issue.status },
-              { label: "SLA",      value: `${SLA_HOURS[issue.severity]}h` },
-            ].map(({ label, value }) => (
-              <div key={label} className="rounded-xl bg-white/[0.04] border border-white/[0.05] p-3 text-center">
-                <p className="text-caption text-slate-500 normal-case tracking-normal mb-1">{label}</p>
-                <p className="text-body-sm font-bold text-white truncate">{value}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-3 gap-2.5 text-center">
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
+              <p className="text-[10px] text-[#88827A] font-medium uppercase">Upvotes</p>
+              <p className="text-sm font-bold font-mono text-[#8B2635]">{issue.upvotes}</p>
+            </div>
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
+              <p className="text-[10px] text-[#88827A] font-medium uppercase">Status</p>
+              <p className="text-xs font-bold text-[#242222] truncate">{issue.status}</p>
+            </div>
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
+              <p className="text-[10px] text-[#88827A] font-medium uppercase">SLA</p>
+              <p className="text-sm font-bold font-mono text-[#242222]">
+                {SLA_HOURS[issue.severity]}h
+              </p>
+            </div>
           </div>
 
-          {/* Action buttons based on Role */}
+          {/* Actions depending on role */}
           {role === "government" ? (
-            <div className="flex flex-col gap-3 pt-2 border-t border-white/[0.06]">
-              <p className="text-caption text-text-muted normal-case">Government Actions</p>
+            <div className="flex flex-col gap-2.5 pt-2 border-t border-[#DED8CD]">
+              <p className="text-[10px] font-bold text-[#88827A] uppercase tracking-wider">
+                Official Operations Triage
+              </p>
               <div className="flex gap-2">
                 <button
                   disabled={isUpdating || issue.status === "In Progress" || issue.status === "Resolved"}
                   onClick={() => handleStatusUpdate("In Progress")}
-                  className="flex-1 py-2 rounded-lg bg-warning-600/20 text-amber-500 text-sm font-semibold hover:bg-warning-600/30 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-[#C58B32] hover:bg-[#A87222] text-white text-xs font-bold transition-colors disabled:opacity-50"
                 >
                   Mark In Progress
                 </button>
-                
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
                   ref={fileInputRef}
                   onChange={(e) => handleStatusUpdate("Resolved", e)}
                 />
                 <button
                   disabled={isUpdating || issue.status === "Resolved"}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 py-2 rounded-lg bg-copper/20 text-copper-light text-sm font-semibold hover:bg-copper/30 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-[#5E8061] hover:bg-[#4C684F] text-white text-xs font-bold transition-colors disabled:opacity-50"
                 >
                   {isUpdating ? "Saving..." : "Resolve + Photo"}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="flex gap-3">
+            <div className="flex gap-2.5 pt-1">
               <motion.button
-                whileTap={{ scale: 0.94 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200",
+                  "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-xs font-bold transition-all duration-200",
                   hasUpvoted
-                    ? "bg-copper/20 border-copper/40 text-copper-light cursor-default"
-                    : "bg-white/[0.04] border-white/10 text-text-secondary hover:bg-copper/10 hover:border-copper/30 hover:text-copper"
+                    ? "bg-[#F0E5D8] border-[#D6C2A3] text-[#8B2635] cursor-default"
+                    : "bg-[#8B2635] text-white border-transparent hover:bg-[#641B27]"
                 )}
               >
                 <span aria-hidden>👍</span>
-                {hasUpvoted ? "Confirmed!" : `Confirm (${issue.upvotes})`}
+                {hasUpvoted ? "Confirmed (+1)" : `Confirm Issue (${issue.upvotes})`}
               </motion.button>
-              <GradientButton variant="outline" size="sm" className="flex-shrink-0">
-                Escalate
-              </GradientButton>
             </div>
           )}
         </div>

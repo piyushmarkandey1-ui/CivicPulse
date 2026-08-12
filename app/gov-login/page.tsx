@@ -27,7 +27,7 @@ export default function GovLoginPage() {
 
       if (signInError) throw signInError;
 
-      // Verify they are actually a government official
+      // Verify role
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
@@ -36,80 +36,105 @@ export default function GovLoginPage() {
 
       if (profile?.role !== "government") {
         await supabase.auth.signOut();
-        throw new Error("This portal is for government officials only. Please use the Citizen Portal.");
+        throw new Error(
+          "This portal is for authorized municipal officials only. Please use the Citizen Portal."
+        );
       }
 
       router.push("/gov-dashboard");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Authentication failed. Please try again.");
+      setError(err.message || "Authentication failed. Please check credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] p-6">
+    <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-80px)] p-6 bg-[#F7F4ED]">
       <div className="w-full max-w-md">
         {/* Institutional badge */}
         <motion.div
-          initial={{ opacity: 0, y: -12 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex justify-center mb-8"
+          transition={{ duration: 0.4 }}
+          className="flex justify-center mb-6"
         >
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border border-warning/30 bg-warning/[0.07] text-warning">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border border-[#D6C2A3] bg-[#F0E5D8] text-[#242222]">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             Authorized Personnel Only
           </span>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          className="rounded-2xl border p-8"
-          style={{
-            background: "rgba(20,17,13,0.92)",
-            backdropFilter: "blur(20px)",
-            borderColor: "rgba(211,163,74,0.15)",
-          }}
+          transition={{ duration: 0.45, delay: 0.05 }}
+          className="rounded-2xl border border-[#D6C2A3] p-8 bg-white shadow-[0_6px_24px_rgba(36,34,34,0.07)]"
         >
           {/* Shield header */}
-          <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3 mb-6 pb-5 border-b border-[#DED8CD]">
             <div
-              className="h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(211,163,74,0.1)", border: "1px solid rgba(211,163,74,0.2)" }}
+              className="h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#F0E5D8] border border-[#D6C2A3]"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D3A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8B2635"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-base font-bold text-white">Government Portal</h1>
-              <p className="text-xs text-text-muted mt-0.5">CivicPulse Operations Access</p>
+              <h1 className="text-base font-bold text-[#242222]">Government Portal</h1>
+              <p className="text-xs text-[#88827A]">CivicPulse Municipal Command & Triage</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-1">Official Sign In</h2>
-            <p className="text-text-muted text-sm">
-              Access restricted to verified government employees. Unauthorized access attempts are logged.
+            <h2 className="text-xl font-bold text-[#242222] mb-1">Official Sign In</h2>
+            <p className="text-[#625E59] text-xs leading-relaxed">
+              Restricted to verified department officers and ward administrators.
             </p>
+          </div>
+
+          {/* Security notice */}
+          <div className="mb-5 p-3 rounded-lg bg-[#F0E5D8]/70 border border-[#D6C2A3] text-xs text-[#625E59]">
+            <span className="font-bold text-[#242222]">Audit Notice:</span> All official
+            actions, status updates, and resolution proofs are permanently logged in the municipal audit index.
           </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-5 p-3 rounded-lg bg-danger/10 border border-danger/20 text-danger text-sm">
+            <div className="mb-5 p-3 rounded-lg bg-[#FDEDED] border border-[#B83A3A]/25 text-[#B83A3A] text-sm font-medium">
               {error}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label htmlFor="gov-email" className="block text-sm font-medium text-text-secondary mb-1.5">
+              <label
+                htmlFor="gov-email"
+                className="block text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5"
+              >
                 Official Email Address
               </label>
               <input
@@ -119,19 +144,16 @@ export default function GovLoginPage() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-text-subtle border focus:outline-none transition-colors"
-                style={{
-                  background: "rgba(13,13,12,0.7)",
-                  borderColor: "rgba(211,163,74,0.15)",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "rgba(211,163,74,0.5)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(211,163,74,0.15)")}
-                placeholder="official@municipality.gov.in"
+                placeholder="officer@bmc.gov.in"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#C9C0B3] bg-white text-[#242222] text-sm focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15 transition-all"
               />
             </div>
 
             <div>
-              <label htmlFor="gov-password" className="block text-sm font-medium text-text-secondary mb-1.5">
+              <label
+                htmlFor="gov-password"
+                className="block text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5"
+              >
                 Password
               </label>
               <input
@@ -141,62 +163,36 @@ export default function GovLoginPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-text-subtle border focus:outline-none transition-colors"
-                style={{
-                  background: "rgba(13,13,12,0.7)",
-                  borderColor: "rgba(211,163,74,0.15)",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "rgba(211,163,74,0.5)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(211,163,74,0.15)")}
                 placeholder="••••••••"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#C9C0B3] bg-white text-[#242222] text-sm focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15 transition-all"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 rounded-xl text-sm font-bold disabled:opacity-60 transition-all duration-200"
-              style={{ background: "#D3A34A", color: "#0D0D0C" }}
+              className="w-full py-3 px-4 rounded-lg bg-[#242222] hover:bg-[#181616] text-[#F7F4ED] font-bold text-sm transition-all duration-200 shadow-sm disabled:opacity-50 mt-2"
             >
-              {loading ? "Authenticating…" : "Access Dashboard →"}
+              {loading ? "Authenticating Official..." : "Enter Government Command Center"}
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-6 space-y-3">
-            <p className="text-center text-sm text-text-muted">
-              New official?{" "}
-              <Link href="/gov-signup" className="font-semibold underline underline-offset-2" style={{ color: "#D3A34A" }}>
-                Request Access
+          {/* Links */}
+          <div className="mt-6 pt-5 border-t border-[#DED8CD] flex flex-col gap-2 text-center text-xs text-[#625E59]">
+            <p>
+              Need to register as an official?{" "}
+              <Link href="/gov-signup" className="text-[#8B2635] font-bold hover:underline">
+                Officer Registration →
               </Link>
             </p>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/[0.06]" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-3 text-text-subtle" style={{ background: "rgba(20,17,13,0.92)" }}>
-                  not an official?
-                </span>
-              </div>
-            </div>
-            <p className="text-center text-sm text-text-muted">
-              <Link href="/login" className="text-text-secondary hover:text-white font-medium underline underline-offset-2">
-                ← Go to Citizen Portal
+            <p className="text-[#88827A]">
+              Citizen user?{" "}
+              <Link href="/login" className="text-[#242222] font-semibold hover:underline">
+                Citizen Portal
               </Link>
             </p>
           </div>
         </motion.div>
-
-        {/* Security notice */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-center text-xs text-text-subtle mt-5"
-        >
-          🔒 This session is secured and monitored. All actions are logged for audit compliance.
-        </motion.p>
       </div>
     </div>
   );

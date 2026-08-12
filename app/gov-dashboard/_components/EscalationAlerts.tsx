@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Escalation } from "./mockData";
-import { AlertCircle, ChevronDown, Clock, MapPin, Tag } from "lucide-react";
+import { ChevronDown, Clock, MapPin, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function EscalationAlerts({ escalations }: { escalations: Escalation[] }) {
@@ -14,48 +14,62 @@ export default function EscalationAlerts({ escalations }: { escalations: Escalat
   };
 
   return (
-    <div className="glass rounded-2xl p-2 border border-white/[0.08]" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.2)" }}>
+    <div className="rounded-2xl p-3 bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.05)]">
       {escalations.length === 0 ? (
-        <div className="p-8 text-center text-slate-400">
-          <p>No active escalations. Good job!</p>
+        <div className="p-8 text-center text-[#88827A]">
+          <p>No active SLA escalations currently logged.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
           {escalations.map((esc) => {
             const isExpanded = expandedId === esc.id;
             return (
-              <div 
-                key={esc.id} 
+              <div
+                key={esc.id}
                 className={cn(
-                  "rounded-xl border transition-all duration-300 overflow-hidden",
-                  isExpanded 
-                    ? "bg-red-500/10 border-red-500/30" 
-                    : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04]"
+                  "rounded-xl border transition-all duration-200 overflow-hidden",
+                  isExpanded
+                    ? "bg-[#FDEDED]/60 border-[#B83A3A]/40"
+                    : "bg-[#F7F4ED]/50 border-[#DED8CD] hover:border-[#C9C0B3]"
                 )}
               >
                 <button
                   onClick={() => toggleExpand(esc.id)}
-                  className="w-full flex items-center justify-between p-4 focus:outline-none"
+                  className="w-full flex items-center justify-between p-4 focus:outline-none text-left"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3.5">
                     {/* Pulsing indicator */}
-                    <div className="relative flex h-3 w-3 flex-shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    <div className="relative flex h-2.5 w-2.5 flex-shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B83A3A] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#B83A3A]"></span>
                     </div>
-                    
-                    <div className="text-left">
-                      <h4 className={cn("font-bold", isExpanded ? "text-red-400" : "text-slate-200")}>
+
+                    <div>
+                      <h4
+                        className={cn(
+                          "text-xs font-bold",
+                          isExpanded ? "text-[#B83A3A]" : "text-[#242222]"
+                        )}
+                      >
                         {esc.title}
                       </h4>
-                      <div className="flex items-center gap-3 mt-1 text-xs font-medium text-slate-500">
-                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {esc.ward}</span>
-                        <span className="flex items-center gap-1 text-red-400/80"><Clock className="h-3 w-3" /> {esc.daysOverdue} days overdue</span>
+                      <div className="flex items-center gap-3 mt-1 text-[11px] font-medium text-[#625E59]">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-[#8B2635]" /> {esc.ward}
+                        </span>
+                        <span className="flex items-center gap-1 text-[#B83A3A] font-bold">
+                          <Clock className="h-3 w-3" /> {esc.daysOverdue} days overdue
+                        </span>
                       </div>
                     </div>
                   </div>
-                  
-                  <ChevronDown className={cn("h-5 w-5 text-slate-500 transition-transform duration-300", isExpanded && "rotate-180 text-red-400")} />
+
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 text-[#88827A] transition-transform duration-200",
+                      isExpanded && "rotate-180 text-[#B83A3A]"
+                    )}
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -64,25 +78,29 @@ export default function EscalationAlerts({ escalations }: { escalations: Escalat
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <div className="px-4 pb-4 pt-2 border-t border-red-500/20">
-                        <div className="bg-black/20 rounded-lg p-4 mb-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Tag className="h-3 w-3 text-slate-400" />
-                            <span className="text-xs font-semibold text-slate-300">{esc.category}</span>
-                            <span className="text-xs text-slate-500 ml-auto">ID: {esc.id}</span>
+                      <div className="px-4 pb-4 pt-2 border-t border-[#B83A3A]/20">
+                        <div className="bg-white rounded-lg p-3 mb-3 border border-[#DED8CD]">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <Tag className="h-3 w-3 text-[#88827A]" />
+                            <span className="text-xs font-bold text-[#242222]">
+                              {esc.category}
+                            </span>
+                            <span className="text-[10px] font-mono text-[#88827A] ml-auto">
+                              ID: {esc.id}
+                            </span>
                           </div>
-                          <p className="text-sm text-slate-400 leading-relaxed">
+                          <p className="text-xs text-[#625E59] leading-relaxed">
                             {esc.description}
                           </p>
                         </div>
                         <div className="flex gap-2">
-                          <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors flex-1">
-                            Intervene Now
+                          <button className="px-3.5 py-2 bg-[#B83A3A] hover:bg-[#9B2E2E] text-white text-xs font-bold rounded-lg transition-colors flex-1 shadow-xs">
+                            Direct Field Dispatch
                           </button>
-                          <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold rounded-lg transition-colors border border-white/10">
-                            Notify Ward Officer
+                          <button className="px-3.5 py-2 bg-white hover:bg-[#F0E5D8] text-[#242222] text-xs font-bold rounded-lg transition-colors border border-[#DED8CD]">
+                            Notify Ward Supervisor
                           </button>
                         </div>
                       </div>
