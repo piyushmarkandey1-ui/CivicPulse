@@ -95,7 +95,7 @@ export default function MapDashboard() {
         reportedAt:  new Date().toISOString(),
         photoSeed:   Math.floor(Math.random() * 100), // Fallback if no photo
         photoUrl,
-        reporterUid: user?.uid || "anonymous",
+        reporterUid: user?.id || "anonymous",
       };
 
       await setDoc(doc(db, "issues", issueId), newIssue);

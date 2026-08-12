@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 import KPIStatsRow from "./KPIStatsRow";
 import ChartsSection from "./ChartsSection";
@@ -22,7 +23,15 @@ export default function GovDashboardClient() {
   const [activeTab, setActiveTab] = useState<TabType>("Overview");
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useAuth();
+  const { role, loading: authLoading, user } = useAuth();
+  const router = useRouter();
+
+  // Redirect non-government users
+  useEffect(() => {
+    if (!authLoading && (!user || role !== "government")) {
+      router.replace("/login?error=unauthorized");
+    }
+  }, [authLoading, user, role, router]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "issues"), (snapshot) => {

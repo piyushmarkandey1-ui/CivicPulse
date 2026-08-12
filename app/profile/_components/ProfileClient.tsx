@@ -29,7 +29,7 @@ export default function ProfileClient() {
       return;
     }
 
-    const q = query(collection(db, "issues"), where("reporterUid", "==", user.uid));
+    const q = query(collection(db, "issues"), where("reporterUid", "==", user.id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedIssues: Issue[] = [];
       snapshot.forEach((doc) => {
@@ -66,11 +66,11 @@ export default function ProfileClient() {
 
   // Create a merged profile object
   const displayProfile = {
-    name: profile?.name || user?.displayName || "Citizen",
-    avatarSeed: user?.uid || "default",
-    joinDate: profile?.joinDate || "Recently",
+    name: profile?.name || user?.user_metadata?.name || "Citizen",
+    avatarSeed: user?.id || "default",
+    joinDate: profile?.join_date || "Recently",
     totalReports: issues.length,
-    reputationScore: profile?.reputationScore || 0,
+    reputationScore: profile?.reputation_score || 0,
     level: "Active Reporter",
     nextBadge: "Ward Guardian",
     reportsNeededForNextBadge: Math.max(0, 15 - issues.length),

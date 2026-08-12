@@ -6,8 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 function LogoIcon() {
   return (
@@ -38,7 +36,7 @@ export function Navbar() {
   const router       = useRouter();
   const [scrolled, setScrolled]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -49,7 +47,7 @@ export function Navbar() {
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    await signOut();
     router.push("/");
   };
 
