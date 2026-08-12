@@ -17,8 +17,8 @@ interface GradientButtonProps {
 
 const sizeMap = {
   sm: "px-4 py-2 text-sm",
-  md: "px-6 py-2.5 text-sm",
-  lg: "px-8 py-3.5 text-base",
+  md: "px-5 py-2.5 text-sm",
+  lg: "px-7 py-3 text-base",
 };
 
 export function GradientButton({
@@ -33,35 +33,39 @@ export function GradientButton({
   icon,
 }: GradientButtonProps) {
   const baseStyles = cn(
-    "relative inline-flex items-center justify-center gap-2 rounded-xl font-semibold",
-    "cursor-pointer select-none overflow-hidden transition-all duration-200",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
+    "relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
+    "cursor-pointer select-none transition-all duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
     sizeMap[size],
-    disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+    disabled && "opacity-40 cursor-not-allowed pointer-events-none",
     className
   );
 
   const content = (
     <>
-      {/* Animated gradient background */}
+      {/* Primary: solid teal, clean */}
       {variant === "primary" && (
-        <>
-          <span
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-r from-teal to-amber opacity-100 transition-opacity duration-300"
-          />
-          <span
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-r from-teal-light to-amber-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          />
-        </>
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-lg"
+          style={{ background: "#4FD1A5" }}
+        />
+      )}
+
+      {/* Primary hover: slightly brighter teal */}
+      {variant === "primary" && (
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          style={{ background: "#7BE3BE" }}
+        />
       )}
 
       {/* Outline variant */}
       {variant === "outline" && (
         <span
           aria-hidden
-          className="absolute inset-0 rounded-xl border border-teal/60 bg-teal/5 group-hover:bg-teal/10 transition-colors duration-300"
+          className="absolute inset-0 rounded-lg border border-slate-600 bg-transparent group-hover:border-teal/50 group-hover:bg-teal/[0.04] transition-all duration-200"
         />
       )}
 
@@ -69,26 +73,15 @@ export function GradientButton({
       {variant === "ghost" && (
         <span
           aria-hidden
-          className="absolute inset-0 rounded-xl bg-white/0 group-hover:bg-white/5 transition-colors duration-300"
+          className="absolute inset-0 rounded-lg bg-transparent group-hover:bg-white/[0.04] transition-colors duration-200"
         />
       )}
 
-      {/* Glow layer (primary only) */}
-      {variant === "primary" && (
-        <span
-          aria-hidden
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{
-            boxShadow: "0 0 30px rgba(20,184,166,0.5), 0 0 60px rgba(20,184,166,0.2)",
-          }}
-        />
-      )}
-
-      {/* Text + icon (above pseudo-elements) */}
+      {/* Text */}
       <span
         className={cn(
           "relative z-10 flex items-center gap-2",
-          variant === "primary" ? "text-navy font-bold" : "text-slate-200"
+          variant === "primary" ? "text-[#070B14] font-semibold" : "text-slate-200"
         )}
       >
         {icon && <span className="flex-shrink-0">{icon}</span>}
@@ -98,9 +91,9 @@ export function GradientButton({
   );
 
   const motionProps = {
-    whileHover: disabled ? undefined : { scale: 1.02 },
-    whileTap:   disabled ? undefined : { scale: 0.96 },
-    transition: { type: "spring" as const, stiffness: 400, damping: 25 },
+    whileHover: disabled ? undefined : { scale: 1.015 },
+    whileTap: disabled ? undefined : { scale: 0.97 },
+    transition: { type: "spring" as const, stiffness: 500, damping: 30 },
   };
 
   if (href) {

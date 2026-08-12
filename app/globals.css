@@ -1,61 +1,93 @@
 @import "tailwindcss";
 
-/* ─── Design Tokens ────────────────────────────────────────────────────────── */
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 @theme {
-  /* Color palette */
-  --color-navy:        #0B1120;
-  --color-navy-light:  #0F172A;
-  --color-navy-muted:  #1E293B;
-  --color-teal:        #14B8A6;
-  --color-teal-light:  #2DD4BF;
-  --color-teal-dark:   #0D9488;
-  --color-amber:       #F59E0B;
-  --color-amber-light: #FCD34D;
-  --color-amber-dark:  #D97706;
-  --color-slate-50:    #F8FAFC;
-  --color-slate-200:   #E2E8F0;
-  --color-slate-400:   #94A3B8;
-  --color-slate-500:   #64748B;
-  --color-slate-600:   #475569;
-  --color-slate-700:   #334155;
-  --color-slate-800:   #1E293B;
-  --color-slate-900:   #0F172A;
-  --color-red-400:     #F87171;
-  --color-red-500:     #EF4444;
-  --color-green-400:   #4ADE80;
-  --color-green-500:   #22C55E;
+  /* ── Backgrounds ── */
+  --color-bg:             #070B14;
+  --color-bg-secondary:   #0B1220;
+  --color-surface:        #0F1726;
+  --color-surface-raised: #121C2D;
 
-  /* Typography */
+  /* ── Legacy aliases (keep for backward compat) ── */
+  --color-navy:           #0B1220;
+  --color-navy-light:     #0F1726;
+  --color-navy-muted:     #1A2540;
+
+  /* ── Border ── */
+  --color-border:         rgba(148,163,184,0.12);
+  --color-border-subtle:  rgba(148,163,184,0.07);
+
+  /* ── Text ── */
+  --color-text-primary:   #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #475569;
+
+  /* ── CivicPulse Brand Accent (ONE accent) ── */
+  --color-teal:           #4FD1A5;
+  --color-teal-light:     #7BE3BE;
+  --color-teal-dark:      #2DB886;
+  --color-teal-dim:       rgba(79,209,165,0.08);
+
+  /* ── Semantic Status Colors (use ONLY for meaning, not decoration) ── */
+  --color-danger:         #F05252;
+  --color-danger-dim:     rgba(240,82,82,0.08);
+  --color-warning:        #F2B84B;
+  --color-warning-dim:    rgba(242,184,75,0.08);
+  --color-success:        #4FD1A5;
+
+  /* ── Legacy color aliases ── */
+  --color-amber:          #F2B84B;
+  --color-amber-light:    #F6CA72;
+  --color-amber-dark:     #D4973A;
+  --color-red-400:        #F87171;
+  --color-red-500:        #F05252;
+  --color-green-400:      #4FD1A5;
+  --color-green-500:      #2DB886;
+  --color-slate-50:       #F8FAFC;
+  --color-slate-200:      #E2E8F0;
+  --color-slate-300:      #CBD5E1;
+  --color-slate-400:      #94A3B8;
+  --color-slate-500:      #64748B;
+  --color-slate-600:      #475569;
+  --color-slate-700:      #334155;
+  --color-slate-800:      #1E293B;
+  --color-slate-900:      #0F172A;
+
+  /* ── Typography ── */
   --font-sora: "Sora", sans-serif;
   --font-sans: "Sora", sans-serif;
 
-  /* Border radius */
+  /* ── Radius System ── */
+  --radius-sm:    0.375rem;
+  --radius-md:    0.625rem;
+  --radius-lg:    0.875rem;
+  --radius-xl:    1rem;
+  --radius-2xl:   1.25rem;
   --radius-glass: 1rem;
 
-  /* Box shadows */
-  --shadow-glow-teal:  0 0 30px rgba(20, 184, 166, 0.35), 0 0 60px rgba(20, 184, 166, 0.15);
-  --shadow-glow-amber: 0 0 30px rgba(245, 158, 11, 0.35), 0 0 60px rgba(245, 158, 11, 0.15);
-  --shadow-glass:      0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.08);
-  --shadow-card:       0 4px 24px rgba(0, 0, 0, 0.3);
+  /* ── Shadows — very restrained ── */
+  --shadow-card:      0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.25);
+  --shadow-panel:     0 2px 8px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.3);
+  --shadow-glow-teal: 0 0 20px rgba(79,209,165,0.12), 0 0 40px rgba(79,209,165,0.06);
+  --shadow-glass:     0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
 
-  /* Custom animations (used via Tailwind animate-* utilities) */
+  /* ── Animations ── */
   --animate-fade-slide-in: fade-slide-in 0.35s ease-out forwards;
 }
 
-@keyframes blob-float {
-  0%   { transform: translate(0px, 0px) scale(1);         }
-  25%  { transform: translate(40px, -30px) scale(1.05);   }
-  50%  { transform: translate(-20px, 20px) scale(0.97);   }
-  75%  { transform: translate(30px, 40px) scale(1.03);    }
-  100% { transform: translate(0px, 0px) scale(1);         }
-}
-
+/* ─── Keyframes ─────────────────────────────────────────────────────────────── */
 @keyframes fade-slide-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0px);  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* ─── Base Reset ───────────────────────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.9); opacity: 0.7; }
+  70%  { transform: scale(1.4); opacity: 0;   }
+  100% { transform: scale(1.4); opacity: 0;   }
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────────── */
 :root {
   color-scheme: dark;
 }
@@ -71,91 +103,141 @@ html, body {
 }
 
 body {
-  background-color: #0B1120;
-  color: #E2E8F0;
+  background-color: #070B14;
+  color: #F1F5F9;
   font-family: "Sora", sans-serif;
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ─── Typography Scale ─────────────────────────────────────────────────────── */
+/* ─── Typography Scale ──────────────────────────────────────────────────────── */
 .text-hero {
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 800;
-  line-height: 1.05;
+  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.06;
   letter-spacing: -0.03em;
 }
 
 .text-h1 {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: clamp(1.9rem, 3.5vw, 3rem);
+  font-weight: 600;
+  line-height: 1.12;
   letter-spacing: -0.02em;
 }
 
 .text-h2 {
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: clamp(1.4rem, 2.5vw, 2.1rem);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.22;
   letter-spacing: -0.015em;
 }
 
 .text-h3 {
-  font-size: clamp(1.125rem, 2vw, 1.75rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.45rem);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   letter-spacing: -0.01em;
 }
 
 .text-body {
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.72;
 }
 
 .text-body-sm {
   font-size: 0.875rem;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .text-caption {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.5;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-/* ─── Gradient Text Utility ────────────────────────────────────────────────── */
+.text-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+/* ─── Brand Accent Text ─────────────────────────────────────────────────────── */
+/* Use sparingly — only for CivicPulse brand moments */
+.accent-text {
+  color: #4FD1A5;
+}
+
+/* Replaces the old teal-amber gradient — now single teal accent */
 .gradient-text {
-  background: linear-gradient(135deg, #14B8A6 0%, #F59E0B 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4FD1A5;
 }
 
-/* ─── Glassmorphism Utility ────────────────────────────────────────────────── */
+/* ─── Surface / Card System ─────────────────────────────────────────────────── */
+.surface {
+  background: #0F1726;
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 0.875rem;
+}
+
+.surface-raised {
+  background: #121C2D;
+  border: 1px solid rgba(148,163,184,0.10);
+  border-radius: 0.875rem;
+}
+
+/* ─── Glass Utility — more restrained ──────────────────────────────────────── */
 .glass {
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(148,163,184,0.10);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0B1120; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #14B8A6; }
+/* ─── Subtle ambient glow — one, teal only ──────────────────────────────────── */
+.glow-teal-ambient {
+  box-shadow: 0 0 20px rgba(79,209,165,0.10), 0 0 40px rgba(79,209,165,0.05);
+}
 
-/* ─── Focus Ring ───────────────────────────────────────────────────────────── */
+/* ─── Divider ────────────────────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  height: 1px;
+  background: rgba(148,163,184,0.10);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #070B14; }
+::-webkit-scrollbar-thumb { background: #1A2540; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4FD1A5; }
+
+/* ─── Focus Ring ─────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #14B8A6;
+  outline: 2px solid #4FD1A5;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* ─── Selection ──────────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(79,209,165,0.2);
+  color: #F1F5F9;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

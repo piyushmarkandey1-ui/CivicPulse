@@ -20,19 +20,37 @@ const TABS: { label: TabType; icon: React.ElementType }[] = [
 
 export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarProps) {
   return (
-    <aside className="w-64 flex-shrink-0 hidden md:flex flex-col border-r border-white/10" style={{ background: "rgba(11,17,32,0.6)", backdropFilter: "blur(20px)" }}>
+    <aside
+      className="w-60 flex-shrink-0 hidden md:flex flex-col"
+      style={{
+        background: "#0B1220",
+        borderRight: "1px solid rgba(148,163,184,0.08)",
+      }}
+    >
       {/* Brand */}
-      <div className="h-20 flex items-center px-6 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-teal to-teal/40 flex items-center justify-center">
-            <span className="text-navy font-black text-lg">CP</span>
+      <div
+        className="h-16 flex items-center px-5"
+        style={{ borderBottom: "1px solid rgba(148,163,184,0.07)" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div
+            className="h-7 w-7 rounded-md flex items-center justify-center"
+            style={{ background: "rgba(79,209,165,0.10)", border: "1px solid rgba(79,209,165,0.18)" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="10" r="2.5" fill="#4FD1A5" />
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="rgba(79,209,165,0.15)" stroke="#4FD1A5" strokeWidth="1.5" />
+            </svg>
           </div>
-          <span className="text-white font-bold text-lg tracking-wide">CivicPulse <span className="text-teal text-sm">GOV</span></span>
+          <div>
+            <span className="text-sm font-semibold text-slate-100">CivicPulse</span>
+            <span className="text-xs ml-1.5 font-medium" style={{ color: "#4FD1A5" }}>GOV</span>
+          </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-6 px-4 space-y-1">
+      <nav className="flex-1 py-5 px-3 space-y-0.5">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.label;
@@ -41,39 +59,45 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
               key={tab.label}
               onClick={() => onTabChange(tab.label)}
               className={cn(
-                "relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                isActive ? "text-teal-light" : "text-slate-400 hover:bg-white/[0.03] hover:text-slate-200"
+                "relative w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-all duration-200",
+                isActive
+                  ? "font-medium"
+                  : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.025] font-normal"
               )}
+              style={isActive ? { color: "#4FD1A5" } : undefined}
             >
               {isActive && (
                 <motion.div
-                  layoutId="activeTabBg"
-                  className="absolute inset-0 rounded-xl border border-teal/20"
-                  style={{ background: "linear-gradient(90deg, rgba(20,184,166,0.15) 0%, rgba(20,184,166,0.03) 100%)" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  layoutId="sidebarActiveTab"
+                  className="absolute inset-0 rounded-lg"
+                  style={{ background: "rgba(79,209,165,0.07)", border: "1px solid rgba(79,209,165,0.12)" }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <Icon className="h-5 w-5 z-10" />
+              <Icon className="h-4 w-4 z-10 flex-shrink-0" />
               <span className="z-10">{tab.label}</span>
             </button>
           );
         })}
       </nav>
 
-      {/* Profile/Logout */}
-      <div className="p-4 border-t border-white/[0.06]">
-        <div className="flex items-center gap-3 px-2 py-2 mb-2">
-          <div className="h-10 w-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold">
+      {/* Profile */}
+      <div className="p-3" style={{ borderTop: "1px solid rgba(148,163,184,0.07)" }}>
+        <div className="flex items-center gap-3 px-2 py-2 mb-1">
+          <div
+            className="h-8 w-8 rounded-md flex items-center justify-center text-xs font-semibold text-slate-300 flex-shrink-0"
+            style={{ background: "#121C2D", border: "1px solid rgba(148,163,184,0.10)" }}
+          >
             OC
           </div>
-          <div>
-            <p className="text-sm font-semibold text-white">Operations Chief</p>
-            <p className="text-xs text-slate-500">HQ Level Access</p>
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-slate-200 truncate">Operations Chief</p>
+            <p className="text-xs text-slate-600">HQ Access</p>
           </div>
         </div>
-        <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/[0.03] hover:text-red-400 transition-colors">
-          <LogOut className="h-4 w-4" />
-          Logout
+        <button className="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-500 hover:bg-white/[0.025] hover:text-red-400 transition-colors">
+          <LogOut className="h-3.5 w-3.5" />
+          Sign out
         </button>
       </div>
     </aside>

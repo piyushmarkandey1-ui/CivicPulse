@@ -8,19 +8,14 @@ interface GlassCardProps {
   className?: string;
   hover?: boolean;
   glow?: "teal" | "amber" | "none";
-  padding?: "sm" | "md" | "lg";
+  padding?: "none" | "sm" | "md" | "lg";
 }
 
 const paddingMap = {
+  none: "",
   sm: "p-4",
   md: "p-6",
   lg: "p-8",
-};
-
-const glowMap = {
-  teal:  "hover:shadow-[0_0_30px_rgba(20,184,166,0.25),0_0_60px_rgba(20,184,166,0.1)]",
-  amber: "hover:shadow-[0_0_30px_rgba(245,158,11,0.25),0_0_60px_rgba(245,158,11,0.1)]",
-  none:  "",
 };
 
 export function GlassCard({
@@ -32,22 +27,37 @@ export function GlassCard({
 }: GlassCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      whileHover={hover ? { y: -2, scale: 1.005 } : undefined}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={
+        hover
+          ? {
+              y: -2,
+              boxShadow:
+                glow === "teal"
+                  ? "0 0 20px rgba(79,209,165,0.10), 0 0 40px rgba(79,209,165,0.05), 0 4px 24px rgba(0,0,0,0.4)"
+                  : "0 4px 24px rgba(0,0,0,0.45)",
+            }
+          : undefined
+      }
       className={cn(
-        "glass rounded-2xl relative overflow-hidden",
-        "transition-shadow duration-500",
+        /* unified surface */
+        "relative rounded-xl overflow-hidden",
+        "bg-surface border border-border",
+        "transition-all duration-300",
         paddingMap[padding],
-        glowMap[glow],
         className
       )}
     >
-      {/* Subtle inner top-highlight */}
+      {/* Very subtle top highlight — barely visible */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 50%, transparent)",
+        }}
       />
       {children}
     </motion.div>

@@ -96,24 +96,22 @@ function MapIllustration() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Outer glow */}
-      <div
-        className="absolute inset-0 rounded-3xl"
-        style={{ boxShadow: "0 0 80px rgba(20,184,166,0.2), 0 0 40px rgba(20,184,166,0.1)" }}
-      />
+      {/* Very subtle border glow — barely visible */}
 
       {/* Map card */}
-      <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/10"
-        style={{ background: "linear-gradient(160deg, #0d1b30 0%, #0a1520 100%)" }}>
+      <div
+        className="relative w-full h-full rounded-2xl overflow-hidden"
+        style={{ background: "#0B1220", border: "1px solid rgba(148,163,184,0.10)" }}
+      >
 
-        {/* Radar sweep overlay */}
+        {/* Radar sweep — very subtle */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `conic-gradient(from 0deg at 55% 45%, transparent 340deg, rgba(20,184,166,0.06) 355deg, transparent 360deg)`,
+            background: `conic-gradient(from 0deg at 55% 45%, transparent 340deg, rgba(79,209,165,0.04) 355deg, transparent 360deg)`,
           }}
           animate={{ rotate: 360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         />
 
         <svg
@@ -124,8 +122,8 @@ function MapIllustration() {
         >
           <defs>
             <radialGradient id={`${id}-glow`} cx="55%" cy="45%" r="50%">
-              <stop offset="0%" stopColor="#14B8A6" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#0B1120" stopOpacity="0" />
+              <stop offset="0%" stopColor="#4FD1A5" stopOpacity="0.04" />
+              <stop offset="100%" stopColor="#070B14" stopOpacity="0" />
             </radialGradient>
             <filter id={`${id}-blur`}>
               <feGaussianBlur stdDeviation="1.5" />
@@ -148,16 +146,14 @@ function MapIllustration() {
             [14, 372, 76, 34], [110, 372, 100, 34],[220, 372, 130, 34],
             [370, 372, 80, 34],[460, 372, 86, 34],
           ].map(([x, y, w, h], i) => (
-            <rect key={i} x={x} y={y} width={w} height={h} rx={4}
-              fill={i % 5 === 2 ? "#0a2c1c" : "#0e1e35"}
-              opacity={0.9} />
+            <rect key={i} x={x} y={y} width={w} height={h} rx={3}
+              fill="#0F1726"
+              opacity={0.85} />
           ))}
 
-          {/* Park / water block */}
-          <rect x={110} y={90} width={100} height={82} rx={6}
-            fill="#0a2c1c" opacity={0.7} />
-          <rect x={370} y={192} width={80} height={78} rx={6}
-            fill="#0d1f38" opacity={0.7} />
+          {/* Water block */}
+          <rect x={110} y={90} width={100} height={82} rx={4}
+            fill="#0B1A2E" opacity={0.8} />
 
           {/* ── Road grid ── */}
           {/* Horizontals */}
@@ -174,17 +170,17 @@ function MapIllustration() {
           {/* ── Animated road highlight ── */}
           <motion.line
             x1={0} y1={180} x2={560} y2={180}
-            stroke="#14B8A6" strokeWidth={1.5} opacity={0.3}
-            strokeDasharray="8 14"
-            animate={{ strokeDashoffset: [0, -88] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            stroke="#4FD1A5" strokeWidth={1} opacity={0.15}
+            strokeDasharray="6 12"
+            animate={{ strokeDashoffset: [0, -72] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
           />
           <motion.line
             x1={220} y1={0} x2={220} y2={420}
-            stroke="#14B8A6" strokeWidth={1.5} opacity={0.25}
-            strokeDasharray="8 14"
-            animate={{ strokeDashoffset: [0, -88] }}
-            transition={{ duration: 5.5, repeat: Infinity, ease: "linear" }}
+            stroke="#4FD1A5" strokeWidth={1} opacity={0.12}
+            strokeDasharray="6 12"
+            animate={{ strokeDashoffset: [0, -72] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
           />
 
           {/* ── Connection lines between pins ── */}
@@ -203,20 +199,18 @@ function MapIllustration() {
           ))}
 
           {/* ── Location Pins ── */}
-          {/* Red — critical issue */}
-          <PulsingPin cx={165} cy={135} color="#ef4444" glowColor="#ef4444" delay={0} size={9} />
-          {/* Amber — pothole */}
-          <PulsingPin cx={307} cy={225} color="#F59E0B" glowColor="#F59E0B" delay={0.6} size={11} />
-          {/* Teal — resolved */}
-          <PulsingPin cx={420} cy={140} color="#14B8A6" glowColor="#14B8A6" delay={1.1} size={8} />
-          {/* Teal — resolved */}
-          <PulsingPin cx={165} cy={310} color="#14B8A6" glowColor="#14B8A6" delay={0.3} size={8} />
-          {/* Red — critical */}
-          <PulsingPin cx={495} cy={225} color="#ef4444" glowColor="#ef4444" delay={1.5} size={7} />
-          {/* Amber */}
-          <PulsingPin cx={60} cy={230} color="#F59E0B" glowColor="#F59E0B" delay={0.9} size={7} />
-          {/* Teal */}
-          <PulsingPin cx={400} cy={330} color="#4ADE80" glowColor="#4ADE80" delay={1.8} size={7} />
+          {/* Critical — semantic red */}
+          <PulsingPin cx={165} cy={135} color="#F05252" glowColor="#F05252" delay={0} size={6} />
+          {/* Warning — semantic amber */}
+          <PulsingPin cx={307} cy={225} color="#F2B84B" glowColor="#F2B84B" delay={0.6} size={7} />
+          {/* Resolved — brand teal */}
+          <PulsingPin cx={420} cy={140} color="#4FD1A5" glowColor="#4FD1A5" delay={1.1} size={5} />
+          {/* Resolved */}
+          <PulsingPin cx={165} cy={310} color="#4FD1A5" glowColor="#4FD1A5" delay={0.3} size={5} />
+          {/* Critical */}
+          <PulsingPin cx={495} cy={225} color="#F05252" glowColor="#F05252" delay={1.5} size={4} />
+          {/* Resolved */}
+          <PulsingPin cx={400} cy={330} color="#4FD1A5" glowColor="#4FD1A5" delay={1.8} size={4} />
         </svg>
 
         {/* Legend */}
@@ -238,14 +232,16 @@ function MapIllustration() {
           <Badge label="LIVE" variant="teal" pulse />
         </div>
 
-        {/* Issue count popup */}
+        {/* Status popup — no emoji, clean */}
         <motion.div
-          className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-xl px-3 py-2 text-xs font-semibold text-slate-200 whitespace-nowrap"
-          initial={{ opacity: 0, y: -8 }}
+          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-md px-3 py-1.5 text-xs font-medium text-slate-300 whitespace-nowrap"
+          style={{ background: "rgba(15,23,38,0.9)", border: "1px solid rgba(148,163,184,0.10)", backdropFilter: "blur(12px)" }}
+          initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.8, duration: 0.5 }}
+          transition={{ delay: 2, duration: 0.45 }}
         >
-          🚨 3 new reports in Ward 12
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-danger mr-1.5 align-middle" style={{ animation: "pulse-ring 2s ease-out infinite" }} />
+          3 new reports · Ward 12
         </motion.div>
       </div>
     </motion.div>
@@ -304,13 +300,7 @@ function HeroSection() {
           >
             Civic{" "}
             <span
-              className="relative inline-block"
-              style={{
-                background: "linear-gradient(135deg, #14B8A6 0%, #F59E0B 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              className="relative inline-block text-teal"
             >
               <AnimatePresence mode="wait">
                 <motion.span
@@ -375,8 +365,8 @@ function HeroSection() {
               { value: "4.2d",   label: "Avg Response" },
             ].map(({ value, label }) => (
               <div key={label} className="flex flex-col">
-                <span className="text-lg font-bold text-teal">{value}</span>
-                <span className="text-caption text-slate-500">{label}</span>
+                <span className="text-base font-semibold text-slate-100">{value}</span>
+                <span className="text-caption text-slate-600">{label}</span>
               </div>
             ))}
           </motion.div>
@@ -403,7 +393,7 @@ function HeroSection() {
       >
         <span className="text-caption text-slate-600">Scroll to explore</span>
         <motion.div
-          className="h-8 w-px bg-gradient-to-b from-teal/60 to-transparent"
+          className="h-8 w-px bg-teal/60"
           animate={{ scaleY: [0.4, 1, 0.4] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -421,13 +411,12 @@ const HOW_STEPS = [
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-          stroke="#14B8A6" strokeWidth="1.8" fill="rgba(20,184,166,0.15)"/>
-        <circle cx="12" cy="9" r="2.5" fill="#14B8A6"/>
-        <path d="M9 22h6M12 18v4" stroke="#14B8A6" strokeWidth="1.5" strokeLinecap="round"/>
+          stroke="#4FD1A5" strokeWidth="1.8" fill="rgba(79,209,165,0.15)"/>
+        <circle cx="12" cy="9" r="2.5" fill="#4FD1A5"/>
+        <path d="M9 22h6M12 18v4" stroke="#4FD1A5" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
     title: "Report",
-    color: "teal" as const,
     description:
       "Snap a photo of any civic issue — pothole, waterlogging, or crumbling infrastructure. Pin it on the live map with one tap and submit in under 30 seconds.",
     badge: "Step 1",
@@ -436,13 +425,12 @@ const HOW_STEPS = [
     step: "02",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="12" r="9" stroke="#F59E0B" strokeWidth="1.8" fill="rgba(245,158,11,0.1)"/>
-        <path d="M12 7v5l3 3" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M3 12H1M23 12h-2M12 1V3M12 21v2" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="9" stroke="#4FD1A5" strokeWidth="1.8" fill="rgba(79,209,165,0.1)"/>
+        <path d="M12 7v5l3 3" stroke="#4FD1A5" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M3 12H1M23 12h-2M12 1V3M12 21v2" stroke="#4FD1A5" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
     title: "Track",
-    color: "amber" as const,
     description:
       "Your report enters the official workflow. Watch it get assigned, acknowledged, and actioned — with live status updates pushed directly to you.",
     badge: "Step 2",
@@ -451,12 +439,11 @@ const HOW_STEPS = [
     step: "03",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="12" r="9" stroke="#4ADE80" strokeWidth="1.8" fill="rgba(74,222,128,0.1)"/>
-        <path d="M8 12l3 3 5-5" stroke="#4ADE80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="12" cy="12" r="9" stroke="#4FD1A5" strokeWidth="1.8" fill="rgba(79,209,165,0.1)"/>
+        <path d="M8 12l3 3 5-5" stroke="#4FD1A5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
     title: "Resolve",
-    color: "green" as const,
     description:
       "Government resolves the issue and uploads proof. Their response time and quality score are publicly logged — building a permanent accountability record.",
     badge: "Step 3",
@@ -490,7 +477,7 @@ function HowItWorksSection() {
           <p className="text-caption text-teal mb-3">How It Works</p>
           <h2 className="text-h1 text-white mb-4">
             Three Steps to{" "}
-            <span className="gradient-text">Real Change</span>
+            <span className="text-teal">Real Change</span>
           </h2>
           <p className="text-body text-slate-400 max-w-xl mx-auto">
             CivicPulse turns citizen frustration into structured accountability —
@@ -521,7 +508,7 @@ function HowItWorksSection() {
               className="origin-left"
             >
               <svg width="60" height="20" viewBox="0 0 60 20" fill="none" aria-hidden>
-                <path d="M0 10 H50 M44 4 L50 10 L44 16" stroke="rgba(245,158,11,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M0 10 H50 M44 4 L50 10 L44 16" stroke="rgba(79,209,165,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </motion.div>
           </div>
@@ -537,7 +524,7 @@ function HowItWorksSection() {
                 className="h-full group"
                 padding="lg"
                 hover
-                glow={step.color === "teal" ? "teal" : step.color === "amber" ? "amber" : "none"}
+                glow="none"
               >
                 {/* Step number */}
                 <div className="flex items-start justify-between mb-5">
@@ -554,7 +541,7 @@ function HowItWorksSection() {
 
                 <Badge
                   label={step.badge}
-                  variant={step.color === "green" ? "green" : step.color}
+                  variant="teal"
                   className="mb-4"
                 />
 
@@ -569,12 +556,7 @@ function HowItWorksSection() {
                 <div
                   className="absolute bottom-0 inset-x-0 h-px rounded-b-2xl"
                   style={{
-                    background:
-                      i === 0
-                        ? "linear-gradient(90deg, transparent, rgba(20,184,166,0.5), transparent)"
-                        : i === 1
-                        ? "linear-gradient(90deg, transparent, rgba(245,158,11,0.5), transparent)"
-                        : "linear-gradient(90deg, transparent, rgba(74,222,128,0.5), transparent)",
+                    background: "linear-gradient(90deg, transparent, rgba(79,209,165,0.5), transparent)",
                   }}
                 />
               </GlassCard>
@@ -596,8 +578,6 @@ const STATS = [
     decimals: 0,
     label: "Reports Resolved",
     caption: "This calendar year",
-    icon: "✅",
-    variant: "teal" as const,
   },
   {
     value: 4.2,
@@ -605,8 +585,6 @@ const STATS = [
     decimals: 1,
     label: "Avg Response Time",
     caption: "Down 38% vs last year",
-    icon: "⚡",
-    variant: "amber" as const,
   },
   {
     value: 38,
@@ -614,8 +592,6 @@ const STATS = [
     decimals: 0,
     label: "Active Wards",
     caption: "Across 3 municipalities",
-    icon: "🗺️",
-    variant: "teal" as const,
   },
   {
     value: 9800,
@@ -623,62 +599,32 @@ const STATS = [
     decimals: 0,
     label: "Citizens Engaged",
     caption: "And growing daily",
-    icon: "👥",
-    variant: "amber" as const,
   },
 ];
 
-function StatCard({
-  stat, index, parentInView,
-}: {
-  stat: typeof STATS[number]; index: number; parentInView: boolean;
-}) {
+function StatItem({ stat, index }: { stat: typeof STATS[number]; index: number }) {
   const { display, ref } = useCountUp(stat.value, 2.2, stat.decimals);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      animate={parentInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay: 0.1 + index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <GlassCard padding="lg" hover glow={stat.variant} className="h-full text-center">
-        <div className="text-3xl mb-3" aria-hidden>{stat.icon}</div>
-        <div className="flex items-end justify-center gap-1 mb-2">
-          <span
-            ref={ref}
-            className="font-black leading-none"
-            style={{
-              fontSize: "clamp(2rem, 4vw, 2.8rem)",
-              background: stat.variant === "teal"
-                ? "linear-gradient(135deg, #14B8A6, #2DD4BF)"
-                : "linear-gradient(135deg, #F59E0B, #FCD34D)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            {display}
+    <div className="flex flex-col items-center text-center p-4">
+      <div className="flex items-end justify-center gap-1 mb-2">
+        <span
+          ref={ref}
+          className="font-black leading-none text-white"
+          style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}
+        >
+          {display}
+        </span>
+        {stat.suffix && (
+          <span className="text-xl font-bold mb-1 text-white">
+            {stat.suffix}
           </span>
-          {stat.suffix && (
-            <span
-              className="text-xl font-bold mb-1"
-              style={{
-                background: stat.variant === "teal"
-                  ? "linear-gradient(135deg, #14B8A6, #2DD4BF)"
-                  : "linear-gradient(135deg, #F59E0B, #FCD34D)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              {stat.suffix}
-            </span>
-          )}
-        </div>
-        <p className="text-body-sm font-semibold text-white mb-1">{stat.label}</p>
-        <p className="text-caption text-slate-500">{stat.caption}</p>
-      </GlassCard>
-    </motion.div>
+        )}
+      </div>
+      <div className="w-6 h-1 bg-teal rounded-full mb-3" />
+      <p className="text-body-sm font-semibold text-white mb-1">{stat.label}</p>
+      <p className="text-caption text-slate-500">{stat.caption}</p>
+    </div>
   );
 }
 
@@ -693,7 +639,7 @@ function StatsSection() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 20% 50%, rgba(20,184,166,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 60% at 20% 50%, rgba(79,209,165,0.06) 0%, transparent 70%)",
         }}
       />
 
@@ -706,7 +652,7 @@ function StatsSection() {
         >
           <p className="text-caption text-teal mb-3">Real Numbers. Real Impact.</p>
           <h2 className="text-h1 text-white mb-4">
-            Live <span className="gradient-text">Impact Stats</span>
+            Live <span className="text-teal">Impact Stats</span>
           </h2>
           <p className="text-body text-slate-400 max-w-xl mx-auto">
             Every resolved pothole, every cleared drain — tracked, verified, and
@@ -714,11 +660,19 @@ function StatsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {STATS.map((stat, i) => (
-            <StatCard key={stat.label} stat={stat} index={i} parentInView={inView} />
-          ))}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <GlassCard padding="lg" glow="none" className="w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+              {STATS.map((stat, i) => (
+                <StatItem key={stat.label} stat={stat} index={i} />
+              ))}
+            </div>
+          </GlassCard>
+        </motion.div>
       </div>
     </section>
   );
@@ -761,7 +715,7 @@ function LeaderboardSection() {
             <p className="text-caption text-amber mb-3">Accountability in Action</p>
             <h2 className="text-h1 text-white mb-6">
               Ward{" "}
-              <span className="gradient-text">Leaderboard</span>
+              <span className="text-teal">Leaderboard</span>
             </h2>
             <p className="text-body text-slate-400 mb-8 leading-relaxed">
               Every ward is scored on resolution rate, response speed, and
@@ -771,12 +725,36 @@ function LeaderboardSection() {
 
             <div className="flex flex-col gap-4">
               {[
-                { icon: "📊", label: "Resolution Rate", desc: "Ratio of resolved to total issues" },
-                { icon: "⏱️", label: "Response Speed",  desc: "Average time from report to action" },
-                { icon: "⭐", label: "Citizen Rating",  desc: "Post-resolution satisfaction score" },
+                {
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                  ),
+                  label: "Resolution Rate", desc: "Ratio of resolved to total issues"
+                },
+                {
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  ),
+                  label: "Response Speed",  desc: "Average time from report to action"
+                },
+                {
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  ),
+                  label: "Citizen Rating",  desc: "Post-resolution satisfaction score"
+                },
               ].map((item) => (
                 <div key={item.label} className="flex gap-3 items-start">
-                  <span className="text-xl mt-0.5" aria-hidden>{item.icon}</span>
+                  <div className="mt-1 flex-shrink-0" aria-hidden>{item.icon}</div>
                   <div>
                     <p className="text-body-sm font-semibold text-slate-200">{item.label}</p>
                     <p className="text-caption text-slate-500 normal-case tracking-normal">{item.desc}</p>
@@ -827,7 +805,7 @@ function LeaderboardSection() {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span
                           className={`text-xs font-semibold ${
-                            ward.trend.startsWith("+") ? "text-green-400" : "text-red-400"
+                            ward.trend.startsWith("+") ? "text-teal" : "text-danger"
                           }`}
                         >
                           {ward.trend}
@@ -843,12 +821,7 @@ function LeaderboardSection() {
                       <motion.div
                         className="h-full rounded-full"
                         style={{
-                          background:
-                            i === 0
-                              ? "linear-gradient(90deg, #14B8A6, #F59E0B)"
-                              : i === 1
-                              ? "linear-gradient(90deg, #14B8A6, #2DD4BF)"
-                              : "linear-gradient(90deg, #475569, #14B8A6)",
+                          background: "#4FD1A5",
                         }}
                         initial={{ width: 0 }}
                         animate={inView ? { width: `${ward.score}%` } : {}}
@@ -893,47 +866,35 @@ function LeaderboardSection() {
 const TOP_WARDS = [
   {
     ward:    "Ward 12 — Andheri East",
-    badge:   "🏆",
     title:   "Champion Ward",
     metric:  "94 / 100",
     caption: "Highest accountability score this quarter",
     detail:  "293 issues resolved · 4-day avg response",
     color:   "amber" as const,
-    gradient:"linear-gradient(135deg, rgba(245,158,11,0.15), rgba(253,211,77,0.05))",
-    border:  "rgba(245,158,11,0.3)",
   },
   {
     ward:    "Ward 7 — Bandra West",
-    badge:   "⚡",
     title:   "Fastest Responder",
     metric:  "1.8d avg",
     caption: "Lowest average response time this month",
     detail:  "215 issues resolved · 1.8-day avg response",
     color:   "teal" as const,
-    gradient:"linear-gradient(135deg, rgba(20,184,166,0.15), rgba(45,212,191,0.05))",
-    border:  "rgba(20,184,166,0.3)",
   },
   {
     ward:    "Ward 23 — Powai",
-    badge:   "🎯",
     title:   "Zero Backlog",
     metric:  "100%",
     caption: "All reported issues cleared within SLA",
     detail:  "154 issues resolved · zero pending",
-    color:   "green" as const,
-    gradient:"linear-gradient(135deg, rgba(74,222,128,0.12), rgba(34,197,94,0.04))",
-    border:  "rgba(74,222,128,0.3)",
+    color:   "teal" as const,
   },
   {
     ward:    "Ward 31 — Versova",
-    badge:   "🌟",
     title:   "Rising Star",
     metric:  "+21%",
     caption: "Biggest improvement in score this quarter",
     detail:  "128 issues resolved · fastest growth",
-    color:   "amber" as const,
-    gradient:"linear-gradient(135deg, rgba(245,158,11,0.1), rgba(20,184,166,0.05))",
-    border:  "rgba(245,158,11,0.2)",
+    color:   "slate" as const,
   },
 ];
 
@@ -951,7 +912,7 @@ function ShineCard({ card, index, parentInView }: {
     >
       <motion.div
         className="relative h-full rounded-2xl overflow-hidden cursor-pointer"
-        style={{ background: card.gradient, border: `1px solid ${card.border}` }}
+        style={{ background: "#0F1726", border: `1px solid rgba(148,163,184,0.12)` }}
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}
         whileHover={{ y: -4, scale: 1.015 }}
@@ -972,37 +933,17 @@ function ShineCard({ card, index, parentInView }: {
           transition={{ duration: 0.55, ease: "easeInOut" }}
         />
 
-        {/* Top border accent */}
-        <div
-          className="absolute top-0 inset-x-0 h-px"
-          style={{
-            background: `linear-gradient(90deg, transparent, ${card.border}, transparent)`,
-          }}
-        />
+
 
         {/* Content */}
         <div className="relative z-10 p-6 flex flex-col gap-4 h-full">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <span className="text-4xl" aria-hidden>{card.badge}</span>
-            </div>
             <Badge label={card.title} variant={card.color} />
           </div>
 
           <div>
             <div
-              className="text-3xl font-black mb-1"
-              style={{
-                background:
-                  card.color === "amber"
-                    ? "linear-gradient(135deg, #F59E0B, #FCD34D)"
-                    : card.color === "teal"
-                    ? "linear-gradient(135deg, #14B8A6, #2DD4BF)"
-                    : "linear-gradient(135deg, #4ADE80, #22C55E)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              className={`text-3xl font-black mb-1 ${card.color === "amber" ? "text-warning" : "text-teal"}`}
             >
               {card.metric}
             </div>
@@ -1048,7 +989,7 @@ function RecognitionWallSection() {
           <p className="text-caption text-teal mb-3">Recognition Wall</p>
           <h2 className="text-h1 text-white mb-4">
             Celebrating{" "}
-            <span className="gradient-text">Outstanding Wards</span>
+            <span className="text-teal">Outstanding Wards</span>
           </h2>
           <p className="text-body text-slate-400 max-w-xl mx-auto">
             These wards went above and beyond. Their records are public — and
@@ -1086,18 +1027,17 @@ function CTASection() {
           <div
             className="absolute inset-0"
             style={{
-              background:
-                "linear-gradient(135deg, rgba(20,184,166,0.15) 0%, rgba(11,17,32,0.9) 50%, rgba(245,158,11,0.12) 100%)",
+              background: "#0F1726",
             }}
           />
-          <div className="glass absolute inset-0 rounded-3xl" />
+          <div className="glass absolute inset-0 rounded-3xl border border-slate-400/10" />
 
           {/* Top glow */}
           <div
             aria-hidden
             className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-96 rounded-full pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse at center, rgba(20,184,166,0.25), transparent 70%)",
+              background: "radial-gradient(ellipse at center, rgba(79,209,165,0.15), transparent 70%)",
               filter: "blur(20px)",
             }}
           />
@@ -1110,7 +1050,7 @@ function CTASection() {
 
             <h2 className="text-h1 text-white max-w-2xl">
               Your City Deserves{" "}
-              <span className="gradient-text">Better.</span>{" "}
+              <span className="text-teal">Better.</span>{" "}
               Start Today.
             </h2>
 
@@ -1142,8 +1082,7 @@ function CTASection() {
             </p>
           </div>
 
-          {/* Bottom border */}
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-amber/30 to-transparent" />
+
         </motion.div>
       </div>
     </section>

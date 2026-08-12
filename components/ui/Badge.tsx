@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate";
 
@@ -15,34 +15,34 @@ interface BadgeProps {
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: string; border: string }> = {
   teal: {
-    bg:     "bg-teal/10",
-    text:   "text-teal-light",
+    bg:     "bg-teal/[0.08]",
+    text:   "text-teal",
     dot:    "bg-teal",
-    border: "border-teal/25",
+    border: "border-teal/20",
   },
   amber: {
-    bg:     "bg-amber/10",
-    text:   "text-amber-light",
-    dot:    "bg-amber",
-    border: "border-amber/25",
+    bg:     "bg-warning/[0.08]",
+    text:   "text-warning",
+    dot:    "bg-warning",
+    border: "border-warning/20",
   },
   red: {
-    bg:     "bg-red-500/10",
-    text:   "text-red-400",
-    dot:    "bg-red-500",
-    border: "border-red-500/25",
+    bg:     "bg-danger/[0.08]",
+    text:   "text-danger",
+    dot:    "bg-danger",
+    border: "border-danger/20",
   },
   green: {
-    bg:     "bg-green-500/10",
-    text:   "text-green-400",
-    dot:    "bg-green-500",
-    border: "border-green-500/25",
+    bg:     "bg-teal/[0.08]",
+    text:   "text-teal",
+    dot:    "bg-teal",
+    border: "border-teal/20",
   },
   slate: {
-    bg:     "bg-slate-700/40",
-    text:   "text-slate-300",
-    dot:    "bg-slate-400",
-    border: "border-slate-600/40",
+    bg:     "bg-white/[0.04]",
+    text:   "text-slate-400",
+    dot:    "bg-slate-500",
+    border: "border-white/[0.08]",
   },
 };
 
@@ -52,7 +52,7 @@ export function Badge({ label, variant = "teal", dot = true, className, pulse = 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide border",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium tracking-wide border",
         styles.bg,
         styles.text,
         styles.border,
@@ -60,13 +60,14 @@ export function Badge({ label, variant = "teal", dot = true, className, pulse = 
       )}
     >
       {dot && (
-        <span className="relative flex h-1.5 w-1.5">
+        <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
           {pulse && (
             <span
               className={cn(
-                "absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping",
+                "absolute inline-flex h-full w-full rounded-full opacity-60",
                 styles.dot
               )}
+              style={{ animation: "pulse-ring 2s ease-out infinite" }}
             />
           )}
           <span className={cn("relative inline-flex rounded-full h-1.5 w-1.5", styles.dot)} />
