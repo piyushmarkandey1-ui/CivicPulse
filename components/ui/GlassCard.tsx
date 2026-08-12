@@ -3,53 +3,54 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
+
 interface GlassCardProps {
   children: React.ReactNode;
   className?: string;
   hover?: boolean;
-  glow?: "teal" | "amber" | "none";
-  padding?: "sm" | "md" | "lg";
+  padding?: "none" | "sm" | "md" | "lg";
+  animate?: boolean;
 }
 
 const paddingMap = {
-  sm: "p-4",
-  md: "p-6",
-  lg: "p-8",
-};
-
-const glowMap = {
-  teal:  "hover:shadow-[0_0_30px_rgba(20,184,166,0.25),0_0_60px_rgba(20,184,166,0.1)]",
-  amber: "hover:shadow-[0_0_30px_rgba(245,158,11,0.25),0_0_60px_rgba(245,158,11,0.1)]",
-  none:  "",
+  none: "",
+  sm:   "p-4",
+  md:   "p-5",
+  lg:   "p-6 md:p-8",
 };
 
 export function GlassCard({
   children,
   className,
-  hover = true,
-  glow = "none",
+  hover   = true,
   padding = "md",
+  animate = true,
 }: GlassCardProps) {
+  const Wrapper = animate ? motion.div : "div";
+
+  const animProps = animate
+    ? {
+        initial:    { opacity: 0, y: 10 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport:   { once: true, margin: "-40px" },
+        transition: { duration: 0.4, ease: EASE_OUT_QUAD },
+        whileHover: hover ? { y: -3, transition: { duration: 0.2, ease: EASE_OUT_QUAD } } : undefined,
+      }
+    : {
+        whileHover: hover ? { y: -3, transition: { duration: 0.2, ease: EASE_OUT_QUAD } } : undefined,
+      };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      whileHover={hover ? { y: -2, scale: 1.005 } : undefined}
+    <Wrapper
+      {...animProps}
       className={cn(
-        "glass rounded-2xl relative overflow-hidden",
-        "transition-shadow duration-500",
+        "surface rounded-lg relative overflow-hidden transition-shadow duration-200 hover:shadow-md",
         paddingMap[padding],
-        glowMap[glow],
         className
       )}
     >
-      {/* Subtle inner top-highlight */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-      />
       {children}
-    </motion.div>
+    </Wrapper>
   );
 }

@@ -3,29 +3,19 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
+const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
+
 const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 14,
-    filter: "blur(4px)",
-  },
+  initial: { opacity: 0, y: 6 },
   animate: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as any,
-    },
+    transition: { duration: 0.35, ease: EASE_OUT_QUAD },
   },
   exit: {
     opacity: 0,
-    y: 12,
-    filter: "blur(4px)",
-    transition: {
-      duration: 0.28,
-      ease: "easeIn" as any,
-    },
+    y: -4,
+    transition: { duration: 0.2, ease: EASE_OUT_QUAD },
   },
 };
 

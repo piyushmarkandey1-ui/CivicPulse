@@ -1,9 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate";
+type BadgeVariant = "teal" | "amber" | "red" | "green" | "slate" | "blue";
 
 interface BadgeProps {
   label: string;
@@ -14,45 +13,51 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; dot: string; border: string }> = {
+  blue: {
+    bg:     "bg-blue-muted",
+    text:   "text-blue-dark",
+    dot:    "bg-blue",
+    border: "border-blue/20",
+  },
   teal: {
-    bg:     "bg-teal/10",
-    text:   "text-teal-light",
-    dot:    "bg-teal",
-    border: "border-teal/25",
+    bg:     "bg-blue-muted",
+    text:   "text-blue-dark",
+    dot:    "bg-blue",
+    border: "border-blue/20",
   },
   amber: {
-    bg:     "bg-amber/10",
-    text:   "text-amber-light",
-    dot:    "bg-amber",
-    border: "border-amber/25",
+    bg:     "bg-gray-muted",
+    text:   "text-gray-mid",
+    dot:    "bg-gray-mid",
+    border: "border-gray-border",
   },
   red: {
     bg:     "bg-red-500/10",
-    text:   "text-red-400",
+    text:   "text-red-500",
     dot:    "bg-red-500",
-    border: "border-red-500/25",
+    border: "border-red-500/20",
   },
   green: {
-    bg:     "bg-green-500/10",
-    text:   "text-green-400",
-    dot:    "bg-green-500",
-    border: "border-green-500/25",
+    bg:     "bg-green-muted",
+    text:   "text-green-dark",
+    dot:    "bg-green",
+    border: "border-green/20",
   },
   slate: {
-    bg:     "bg-slate-700/40",
-    text:   "text-slate-300",
-    dot:    "bg-slate-400",
-    border: "border-slate-600/40",
+    bg:     "bg-gray-muted",
+    text:   "text-gray-mid",
+    dot:    "bg-gray-mid",
+    border: "border-gray-border",
   },
 };
 
-export function Badge({ label, variant = "teal", dot = true, className, pulse = false }: BadgeProps) {
+export function Badge({ label, variant = "blue", dot = true, className, pulse = false }: BadgeProps) {
   const styles = variantStyles[variant];
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide border",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium tracking-wide border",
         styles.bg,
         styles.text,
         styles.border,
@@ -60,17 +65,7 @@ export function Badge({ label, variant = "teal", dot = true, className, pulse = 
       )}
     >
       {dot && (
-        <span className="relative flex h-1.5 w-1.5">
-          {pulse && (
-            <span
-              className={cn(
-                "absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping",
-                styles.dot
-              )}
-            />
-          )}
-          <span className={cn("relative inline-flex rounded-full h-1.5 w-1.5", styles.dot)} />
-        </span>
+        <span className={cn("inline-flex rounded-full h-1.5 w-1.5 flex-shrink-0", styles.dot)} />
       )}
       {label}
     </span>

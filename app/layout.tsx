@@ -38,7 +38,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${sora.variable} h-full`} suppressHydrationWarning>
-      <body className="h-full flex flex-col min-h-screen bg-navy text-slate-200 font-sora antialiased">
+      <body className="h-full flex flex-col min-h-screen bg-gray-soft text-gray-dark font-sora antialiased">
         <SmoothScroller>
           <AuthProvider>
             <BlobBackground />
