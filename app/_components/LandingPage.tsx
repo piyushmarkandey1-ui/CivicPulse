@@ -487,31 +487,7 @@ function HowItWorksSection() {
 
         {/* Cards */}
         <div className="relative grid md:grid-cols-3 gap-6">
-          {/* Connector arrows (desktop only) */}
-          <div className="hidden md:block absolute top-1/2 left-1/3 -translate-y-1/2 z-10 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={inView ? { opacity: 1, scaleX: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="origin-left"
-            >
-              <svg width="60" height="20" viewBox="0 0 60 20" fill="none" aria-hidden>
-                <path d="M0 10 H50 M44 4 L50 10 L44 16" stroke="rgba(217, 139, 82, 0.4)" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </motion.div>
-          </div>
-          <div className="hidden md:block absolute top-1/2 right-1/3 -translate-y-1/2 z-10 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={inView ? { opacity: 1, scaleX: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="origin-left"
-            >
-              <svg width="60" height="20" viewBox="0 0 60 20" fill="none" aria-hidden>
-                <path d="M0 10 H50 M44 4 L50 10 L44 16" stroke="rgba(217, 139, 82, 0.4)" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </motion.div>
-          </div>
+
 
           {HOW_STEPS.map((step, i) => (
             <motion.div
@@ -539,11 +515,7 @@ function HowItWorksSection() {
                   </span>
                 </div>
 
-                <Badge
-                  label={step.badge}
-                  variant="copper"
-                  className="mb-4"
-                />
+
 
                 <h3 className="text-h3 text-white mb-3 group-hover:text-copper-light transition-colors duration-300">
                   {step.title}
