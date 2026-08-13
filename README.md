@@ -1,79 +1,68 @@
-# CivicPulse
+# CivicPulse — Geospatial Infrastructure Accountability Platform
 
-CivicPulse is a premium, real-time geospatial civic intelligence platform. It bridges the gap between citizens and government by providing a transparent, accountable, and map-driven issue reporting system.
+**CivicPulse** is a modern, real-time geospatial civic intelligence platform bridging citizens and municipal authorities. It provides transparent issue reporting, statutory SLA tracking, and visual resolution verification across city wards.
 
-## Features
+---
 
-- **Live Geospatial Dashboard**: Interactive real-time map of civic infrastructure issues across wards. Filter by severity, category, and status.
-- **Cinematic Landing Page**: Features a scroll-driven, GSAP-animated bridge reconstruction story illustrating the reporting and resolution workflow.
-- **Government Dashboard**: High-level KPIs, escalation tracking, and ward leaderboards for public accountability.
-- **Citizen Engagement**: Citizens can easily snap a photo, pin an issue on the map, and track its resolution in real time.
-- **Premium UI/UX**: Built with a restrained, professional design system focusing on dark navy backgrounds, single teal accents, and glassmorphism elements.
+## 🌟 Key Portals & Features
 
-## Tech Stack
+### 👤 Citizen Portal
+- **Geospatial Reporting**: Pin issues (potholes, waterlogging, streetlights, garbage) directly on an interactive GIS map.
+- **Photo Upload & Geotagging**: Attach photos and precise location data to issue reports.
+- **Track Status**: Real-time progress updates from submission to verified resolution.
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Styling**: Tailwind CSS v4, Framer Motion (for UI micro-interactions)
-- **Animation**: GSAP & ScrollTrigger (for cinematic scroll stories)
-- **Mapping**: Leaflet / React-Leaflet
+### 🛡️ Government Command & SLA Triage Center (`/gov-dashboard`)
+- **Municipal Command Center**: Dedicated officer portal with sidebar navigation and zero clutter.
+- **Live KPIs & Telemetry**: Track Resolution Rate (%), Avg Turnaround (days), Active Backlog, and Citizen Trust Score in real time.
+- **SLA Escalation Alerts**: Automated warnings for complaints exceeding statutory turnaround limits.
+- **Ward Performance Roster**: Comparative metrics across all 40 municipal wards.
+- **Verified Field Resolutions**: Interactive before/after repair photo sliders demonstrating completed repairs.
+- **Ward Hall of Excellence**: Leaderboard celebrating top-performing municipal wards.
+
+---
+
+## 🔑 Access & Authentication
+
+- **Citizen Sign In / Up**: Open registration via `/login` and `/signup`.
+- **Official Officer Onboarding**: Restricted access via `/gov-signup` and `/gov-login`.
+  - **Department Invite Code**: Requires official invite code (`civic2025gov` for demo, configurable via `NEXT_PUBLIC_GOV_INVITE_CODE`).
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router, TypeScript)
+- **Styling**: Tailwind CSS, Framer Motion
+- **Icons**: Lucide React
+- **Mapping**: Leaflet / React-Leaflet GIS Radar
+- **Backend / Database**: Supabase & Firebase Firestore (Realtime sync)
 - **Charts**: Recharts
-- **Backend / DB**: Firebase (Authentication, Firestore, Storage)
 
-## Getting Started
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
-- Firebase Account (for authentication and database)
-- A Mapbox access token (optional, if using Mapbox tile layers instead of CartoDB)
+- npm or pnpm
 
-### 1. Environment Setup
-
-Create a `.env.local` file in the root of the project with your Firebase configuration:
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-```
-
-### 2. Installation
-
-Install the project dependencies:
+### Installation
 
 ```bash
+git clone https://github.com/piyushmarkandey1-ui/CivicPulse.git
+cd CivicPulse
 npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-### 3. Run Development Server
-
-Start the local Next.js development server:
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deployment (Vercel)
+---
 
-1. Push your code to a GitHub repository.
-2. Import the project in Vercel.
-3. Ensure the Framework Preset is set to **Next.js**.
-4. In the **Environment Variables** section, add all your `NEXT_PUBLIC_FIREBASE_*` variables exactly as they are in your local `.env.local` file.
-5. Deploy!
+## 📜 Key Terminology (Cheat Sheet for Presentation)
 
-## UI/UX Guidelines
+- **SLA (Service Level Agreement)**: Statutory deadline promised by municipal authorities to resolve reported issues.
+- **Triage**: Categorizing and prioritizing complaints based on severity and SLA overdue status.
+- **GIS Radar**: Interactive geospatial map overlay showing geotagged issue pins.
+- **Verified Field Resolution**: Photographic proof (Before/After) uploaded by field engineering crews upon completing repairs.
 
-- **Colors**: The background is deep navy (`#070B14`) and surfaces are `#0F1726`. The primary accent is teal (`#4FD1A5`). Semantic colors (amber, red) are strictly reserved for warnings and critical alerts.
-- **Components**: The design emphasizes subtle glassmorphism (`GlassCard`) and clean, solid primary buttons (`GradientButton` without the gradient).
-
-## Known Issues & Current Status
-
-*A build/lint check is currently being run to verify the current health of the codebase. Any discovered issues will be documented here or addressed directly.*
