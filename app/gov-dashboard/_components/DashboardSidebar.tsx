@@ -30,7 +30,7 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
   };
 
   return (
-    <aside className="w-60 flex-shrink-0 hidden md:flex flex-col bg-white border-r border-[#DED8CD]">
+    <aside className="w-60 flex-shrink-0 hidden md:flex flex-col bg-white border-r border-[#DED8CD] sticky top-0 h-screen">
       {/* Brand */}
       <div className="h-16 flex items-center px-5 border-b border-[#DED8CD]">
         <div className="flex items-center gap-2.5">

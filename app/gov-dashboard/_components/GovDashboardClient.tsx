@@ -58,12 +58,12 @@ export default function GovDashboardClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex overflow-hidden">
+    <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex">
       {/* Sidebar Navigation */}
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto px-6 py-6 md:px-10 scrollbar-none bg-[#F7F4ED]">
+      <main className="flex-1 min-h-screen px-6 py-6 md:px-10 bg-[#F7F4ED]">
         {/* Header */}
         <header className="mb-8 pb-6 border-b border-[#DED8CD] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
