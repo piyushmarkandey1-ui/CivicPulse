@@ -76,14 +76,14 @@ export const BEFORE_AFTER_EXAMPLES = [
     id: "BA-1",
     title: "D.N. Nagar Pothole Repair",
     ward: "Ward 12",
-    beforeImg: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800", // Rough road
-    afterImg: "https://images.unsplash.com/photo-1518991669955-9c7e78ec80ca?auto=format&fit=crop&q=80&w=800", // Smooth road
+    beforeImg: "https://loremflickr.com/800/500/pothole,road,broken,damaged",
+    afterImg:  "https://loremflickr.com/800/500/asphalt,road,smooth,repaired/all",
   },
   {
     id: "BA-2",
     title: "Goregaon Market Drain Clearance",
     ward: "Ward 19",
-    beforeImg: "https://images.unsplash.com/photo-1584483766114-2caaaa54bebc?auto=format&fit=crop&q=80&w=800", // flooded
-    afterImg: "https://images.unsplash.com/photo-1605333148118-2834b6b15802?auto=format&fit=crop&q=80&w=800", // clean street
-  }
+    beforeImg: "https://loremflickr.com/800/500/flood,waterlogged,street,rain",
+    afterImg:  "https://loremflickr.com/800/500/clean,street,road,urban/all",
+  },
 ];

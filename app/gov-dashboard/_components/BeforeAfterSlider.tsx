@@ -10,6 +10,9 @@ interface BeforeAfterExample {
   ward: string;
   beforeImg: string;
   afterImg: string;
+  // Optional: if combinedImg is set, the same image is used for both sides
+  // beforeSide: "left" | "right" controls which half maps to before/after
+  combinedImg?: string;
 }
 
 export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }) {
@@ -49,6 +52,35 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }
     };
   }, [isResizing, handlePointerMove, handlePointerUp]);
 
+  // If combinedImg is provided, use the same image but show left half for "before"
+  // and right half for "after" using background-position tricks
+  const isCombined = !!data.combinedImg;
+  const src = data.combinedImg ?? "";
+
+  const beforeStyle = isCombined
+    ? {
+        backgroundImage: `url(${src})`,
+        backgroundSize: "200% 100%",
+        backgroundPosition: "left center",
+      }
+    : {
+        backgroundImage: `url(${data.beforeImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+
+  const afterStyle = isCombined
+    ? {
+        backgroundImage: `url(${src})`,
+        backgroundSize: "200% 100%",
+        backgroundPosition: "right center",
+      }
+    : {
+        backgroundImage: `url(${data.afterImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+
   return (
     <div className="rounded-2xl overflow-hidden bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.06)]">
       <div className="p-4 border-b border-[#DED8CD] flex items-center justify-between bg-[#F7F4ED]">
@@ -69,23 +101,23 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }
       >
         {/* After Image (Background) */}
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${data.afterImg})` }}
+          className="absolute inset-0 w-full h-full"
+          style={afterStyle}
         >
-          <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-[#242222]/80 text-white text-[10px] font-bold">
+          <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-[#242222]/80 text-white text-[10px] font-bold tracking-wide">
             AFTER REPAIR
           </div>
         </div>
 
         {/* Before Image (Foreground, clipped) */}
         <div
-          className="absolute inset-0 h-full bg-cover bg-center border-r-2 border-[#8B2635] transition-none"
+          className="absolute inset-0 h-full border-r-2 border-[#8B2635] transition-none"
           style={{
-            backgroundImage: `url(${data.beforeImg})`,
+            ...beforeStyle,
             clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
           }}
         >
-          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded bg-[#242222]/80 text-white text-[10px] font-bold">
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded bg-[#242222]/80 text-white text-[10px] font-bold tracking-wide">
             BEFORE (INCIDENT)
           </div>
         </div>
@@ -95,8 +127,8 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfterExample }
           className="absolute top-0 bottom-0 w-0.5 bg-[#8B2635] cursor-col-resize z-10"
           style={{ left: `${sliderPosition}%`, transform: "translateX(-50%)" }}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-[#8B2635] text-white border-2 border-white flex items-center justify-center shadow-md">
-            <MoveHorizontal className="h-3.5 w-3.5" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#8B2635] text-white border-2 border-white flex items-center justify-center shadow-md">
+            <MoveHorizontal className="h-4 w-4" />
           </div>
         </div>
       </div>
