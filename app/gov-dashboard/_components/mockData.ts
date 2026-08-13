@@ -83,7 +83,7 @@ export const BEFORE_AFTER_EXAMPLES = [
     id: "BA-2",
     title: "Goregaon Market Drain Clearance",
     ward: "Ward 19",
-    beforeImg: "https://loremflickr.com/800/500/flood,waterlogged,street,rain",
-    afterImg:  "https://loremflickr.com/800/500/clean,street,road,urban/all",
+    beforeImg: "https://loremflickr.com/800/500/drain,clogged,garbage,dirty,india,sewage",
+    afterImg:  "https://loremflickr.com/800/500/drain,clean,concrete,covered,india,street",
   },
 ];
