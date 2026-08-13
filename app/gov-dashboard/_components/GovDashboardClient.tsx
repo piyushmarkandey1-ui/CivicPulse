@@ -7,9 +7,8 @@ import KPIStatsRow from "./KPIStatsRow";
 import ChartsSection from "./ChartsSection";
 import WardPerformanceTable from "./WardPerformanceTable";
 import EscalationAlerts from "./EscalationAlerts";
-import BeforeAfterSlider from "./BeforeAfterSlider";
 import RecognitionWall from "./RecognitionWall";
-import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI, BEFORE_AFTER_EXAMPLES } from "./mockData";
+import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI } from "./mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
@@ -142,24 +141,6 @@ export default function GovDashboardClient() {
                     </p>
                   </div>
                   <EscalationAlerts escalations={ESCALATIONS} />
-                </div>
-              )}
-
-              {activeTab === "Overview" && (
-                <div>
-                  <div className="mb-4">
-                    <h2 className="text-base font-bold text-[#242222]">
-                      Verified Field Resolutions
-                    </h2>
-                    <p className="text-xs text-[#625E59]">
-                      Before and after repair photo validations uploaded by municipal engineering crews.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {BEFORE_AFTER_EXAMPLES.map((example) => (
-                      <BeforeAfterSlider key={example.id} data={example} />
-                    ))}
-                  </div>
                 </div>
               )}
 

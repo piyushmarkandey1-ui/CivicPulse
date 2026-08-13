@@ -16,7 +16,6 @@
 - **Live KPIs & Telemetry**: Track Resolution Rate (%), Avg Turnaround (days), Active Backlog, and Citizen Trust Score in real time.
 - **SLA Escalation Alerts**: Automated warnings for complaints exceeding statutory turnaround limits.
 - **Ward Performance Roster**: Comparative metrics across all 40 municipal wards.
-- **Verified Field Resolutions**: Interactive before/after repair photo sliders demonstrating completed repairs.
 - **Ward Hall of Excellence**: Leaderboard celebrating top-performing municipal wards.
 
 ---
