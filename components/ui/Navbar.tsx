@@ -247,16 +247,18 @@ export function Navbar() {
     }
   };
 
+  // Hide global Navbar on gov-dashboard — it has its own sidebar navigation
+  const isGovDashboard = pathname?.startsWith("/gov-dashboard");
+
   const navLinks = [{ label: "Home", href: "/" }];
-  if (role === "government") {
-    navLinks.push({ label: "Gov Dashboard", href: "/gov-dashboard" });
-    navLinks.push({ label: "Live Map Radar", href: "/map" });
-  } else if (role === "citizen") {
+  if (role === "citizen") {
     navLinks.push({ label: "Live Map", href: "/map" });
     navLinks.push({ label: "My Reports", href: "/profile" });
   } else if (!user) {
     navLinks.push({ label: "Live Map Radar", href: "/map" });
   }
+
+  if (isGovDashboard) return null;
 
   return (
     <>
@@ -313,50 +315,50 @@ export function Navbar() {
           </ul>
 
           {/* Desktop Auth Controls */}
-          <div className="hidden md:flex flex-shrink-0 items-center gap-3">
+          <div className="hidden md:flex flex-shrink-0 items-center gap-2">
             {!loading && !user && pathname !== "/map" && <DualPortalAuthDropdowns />}
 
             {!loading && user && (
-              <div className="flex items-center gap-3">
-                {/* Role Badge Indicator */}
-                {role === "government" ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0E5D8] border border-[#D6C2A3] text-[#8B2635] shadow-xs">
-                    <span>🛡️</span>
-                    <span className="max-w-[140px] truncate">{profile?.department || "Official"}</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#8B2635]/10 border border-[#8B2635]/20 text-[#8B2635]">
+              <div className="flex items-center gap-2">
+                {/* Citizen: role badge */}
+                {role === "citizen" && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#8B2635]/10 border border-[#8B2635]/20 text-[#8B2635]">
                     <span>👤</span>
                     <span>Citizen</span>
                   </span>
                 )}
 
                 {/* Primary Action Button */}
-                {role === "government" ? (
-                  <Link
-                    href="/gov-dashboard"
-                    className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs"
-                  >
-                    Ops Dashboard →
-                  </Link>
-                ) : (
+                {role === "citizen" ? (
                   <Link
                     href="/map?report=true"
                     onClick={handleReportClick}
-                    className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs flex items-center gap-1.5"
+                    className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs flex items-center gap-1.5"
                   >
                     <span>📢</span>
                     <span>Report Issue</span>
                   </Link>
-                )}
+                ) : role === "government" ? (
+                  <Link
+                    href="/gov-dashboard"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[#242222] hover:bg-[#181616] text-[#F7F4ED] transition-colors shadow-xs"
+                  >
+                    <span>🛡️</span>
+                    <span className="max-w-[120px] truncate">{profile?.department || "Gov Portal"}</span>
+                  </Link>
+                ) : null}
 
-                {/* Logout */}
+                {/* Compact logout icon button */}
                 <button
                   onClick={handleLogout}
-                  className="text-xs text-[#88827A] hover:text-[#242222] transition-colors px-2 py-1"
                   title="Sign out"
+                  className="flex items-center justify-center h-7 w-7 rounded-full border border-[#DED8CD] bg-white/70 hover:bg-[#FDEDED] hover:border-[#B83A3A]/40 transition-colors text-[#88827A] hover:text-[#B83A3A]"
                 >
-                  Sign out
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
                 </button>
               </div>
             )}

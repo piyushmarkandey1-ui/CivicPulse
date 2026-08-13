@@ -51,7 +51,9 @@ function KPICard({
   sparklineData,
   accentColor,
 }: KPIProps) {
-  const displayValue = isDecimal ? value : useCountUp(value);
+  // Always call the hook (Rules of Hooks) — use raw value for decimals, animated count for integers
+  const animatedCount = useCountUp(isDecimal ? 0 : value);
+  const displayValue = isDecimal ? value : animatedCount;
   const trendIsPositive = trend.startsWith("+");
   const trendIsGood = trendIsPositive === trendUpIsGood;
 

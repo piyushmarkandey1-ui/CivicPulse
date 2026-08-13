@@ -63,37 +63,36 @@ export default function GovDashboardClient() {
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto px-6 py-8 md:px-10 scrollbar-none bg-[#F7F4ED]">
+      <main className="flex-1 h-screen overflow-y-auto px-6 py-6 md:px-10 scrollbar-none bg-[#F7F4ED]">
         {/* Header */}
-        <header className="mb-8 flex items-center justify-between">
+        <header className="mb-8 pb-6 border-b border-[#DED8CD] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#8B2635]">
-                Municipal Command Center
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold text-[#242222] mt-0.5">
-              Operations & SLA Triage Dashboard
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8B2635] bg-[#F0E5D8] border border-[#D6C2A3] px-2.5 py-1 rounded-full mb-3">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Municipal Command Center
+            </span>
+            <h1 className="text-xl font-bold text-[#242222] leading-tight">
+              Operations &amp; SLA Triage Dashboard
             </h1>
-            <p className="text-xs text-[#625E59] mt-0.5">
+            <p className="text-xs text-[#88827A] mt-1 max-w-sm">
               Live ward telemetry, statutory response tracking, and photographic resolution index.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Link
               href="/map"
-              className="text-xs font-bold px-3.5 py-2 rounded-lg bg-white border border-[#DED8CD] hover:border-[#8B2635] text-[#242222] transition-colors shadow-xs flex items-center gap-1.5"
+              className="text-xs font-bold px-3 py-2 rounded-lg bg-white border border-[#DED8CD] hover:border-[#8B2635] text-[#242222] transition-colors shadow-xs flex items-center gap-1.5"
             >
               <span>🗺️</span>
-              <span>Open GIS Radar</span>
+              <span>GIS Radar</span>
             </Link>
-            <div className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-[#DED8CD] shadow-xs">
+            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-[#DED8CD] shadow-xs">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5E8061] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5E8061]"></span>
               </span>
-              <span className="text-xs font-semibold text-[#625E59]">Live Telemetry Active</span>
+              <span className="text-xs font-semibold text-[#625E59]">Live</span>
             </div>
           </div>
         </header>
