@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, CircleMarker, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L, { type LatLngTuple } from "leaflet";
@@ -9,8 +9,7 @@ import { type Issue, type Severity } from "@/lib/types";
 import "leaflet/dist/leaflet.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
-
-import { HOTSPOT_DATA } from "./mockData";
+import * as turf from "@turf/turf";
 
 // ─── Municipal GIS Config ──────────────────────────────────────────────────────
 const MAP_CENTER: LatLngTuple = [19.09, 72.865];
@@ -141,6 +140,48 @@ export default function LeafletMap({
   onSelectIssue,
   showHeatmap,
 }: LeafletMapProps) {
+  // Dynamically cluster points with Turf.js
+  const hotspots = useMemo(() => {
+    if (!issues || issues.length === 0) return [];
+    
+    // Create GeoJSON features
+    const points = turf.featureCollection(
+      issues.map((i) => turf.point([i.lng, i.lat], { severity: i.severity }))
+    );
+    
+    // Cluster points within a 1.5km radius
+    const clustered = turf.clustersDbscan(points, 1.5, { minPoints: 1 });
+    
+    const groups: Record<string, any[]> = {};
+    clustered.features.forEach((f: any, idx) => {
+      // Dbscan adds 'cluster' property. Fallback to unique id if unclustered
+      const clusterId = f.properties.cluster !== undefined ? f.properties.cluster : `solo-${idx}`;
+      if (!groups[clusterId]) groups[clusterId] = [];
+      groups[clusterId].push(f);
+    });
+    
+    const computedHotspots = [];
+    for (const group of Object.values(groups)) {
+      if (group.length > 0) {
+        // Calculate center of mass for the cluster
+        const center = turf.centerOfMass(turf.featureCollection(group));
+        
+        let intensity = group.length * 2.5;
+        group.forEach((p) => {
+          if (p.properties.severity === "critical") intensity += 2.5;
+          if (p.properties.severity === "moderate") intensity += 1;
+        });
+        
+        computedHotspots.push({
+          lng: center.geometry.coordinates[0],
+          lat: center.geometry.coordinates[1],
+          intensity: Math.min(intensity, 15),
+        });
+      }
+    }
+    return computedHotspots;
+  }, [issues]);
+
   return (
     <>
       <style>{`
@@ -198,7 +239,7 @@ export default function LeafletMap({
 
         {/* Heatmap overlay with restrained status colors */}
         {showHeatmap &&
-          HOTSPOT_DATA.map((pt, i) => (
+          hotspots.map((pt, i) => (
             <CircleMarker
               key={`hs-${i}`}
               center={[pt.lat, pt.lng]}

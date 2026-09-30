@@ -84,11 +84,27 @@ function StepPhoto({
 }) {
   const [dragging, setDragging] = useState(false);
   const [detected, setDetected] = useState(false);
+  const [exifStatus, setExifStatus] = useState("Processing EXIF...");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     const url = URL.createObjectURL(file);
     onUpdate({ photoFile: url });
+    
+    // Extract actual EXIF data
+    try {
+      const exifr = (await import("exifr")).default;
+      const gps = await exifr.gps(file);
+      if (gps && gps.latitude && gps.longitude) {
+        onUpdate({ lat: gps.latitude, lng: gps.longitude });
+        setExifStatus(`EXIF Captured: ${gps.latitude.toFixed(4)}, ${gps.longitude.toFixed(4)}`);
+      } else {
+        setExifStatus("No EXIF found. Using default location.");
+      }
+    } catch (err) {
+      setExifStatus("EXIF read failed. Using default location.");
+    }
+    
     setTimeout(() => setDetected(true), 600);
   };
 
@@ -104,7 +120,7 @@ function StepPhoto({
           <img src={draft.photoFile} alt="Issue preview" className="w-full h-48 object-cover rounded-xl" />
           {detected && (
             <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-[#242222] bg-white border border-[#DED8CD] shadow-sm">
-              <span className="text-[#8B2635]">📍</span> EXIF Geolocation Captured · Mumbai, MH
+              <span className="text-[#8B2635]">📍</span> {exifStatus}
             </div>
           )}
           <button
