@@ -60,7 +60,7 @@ export default function MyReportsGrid({ reports, onSelectReport }: MyReportsGrid
           {/* Thumbnail */}
           <div className="relative h-36 w-full bg-[#F0E5D8] overflow-hidden">
             <img
-              src={`https://picsum.photos/seed/${report.photoSeed}/400/200`}
+              src={report.photoUrl || "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800"}
               alt={report.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

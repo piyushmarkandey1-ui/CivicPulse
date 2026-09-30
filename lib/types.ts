@@ -15,5 +15,5 @@ export interface Issue {
   reportedAt:  string;   // ISO-8601
   upvotes:     number;
   address:     string;
-  photoSeed:   number;
+  photoUrl?:   string;
 }

@@ -30,6 +30,13 @@ export const USER_BADGES: BadgeEarned[] = [
   { id: "B6", name: "City Legend", icon: "👑", description: "Reach a reputation score of 5000.", isLocked: true },
 ];
 
+
+// Helper to generate realistic recent dates
+const now = Date.now();
+const getPastDate = (daysAgo: number, hoursAgo: number) => {
+  return new Date(now - (daysAgo * 24 * 60 * 60 * 1000) - (hoursAgo * 60 * 60 * 1000)).toISOString();
+};
+
 export const MY_REPORTS: Issue[] = [
   {
     id: "ISS-012", lat: 19.0910, lng: 72.8650,
@@ -37,8 +44,8 @@ export const MY_REPORTS: Issue[] = [
     title: "Accident-prone pothole at crossroads",
     description: "Massive pothole at busy SEEPZ crossroads. Two accidents in past week, one resulting in hospitalization. Depth approximately 14 inches.",
     ward: "Ward 14 — Andheri East", status: "In Progress",
-    reportedAt: "2026-08-08T11:00:00Z", upvotes: 73,
-    address: "SEEPZ Crossroads, Andheri East", photoSeed: 59,
+    reportedAt: getPastDate(3, 2), upvotes: 73,
+    address: "SEEPZ Crossroads, Andheri East", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "ISS-007", lat: 19.0760, lng: 72.8777,
@@ -46,8 +53,8 @@ export const MY_REPORTS: Issue[] = [
     title: "Crumbling retaining wall on arterial road",
     description: "The retaining wall along the main road shows deep horizontal cracks and is bulging outward. Risk of partial collapse in heavy rain.",
     ward: "Ward 15 — Dharavi", status: "Reported",
-    reportedAt: "2026-08-11T08:00:00Z", upvotes: 55,
-    address: "Dharavi Main Road", photoSeed: 33,
+    reportedAt: getPastDate(0, 22), upvotes: 55,
+    address: "Dharavi Main Road", photoUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "ISS-018", lat: 19.1550, lng: 72.8710,
@@ -55,7 +62,7 @@ export const MY_REPORTS: Issue[] = [
     title: "Manhole cover replaced — issue closed",
     description: "Missing manhole cover on Jogeshwari main road was a major safety hazard. Reported 10 days ago with photographic evidence.",
     ward: "Ward 17 — Jogeshwari", status: "Resolved",
-    reportedAt: "2026-08-02T12:00:00Z", upvotes: 9,
-    address: "Jogeshwari West Main Road", photoSeed: 71,
+    reportedAt: getPastDate(1, 2), upvotes: 9,
+    address: "Jogeshwari West Main Road", photoUrl: "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800",
   },
 ];

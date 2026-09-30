@@ -141,7 +141,7 @@ export default function MapDashboard() {
           description: issue.description || "Reported by citizen via CivicPulse mobile web.",
           ward: issue.ward || "Ward 12 — Andheri East",
           reportedAt: new Date().toISOString(),
-          photoSeed: Math.floor(Math.random() * 100),
+
           photoUrl,
           reporterUid: user?.id || "anonymous",
         };

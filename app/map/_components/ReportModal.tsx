@@ -402,7 +402,7 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         ward: "Ward 12 — Andheri East",
         status: "Reported",
         address: draft.address,
-        photoSeed: Math.floor(Math.random() * 100),
+
       });
     }, 1200);
   };

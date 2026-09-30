@@ -183,7 +183,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
         {/* Photo */}
         <div className="relative h-48 w-full flex-shrink-0 bg-[#F0E5D8] overflow-hidden">
           <img
-            src={`https://picsum.photos/seed/${issue.photoSeed}/760/400`}
+            src={issue.photoUrl || "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800"}
             alt={issue.title}
             className="w-full h-full object-cover"
           />
