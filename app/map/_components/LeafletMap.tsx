@@ -15,10 +15,10 @@ import { HOTSPOT_DATA } from "./mockData";
 // ─── Municipal GIS Config ──────────────────────────────────────────────────────
 const MAP_CENTER: LatLngTuple = [19.09, 72.865];
 const MAP_ZOOM = 13;
-// Clean, light municipal Carto Positron map
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+// Free OpenStreetMap standard tile layer (no API key required)
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 // ─── Restrained Status Colors ──────────────────────────────────────────────────
 const SEV_COLOR: Record<Severity, string> = {
@@ -192,7 +192,6 @@ export default function LeafletMap({
           url={TILE_URL}
           attribution={ATTRIBUTION}
           maxZoom={19}
-          subdomains="abcd"
         />
 
         <FlyToIssue issue={selectedIssue} />

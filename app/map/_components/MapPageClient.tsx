@@ -22,7 +22,7 @@ const MapDashboard = dynamic(() => import("./MapDashboard"), {
 
 export default function MapPageClient() {
   return (
-    <div className="relative overflow-hidden" style={{ height: "calc(100vh - 80px)" }}>
+    <div className="relative overflow-hidden flex-1 h-full">
       <MapDashboard />
     </div>
   );
