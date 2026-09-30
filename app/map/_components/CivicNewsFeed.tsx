@@ -249,6 +249,7 @@ export default function CivicNewsFeed({
             >
               <div
                 ref={scrollRef}
+                data-lenis-prevent="true"
                 className="h-full overflow-y-auto p-4 space-y-3 overscroll-contain"
                 style={{
                   scrollbarWidth: "thin",
