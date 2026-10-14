@@ -10,6 +10,7 @@ import {
   setStoredDemoSession,
   getStoredDemoSession,
   createMockUser,
+  loginAsDemoOfficer,
 } from "@/lib/supabase/auth-helpers";
 
 export default function GovLoginPage() {
@@ -149,11 +150,32 @@ export default function GovLoginPage() {
             </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-5">
             <h2 className="text-xl font-bold text-[#242222] mb-1">Official Sign In</h2>
             <p className="text-[#625E59] text-xs leading-relaxed">
               Restricted to verified department officers and ward administrators.
             </p>
+          </div>
+
+          {/* 1-Click Judge & Evaluation Fast Pass */}
+          <div className="mb-6 p-4 rounded-xl bg-[#242222] border border-[#3A3636] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#F0E5D8]">
+                ⚡ Judge &amp; Evaluation Fast Pass
+              </span>
+              <span className="text-[10px] text-[#A8A29E]">No password required</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsDemoOfficer();
+                router.push("/gov-dashboard");
+              }}
+              className="w-full py-2.5 px-4 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>🛡️</span>
+              <span>Instant 1-Click Entry: Municipal Officer Portal →</span>
+            </button>
           </div>
 
           {/* Security notice */}

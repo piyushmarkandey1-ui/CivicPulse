@@ -10,6 +10,7 @@ import {
   setStoredDemoSession,
   getStoredDemoSession,
   createMockUser,
+  loginAsDemoCitizen,
 } from "@/lib/supabase/auth-helpers";
 
 export default function LoginPage() {
@@ -117,11 +118,32 @@ export default function LoginPage() {
           className="rounded-2xl border border-[#DED8CD] p-8 bg-white shadow-[0_4px_20px_rgba(36,34,34,0.06)]"
         >
           {/* Header */}
-          <div className="mb-6">
+          <div className="mb-5">
             <h1 className="text-2xl font-bold text-[#242222] mb-1">Citizen Sign In</h1>
             <p className="text-[#625E59] text-sm">
               Access your report history, track SLA resolution progress, and participate in ward verification.
             </p>
+          </div>
+
+          {/* 1-Click Judge & Evaluation Fast Pass */}
+          <div className="mb-6 p-4 rounded-xl bg-[#FAF3EF] border border-[#E8D4CD] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B2635]">
+                ⚡ Judge &amp; Evaluation Fast Pass
+              </span>
+              <span className="text-[10px] text-[#625E59]">No password required</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsDemoCitizen();
+                router.push("/map");
+              }}
+              className="w-full py-2.5 px-4 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>👤</span>
+              <span>Instant 1-Click Entry: Citizen Portal →</span>
+            </button>
           </div>
 
           {/* Error */}

@@ -23,14 +23,14 @@ export default function GovDashboardClient() {
   const [activeTab, setActiveTab] = useState<TabType>("Overview");
   const [issues, setIssues] = useState<Issue[]>(MOCK_ISSUES);
   const [loading, setLoading] = useState(false);
-  const { role, loading: authLoading, user } = useAuth();
+  const { role, loading: authLoading, user, loginAsOfficer, loginAsCitizen } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!authLoading && (!user || role !== "government")) {
-      router.replace("/gov-login");
+      loginAsOfficer();
     }
-  }, [authLoading, user, role, router]);
+  }, [authLoading, user, role, loginAsOfficer]);
 
   useEffect(() => {
     const unsubscribe = subscribeToIssues(
@@ -102,6 +102,18 @@ export default function GovDashboardClient() {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                loginAsCitizen();
+                router.push("/map");
+              }}
+              className="text-xs font-bold px-3 py-2 rounded-lg bg-[#FAF3EF] border border-[#E8D4CD] hover:border-[#8B2635] text-[#8B2635] transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>👤</span>
+              <span>Switch to Citizen View</span>
+            </button>
+
             <Link
               href="/map"
               className="text-xs font-bold px-3 py-2 rounded-lg bg-white border border-[#DED8CD] hover:border-[#8B2635] text-[#242222] transition-colors shadow-xs flex items-center gap-1.5"

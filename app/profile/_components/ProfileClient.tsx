@@ -16,10 +16,16 @@ import { MOCK_ISSUES } from "@/app/map/_components/mockData";
 import Link from "next/link";
 
 export default function ProfileClient() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, loginAsCitizen } = useAuth();
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loadingIssues, setLoadingIssues] = useState(() => !!user);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      loginAsCitizen();
+    }
+  }, [authLoading, user, loginAsCitizen]);
 
   useEffect(() => {
     if (!user) return;

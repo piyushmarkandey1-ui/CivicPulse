@@ -46,172 +46,50 @@ function HamburgerIcon({ open }: { open: boolean }) {
   );
 }
 
-// ─── Dual Portal Auth Dropdowns (Floating Pill Style) ─────────────────────────
+// ─── Dual Portal Direct 1-Click Access Buttons ───────────────────────────────
 export function DualPortalAuthDropdowns() {
-  const [openDropdown, setOpenDropdown] = useState<"citizen" | "officer" | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const router = useRouter();
+  const { role, loginAsCitizen, loginAsOfficer } = useAuth();
 
   return (
-    <div ref={containerRef} className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       {/* ─── OPTION 1: FOR CITIZENS ─── */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setOpenDropdown((cur) => (cur === "citizen" ? null : "citizen"))}
-          className={cn(
-            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none border shadow-xs",
-            openDropdown === "citizen"
-              ? "bg-[#8B2635] text-white border-[#8B2635]"
-              : "bg-white/80 backdrop-blur-sm text-[#242222] border-[#DED8CD] hover:border-[#8B2635] hover:text-[#8B2635] hover:bg-white"
-          )}
-          aria-expanded={openDropdown === "citizen"}
-        >
-          <span>👤</span>
-          <span>For Citizens</span>
-          <motion.svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            animate={{ rotate: openDropdown === "citizen" ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </motion.svg>
-        </button>
-
-        <AnimatePresence>
-          {openDropdown === "citizen" && (
-            <motion.div
-              initial={{ opacity: 0, y: 6, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 4, scale: 0.97 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 top-full mt-2 w-56 p-1.5 rounded-2xl border border-[#DED8CD]/80 shadow-[0_12px_36px_rgba(36,34,34,0.12)] z-50 bg-white/95 backdrop-blur-md"
-            >
-              <div className="px-3 py-2 border-b border-[#DED8CD]/60 mb-1">
-                <p className="text-[10px] font-bold tracking-wider uppercase text-[#8B2635]">
-                  Citizen Portal
-                </p>
-                <p className="text-[11px] text-[#625E59]">Report & track municipal issues</p>
-              </div>
-
-              <Link
-                href="/login"
-                onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
-              >
-                <span className="text-sm">🔑</span>
-                <div>
-                  <div className="font-bold">Citizen Sign In</div>
-                  <div className="text-[10px] text-[#88827A] font-normal">Access your reports</div>
-                </div>
-              </Link>
-
-              <Link
-                href="/signup"
-                onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
-              >
-                <span className="text-sm">📝</span>
-                <div>
-                  <div className="font-bold">Citizen Sign Up</div>
-                  <div className="text-[10px] text-[#88827A] font-normal">Join citizen watch</div>
-                </div>
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      <button
+        type="button"
+        onClick={() => {
+          loginAsCitizen();
+          router.push("/map");
+        }}
+        className={cn(
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 select-none border shadow-xs cursor-pointer",
+          role === "citizen"
+            ? "bg-[#8B2635] text-white border-[#8B2635]"
+            : "bg-white/90 text-[#242222] border-[#DED8CD] hover:border-[#8B2635] hover:text-[#8B2635] hover:bg-[#FAF3EF]"
+        )}
+        title="1-Click Instant Citizen Entry"
+      >
+        <span>👤</span>
+        <span>Citizen Portal</span>
+      </button>
 
       {/* ─── OPTION 2: FOR OFFICERS ─── */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setOpenDropdown((cur) => (cur === "officer" ? null : "officer"))}
-          className={cn(
-            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none border shadow-xs",
-            openDropdown === "officer"
-              ? "bg-[#242222] text-[#F7F4ED] border-[#242222]"
-              : "bg-[#F0E5D8]/80 backdrop-blur-sm text-[#8B2635] border-[#D6C2A3] hover:border-[#8B2635] hover:bg-[#EBDDCB]"
-          )}
-          aria-expanded={openDropdown === "officer"}
-        >
-          <span>🛡️</span>
-          <span>For Officers</span>
-          <motion.svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            animate={{ rotate: openDropdown === "officer" ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </motion.svg>
-        </button>
-
-        <AnimatePresence>
-          {openDropdown === "officer" && (
-            <motion.div
-              initial={{ opacity: 0, y: 6, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 4, scale: 0.97 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 top-full mt-2 w-60 p-1.5 rounded-2xl border border-[#D6C2A3]/80 shadow-[0_12px_36px_rgba(36,34,34,0.12)] z-50 bg-white/95 backdrop-blur-md"
-            >
-              <div className="px-3 py-2 border-b border-[#DED8CD]/60 mb-1">
-                <p className="text-[10px] font-bold tracking-wider uppercase text-[#8B2635]">
-                  Government Portal
-                </p>
-                <p className="text-[11px] text-[#625E59]">Municipal Command & Ward Triage</p>
-              </div>
-
-              <Link
-                href="/gov-login"
-                onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors"
-              >
-                <span className="text-sm">🛡️</span>
-                <div>
-                  <div className="font-bold">Official Sign In</div>
-                  <div className="text-[10px] text-[#88827A] font-normal">Authorized personnel only</div>
-                </div>
-              </Link>
-
-              <Link
-                href="/gov-signup"
-                onClick={() => setOpenDropdown(null)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#242222] hover:bg-[#F0E5D8] hover:text-[#8B2635] transition-colors mt-0.5"
-              >
-                <span className="text-sm">📋</span>
-                <div>
-                  <div className="font-bold">Officer Registration</div>
-                  <div className="text-[10px] text-[#88827A] font-normal">Department invite code required</div>
-                </div>
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      <button
+        type="button"
+        onClick={() => {
+          loginAsOfficer();
+          router.push("/gov-dashboard");
+        }}
+        className={cn(
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 select-none border shadow-xs cursor-pointer",
+          role === "government"
+            ? "bg-[#242222] text-[#F7F4ED] border-[#242222]"
+            : "bg-[#F0E5D8] text-[#8B2635] border-[#D6C2A3] hover:border-[#8B2635] hover:bg-[#EBDDCB]"
+        )}
+        title="1-Click Instant Officer Entry"
+      >
+        <span>🛡️</span>
+        <span>Officer Portal</span>
+      </button>
     </div>
   );
 }
@@ -223,7 +101,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCitizenOpen, setMobileCitizenOpen] = useState(false);
   const [mobileOfficerOpen, setMobileOfficerOpen] = useState(false);
-  const { user, role, profile, loading, signOut } = useAuth();
+  const { user, role, profile, loading, signOut, loginAsCitizen, loginAsOfficer } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -318,50 +196,62 @@ export function Navbar() {
 
           {/* Desktop Auth Controls */}
           <div className="hidden md:flex flex-shrink-0 items-center gap-2">
-            {!loading && !user && pathname !== "/map" && <DualPortalAuthDropdowns />}
+            {!loading && !user && <DualPortalAuthDropdowns />}
 
             {!loading && user && (
               <div className="flex items-center gap-2">
-                {/* Citizen: role badge */}
-                {role === "citizen" && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#8B2635]/10 border border-[#8B2635]/20 text-[#8B2635]">
+                {/* Mode Pill Indicator */}
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-2xs",
+                    role === "government"
+                      ? "bg-[#242222] text-[#F7F4ED] border-[#242222]"
+                      : "bg-[#FAF3EF] text-[#8B2635] border-[#EAD6CE]"
+                  )}
+                >
+                  <span>{role === "government" ? "🛡️ Officer Mode" : "👤 Citizen Mode"}</span>
+                </span>
+
+                {/* Instant 1-Click Role Switcher */}
+                {role === "citizen" ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loginAsOfficer();
+                      router.push("/gov-dashboard");
+                    }}
+                    className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#242222] hover:bg-[#181616] text-[#F7F4ED] transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    title="Switch to Municipal Officer Command Portal"
+                  >
+                    <span>🛡️</span>
+                    <span>Officer Portal →</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loginAsCitizen();
+                      router.push("/map");
+                    }}
+                    className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    title="Switch to Citizen Live Map"
+                  >
                     <span>👤</span>
-                    <span>Citizen</span>
-                  </span>
+                    <span>Citizen Portal →</span>
+                  </button>
                 )}
 
                 {/* Primary Action Button */}
-                {role === "citizen" ? (
+                {role === "citizen" && (
                   <Link
                     href="/map?report=true"
                     onClick={handleReportClick}
-                    className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#8B2635] hover:bg-[#641B27] text-white transition-colors shadow-xs flex items-center gap-1.5"
+                    className="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-[#DED8CD] hover:border-[#8B2635] text-[#8B2635] transition-colors shadow-xs flex items-center gap-1.5"
                   >
                     <span>📢</span>
-                    <span>Report Issue</span>
+                    <span>Report</span>
                   </Link>
-                ) : role === "government" ? (
-                  <Link
-                    href="/gov-dashboard"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[#242222] hover:bg-[#181616] text-[#F7F4ED] transition-colors shadow-xs"
-                  >
-                    <span>🛡️</span>
-                    <span className="max-w-[120px] truncate">{profile?.department || "Gov Portal"}</span>
-                  </Link>
-                ) : null}
-
-                {/* Compact logout icon button */}
-                <button
-                  onClick={handleLogout}
-                  title="Sign out"
-                  className="flex items-center justify-center h-7 w-7 rounded-full border border-[#DED8CD] bg-white/70 hover:bg-[#FDEDED] hover:border-[#B83A3A]/40 transition-colors text-[#88827A] hover:text-[#B83A3A]"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                  </svg>
-                </button>
+                )}
               </div>
             )}
           </div>
@@ -410,96 +300,43 @@ export function Navbar() {
               })}
 
               <li className="pt-3 mt-2 border-t border-[#DED8CD] space-y-2">
-                {!loading && !user && (
-                  <div className="flex flex-col gap-2.5">
-                    <div className="rounded-xl border border-[#DED8CD] bg-white overflow-hidden shadow-xs">
-                      <button
-                        type="button"
-                        onClick={() => setMobileCitizenOpen((v) => !v)}
-                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-[#8B2635]"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span>👤</span>
-                          <span>For Citizens</span>
-                        </div>
-                        <span>{mobileCitizenOpen ? "▲" : "▼"}</span>
-                      </button>
-                      {mobileCitizenOpen && (
-                        <div className="px-3 pb-3 pt-1 space-y-1.5 border-t border-[#DED8CD]">
-                          <Link
-                            href="/login"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] bg-[#F7F4ED]"
-                          >
-                            🔑 Citizen Sign In
-                          </Link>
-                          <Link
-                            href="/signup"
-                            className="block px-3 py-2 rounded-lg text-xs font-bold text-white bg-[#8B2635] text-center"
-                          >
-                            📝 Citizen Sign Up (Register)
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="rounded-xl border border-[#D6C2A3] bg-[#F0E5D8]/50 overflow-hidden shadow-xs">
-                      <button
-                        type="button"
-                        onClick={() => setMobileOfficerOpen((v) => !v)}
-                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-[#242222]"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span>🛡️</span>
-                          <span>For Officers</span>
-                        </div>
-                        <span>{mobileOfficerOpen ? "▲" : "▼"}</span>
-                      </button>
-                      {mobileOfficerOpen && (
-                        <div className="px-3 pb-3 pt-1 space-y-1.5 border-t border-[#D6C2A3]">
-                          <Link
-                            href="/gov-login"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-[#242222] bg-white"
-                          >
-                            🛡️ Officer Sign In
-                          </Link>
-                          <Link
-                            href="/gov-signup"
-                            className="block px-3 py-2 rounded-lg text-xs font-bold text-white bg-[#242222] text-center"
-                          >
-                            📋 Officer Registration (Invite Code)
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {!loading && user && (
-                  <div className="flex flex-col gap-2">
-                    {role === "government" ? (
-                      <Link
-                        href="/gov-dashboard"
-                        className="block text-center py-2.5 text-sm font-bold rounded-lg bg-[#8B2635] text-white transition-colors"
-                      >
-                        🛡️ Government Ops Dashboard
-                      </Link>
-                    ) : (
-                      <Link
-                        href="/map?report=true"
-                        onClick={handleReportClick}
-                        className="block text-center py-2.5 text-sm font-bold rounded-lg bg-[#8B2635] text-white transition-colors"
-                      >
-                        📢 Report an Issue
-                      </Link>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loginAsCitizen();
+                      setMobileOpen(false);
+                      router.push("/map");
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-bold text-xs shadow-xs transition-colors cursor-pointer",
+                      role === "citizen"
+                        ? "bg-[#8B2635] text-white"
+                        : "bg-[#FAF3EF] text-[#8B2635] border border-[#E8D4CD]"
                     )}
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-center py-2 text-sm text-[#88827A] hover:text-[#242222] rounded-lg transition-colors"
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                )}
+                  >
+                    <span>👤</span>
+                    <span>Enter as Citizen (Live Map &amp; Reports)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loginAsOfficer();
+                      setMobileOpen(false);
+                      router.push("/gov-dashboard");
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-bold text-xs shadow-xs transition-colors cursor-pointer",
+                      role === "government"
+                        ? "bg-[#242222] text-[#F7F4ED]"
+                        : "bg-[#F0E5D8] text-[#8B2635] border border-[#D6C2A3]"
+                    )}
+                  >
+                    <span>🛡️</span>
+                    <span>Enter as Municipal Officer</span>
+                  </button>
+                </div>
               </li>
             </ul>
           </motion.div>

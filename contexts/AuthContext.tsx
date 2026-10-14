@@ -8,6 +8,8 @@ import {
   isSupabaseConfigured,
   getStoredDemoSession,
   clearStoredDemoSession,
+  loginAsDemoCitizen,
+  loginAsDemoOfficer,
   type AuthRole,
   type UserProfile,
 } from "@/lib/supabase/auth-helpers";
@@ -18,6 +20,8 @@ interface AuthContextType {
   role: AuthRole;
   loading: boolean;
   signOut: () => Promise<void>;
+  loginAsCitizen: () => void;
+  loginAsOfficer: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +30,8 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   loading: true,
   signOut: async () => {},
+  loginAsCitizen: () => {},
+  loginAsOfficer: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -126,6 +132,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const loginAsCitizen = () => {
+    const mock = loginAsDemoCitizen();
+    setUser(mock.user);
+    setProfile(mock.profile);
+    setRole("citizen");
+    setLoading(false);
+  };
+
+  const loginAsOfficer = () => {
+    const mock = loginAsDemoOfficer();
+    setUser(mock.user);
+    setProfile(mock.profile);
+    setRole("government");
+    setLoading(false);
+  };
+
   const signOut = async () => {
     clearStoredDemoSession();
     const supabase = getSupabase();
@@ -142,7 +164,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, role, loading, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        role,
+        loading,
+        signOut,
+        loginAsCitizen,
+        loginAsOfficer,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

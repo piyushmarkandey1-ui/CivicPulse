@@ -11,12 +11,14 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import Link from "next/link";
-import { MapPin, Cpu, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { MapPin, Cpu, ShieldCheck, ArrowRight, CheckCircle2, Building2, User } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/Badge";
 import { BridgeStory } from "./BridgeStory";
 import { Footer } from "@/components/ui/Footer";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Utility: Count-Up Hook
@@ -283,6 +285,8 @@ function MapIllustration() {
 const HERO_WORDS = ["Transparency", "Accountability", "Resolution", "Action"];
 
 function HeroSection() {
+  const router = useRouter();
+  const { loginAsCitizen, loginAsOfficer } = useAuth();
   const { scrollY } = useScroll();
   const mapY = useTransform(scrollY, [0, 600], [0, 60]);
 
@@ -311,7 +315,7 @@ function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B2635] opacity-60"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8B2635]"></span>
               </span>
-              <span>Now Live in 38 Municipal Wards</span>
+              <span>Now Live across Durg, CG &amp; Mumbai Municipal Corridors</span>
             </span>
           </div>
 
@@ -337,38 +341,94 @@ function HeroSection() {
 
           {/* Subtitle */}
           <p className="text-body text-[#625E59] max-w-lg leading-relaxed">
-            Smart Automation for Municipal Infrastructure — AI-driven deduplication,
-            priority scoring, and ranked repair queues that help officers act faster
-            and citizens see results.
+            Civic infrastructure accountability platform — AI duplicate clustering, automated
+            priority triage, department assignment workflows, and verifiable 5-stage repair tracking.
           </p>
 
-          {/* Action Buttons */}
+          {/* Dual-Door Direct Portal Entry Cards (1-Click Judge & Demo Access) */}
           <motion.div
-            className="flex flex-wrap gap-3.5 items-center pt-1"
+            className="grid sm:grid-cols-2 gap-3.5 pt-1"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <GradientButton href="/map?report=true" size="lg" variant="primary">
-              <span className="flex items-center gap-2">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path
-                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-                    fill="currentColor"
-                    fillOpacity="0.25"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  />
-                  <circle cx="12" cy="9" r="2.5" fill="currentColor" />
-                </svg>
-                Report an Issue
-              </span>
-            </GradientButton>
+            {/* Citizen Direct Entry Door */}
+            <button
+              type="button"
+              onClick={() => {
+                loginAsCitizen();
+                router.push("/map");
+              }}
+              className="group p-4 rounded-2xl bg-white border-2 border-[#8B2635] hover:bg-[#FAF3EF] shadow-[0_8px_24px_rgba(139,38,53,0.1)] transition-all text-left flex flex-col justify-between cursor-pointer"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B2635] bg-[#F5EAE6] border border-[#E8D4CD] px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <User className="w-2.5 h-2.5" />
+                    Citizen Portal
+                  </span>
+                  <span className="text-xs font-bold text-[#8B2635] group-hover:translate-x-1 transition-transform">
+                    Enter →
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-[#242222] group-hover:text-[#8B2635] transition-colors leading-snug">
+                  Enter as Citizen
+                </h3>
+                <p className="text-xs text-[#625E59] mt-1.5 leading-relaxed">
+                  Live GIS map in Durg &amp; Mumbai, report hazards with GPS telemetry, and track 5-stage resolution pipeline.
+                </p>
+              </div>
+              <div className="mt-3.5 pt-2.5 border-t border-[#F0EBE1] flex items-center justify-between text-xs font-bold text-[#8B2635]">
+                <span>Launch Citizen Watch</span>
+                <span className="text-[11px] font-normal text-[#88827A]">Instant 1-Click</span>
+              </div>
+            </button>
 
-            <GradientButton href="/map" variant="outline" size="lg">
-              View Live Map →
-            </GradientButton>
+            {/* Officer Direct Entry Door */}
+            <button
+              type="button"
+              onClick={() => {
+                loginAsOfficer();
+                router.push("/gov-dashboard");
+              }}
+              className="group p-4 rounded-2xl bg-[#242222] border-2 border-[#3A3636] hover:border-[#8B2635] shadow-[0_8px_24px_rgba(36,34,34,0.18)] transition-all text-left flex flex-col justify-between cursor-pointer"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#F0E5D8] bg-[#363232] border border-[#484242] px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <ShieldCheck className="w-2.5 h-2.5 text-[#B07525]" />
+                    Command Center
+                  </span>
+                  <span className="text-xs font-bold text-[#F0E5D8] group-hover:translate-x-1 transition-transform">
+                    Enter →
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-white group-hover:text-[#F0E5D8] transition-colors leading-snug">
+                  Enter as Officer
+                </h3>
+                <p className="text-xs text-[#C9C0B3] mt-1.5 leading-relaxed">
+                  Municipal triage queue, assign reports to operational departments, deploy engineers, and sign off verified fixes.
+                </p>
+              </div>
+              <div className="mt-3.5 pt-2.5 border-t border-[#363232] flex items-center justify-between text-xs font-bold text-[#F0E5D8]">
+                <span>Launch Operations Dashboard</span>
+                <span className="text-[11px] font-normal text-[#88827A]">Instant 1-Click</span>
+              </div>
+            </button>
           </motion.div>
+
+          {/* Secondary Quick Action Row */}
+          <div className="flex items-center gap-3 text-xs text-[#625E59]">
+            <Link
+              href="/map"
+              className="font-bold text-[#8B2635] hover:underline flex items-center gap-1"
+            >
+              <span>Explore GIS Map directly</span>
+              <span>→</span>
+            </Link>
+            <span className="text-[#C9C0B3]">•</span>
+            <span>No passwords or registration required for evaluation</span>
+          </div>
 
           {/* Floating Trust Strip */}
           <motion.div

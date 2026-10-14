@@ -21,24 +21,17 @@ export async function updateSession(request: NextRequest) {
   const govProtected = ["/gov-dashboard"];
   const authRoutes = ["/login", "/signup", "/gov-login", "/gov-signup"];
 
-  // If running in demo mode or without real Supabase connection
-  if (!isRealSupabase) {
-    if (demoRole) {
-      if (govProtected.some((p) => pathname.startsWith(p)) && demoRole !== "government") {
-        return NextResponse.redirect(new URL("/login?error=unauthorized", request.url));
-      }
-      if (authRoutes.includes(pathname)) {
-        return NextResponse.redirect(new URL(demoRole === "government" ? "/gov-dashboard" : "/map", request.url));
-      }
-      return supabaseResponse;
-    }
+  // Seamless Judge Demo Mode:
+  // If navigating to /gov-dashboard, automatically grant government session
+  if (govProtected.some((p) => pathname.startsWith(p))) {
+    supabaseResponse.cookies.set("civicpulse_role", "government", { path: "/", maxAge: 604800, sameSite: "lax" });
+    return supabaseResponse;
+  }
 
-    // Unauthenticated demo user
-    if (govProtected.some((p) => pathname.startsWith(p))) {
-      return NextResponse.redirect(new URL("/gov-login", request.url));
-    }
-    if (citizenProtected.some((p) => pathname.startsWith(p))) {
-      return NextResponse.redirect(new URL("/login", request.url));
+  // If navigating to /profile or citizen routes, automatically allow citizen session
+  if (citizenProtected.some((p) => pathname.startsWith(p))) {
+    if (!demoRole) {
+      supabaseResponse.cookies.set("civicpulse_role", "citizen", { path: "/", maxAge: 604800, sameSite: "lax" });
     }
     return supabaseResponse;
   }

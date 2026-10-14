@@ -152,3 +152,34 @@ export function createMockUser(params: {
 
   return { user, profile };
 }
+
+/**
+ * Instantly logs in as demo citizen without credentials
+ */
+export function loginAsDemoCitizen(): { user: User; profile: UserProfile } {
+  const mock = createMockUser({
+    id: "demo-citizen-id",
+    name: "Rani Suryavanshi (Citizen)",
+    email: "citizen@civicpulse.org",
+    role: "citizen",
+    ward: "Ward 15 — Indira Market, Durg",
+  });
+  setStoredDemoSession(mock.user, mock.profile);
+  return mock;
+}
+
+/**
+ * Instantly logs in as demo government officer without credentials
+ */
+export function loginAsDemoOfficer(): { user: User; profile: UserProfile } {
+  const mock = createMockUser({
+    id: "demo-officer-id",
+    name: "Er. A. K. Sahu (Executive Engineer)",
+    email: "officer@civicpulse.org",
+    role: "government",
+    department: "Roads & Highway Infrastructure (PWD)",
+    ward: "Durg & Mumbai Central Municipal Division",
+  });
+  setStoredDemoSession(mock.user, mock.profile);
+  return mock;
+}
