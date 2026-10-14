@@ -61,7 +61,7 @@ function KPICard({
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl p-5 bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.05)]"
+      className="rounded-xl p-4 sm:p-5 bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.05)]"
     >
       <div className="flex justify-between items-center mb-3">
         <p className="text-[11px] font-bold text-[#88827A] uppercase tracking-wider">{title}</p>
@@ -114,7 +114,7 @@ export interface KPIData {
 
 export default function KPIStatsRow({ kpi }: { kpi: KPIData }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <KPICard
         title="Resolution Rate"
         value={kpi.resolutionRate}

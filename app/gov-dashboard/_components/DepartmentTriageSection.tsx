@@ -129,8 +129,8 @@ export default function DepartmentTriageSection({
       </div>
 
       {/* Metric Capsule Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
           <p className="text-[10px] font-bold text-[#88827A] uppercase tracking-wider">
             Total Triage Queue
           </p>
@@ -140,7 +140,7 @@ export default function DepartmentTriageSection({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
           <p className="text-[10px] font-bold text-[#8B2635] uppercase tracking-wider">
             Durg, CG Telemetry
           </p>
@@ -150,7 +150,7 @@ export default function DepartmentTriageSection({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
           <p className="text-[10px] font-bold text-[#3F6B4C] uppercase tracking-wider">
             Mumbai Telemetry
           </p>
@@ -160,7 +160,7 @@ export default function DepartmentTriageSection({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-[#DED8CD] shadow-2xs">
           <p className="text-[10px] font-bold text-[#B07525] uppercase tracking-wider">
             Pending Routing
           </p>
@@ -230,73 +230,77 @@ export default function DepartmentTriageSection({
         </div>
 
         {/* Filter dropdowns row */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#F0EBE1] text-xs">
-          <span className="text-[#88827A] font-semibold flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5" />
-            Filters:
-          </span>
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#F0EBE1] text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[#88827A] font-semibold flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5" />
+              Filters:
+            </span>
 
-          {/* Department Filter */}
-          <select
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-[#DED8CD] bg-[#FDFBF7] text-[#242222] font-medium text-xs focus:outline-none focus:border-[#8B2635] cursor-pointer"
-          >
-            <option value="all">All Departments</option>
-            <option value="unassigned">Awaiting Routing (Unassigned)</option>
-            {MUNICIPAL_DEPARTMENTS.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
-
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-[#DED8CD] bg-[#FDFBF7] text-[#242222] font-medium text-xs focus:outline-none focus:border-[#8B2635] cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="Reported">Reported</option>
-            <option value="Verified">Verified</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-          </select>
-
-          {(selectedDept !== "all" || statusFilter !== "all" || searchQuery) && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedDept("all");
-                setStatusFilter("all");
-                setSearchQuery("");
-              }}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#8B2635] hover:bg-[#FAF3EF] transition-colors cursor-pointer"
+            {/* Department Filter */}
+            <select
+              value={selectedDept}
+              onChange={(e) => setSelectedDept(e.target.value)}
+              className="px-2.5 py-1.5 rounded-lg border border-[#DED8CD] bg-[#FDFBF7] text-[#242222] font-medium text-xs focus:outline-none focus:border-[#8B2635] cursor-pointer"
             >
-              Reset Filters
-            </button>
-          )}
+              <option value="all">All Departments</option>
+              <option value="unassigned">Awaiting Routing (Unassigned)</option>
+              {MUNICIPAL_DEPARTMENTS.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
 
-          <span className="ml-auto text-[11px] font-mono text-[#88827A]">
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-2.5 py-1.5 rounded-lg border border-[#DED8CD] bg-[#FDFBF7] text-[#242222] font-medium text-xs focus:outline-none focus:border-[#8B2635] cursor-pointer"
+            >
+              <option value="all">All Statuses</option>
+              <option value="Reported">Reported</option>
+              <option value="Verified">Verified</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+
+            {(selectedDept !== "all" || statusFilter !== "all" || searchQuery) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDept("all");
+                  setStatusFilter("all");
+                  setSearchQuery("");
+                }}
+                className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#8B2635] hover:bg-[#FAF3EF] transition-colors cursor-pointer"
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
+
+          <span className="text-[11px] font-mono text-[#88827A] whitespace-nowrap flex-shrink-0">
             Showing {filtered.length} of {issues.length} tickets
           </span>
         </div>
       </div>
 
       {/* Main Operational Table */}
-      <div className="bg-white rounded-2xl border border-[#DED8CD] shadow-2xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-2xl border border-[#DED8CD] shadow-2xs overflow-hidden w-full">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[880px] text-left border-collapse">
             <thead>
               <tr className="border-b border-[#E8E2D8] bg-[#FDFBF7] text-[10px] font-bold text-[#88827A] uppercase tracking-wider">
-                <th className="py-3.5 px-4">Ticket Ref &amp; City</th>
-                <th className="py-3.5 px-4">Issue Summary &amp; Ward</th>
-                <th className="py-3.5 px-4">AI Triage Score</th>
-                <th className="py-3.5 px-4">Target Department</th>
-                <th className="py-3.5 px-4">Officer Assigned</th>
-                <th className="py-3.5 px-4">Lifecycle Stage</th>
-                <th className="py-3.5 px-4 text-right">Dispatch Action</th>
+                <th className="py-3 px-3.5">Ticket Ref &amp; City</th>
+                <th className="py-3 px-3.5">Issue Summary &amp; Ward</th>
+                <th className="py-3 px-3.5">AI Triage Score</th>
+                <th className="py-3 px-3.5">Target Department</th>
+                <th className="py-3 px-3.5">Officer Assigned</th>
+                <th className="py-3 px-3.5">Lifecycle Stage</th>
+                <th className="py-3 px-4 text-right sticky right-0 bg-[#FDFBF7] z-10 shadow-[-8px_0_12px_rgba(36,34,34,0.04)] whitespace-nowrap">
+                  Dispatch Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#EFEAE1] text-xs">
@@ -335,7 +339,7 @@ export default function DepartmentTriageSection({
                       className="hover:bg-[#FAF8F3] transition-colors group"
                     >
                       {/* Ticket Ref & City */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-3 px-3.5 whitespace-nowrap">
                         <div className="flex flex-col gap-1">
                           <span className="font-mono font-bold text-[#8B2635] text-[11px]">
                             {issue.id}
@@ -355,7 +359,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* Issue Summary & Ward */}
-                      <td className="py-3.5 px-4 max-w-xs">
+                      <td className="py-3 px-3.5 max-w-[200px] sm:max-w-xs">
                         <p className="font-semibold text-[#242222] truncate leading-snug">
                           {issue.title}
                         </p>
@@ -365,7 +369,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* AI Triage Score */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-3 px-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span
                             className={cn(
@@ -384,7 +388,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* Target Department */}
-                      <td className="py-3.5 px-4 max-w-[220px]">
+                      <td className="py-3 px-3.5 max-w-[190px]">
                         {issue.assignedDepartment ? (
                           <div className="flex items-start gap-1.5">
                             <Building2 className="w-3.5 h-3.5 text-[#8B2635] mt-0.5 flex-shrink-0" />
@@ -401,7 +405,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* Officer Assigned */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-3 px-3.5 whitespace-nowrap">
                         {issue.assignedOfficer ? (
                           <div className="flex items-center gap-1.5 text-[11px] text-[#242222]">
                             <UserCheck className="w-3 h-3 text-[#3F6B4C]" />
@@ -413,7 +417,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* Lifecycle Stage */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-3 px-3.5 whitespace-nowrap">
                         <span
                           className={cn(
                             "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border",
@@ -440,7 +444,7 @@ export default function DepartmentTriageSection({
                       </td>
 
                       {/* Dispatch Action */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                      <td className="py-3 px-4 text-right whitespace-nowrap sticky right-0 bg-white group-hover:bg-[#FAF8F3] z-10 shadow-[-8px_0_12px_rgba(36,34,34,0.04)]">
                         <button
                           type="button"
                           onClick={() => setActiveIssue(issue)}

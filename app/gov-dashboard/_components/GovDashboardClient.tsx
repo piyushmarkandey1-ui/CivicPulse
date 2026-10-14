@@ -80,12 +80,12 @@ export default function GovDashboardClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex">
+    <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex w-full overflow-x-hidden">
       {/* Sidebar Navigation */}
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-h-screen px-6 py-6 md:px-10 bg-[#F7F4ED]">
+      <main className="flex-1 min-w-0 w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 bg-[#F7F4ED] overflow-y-auto overflow-x-hidden">
         {/* Header */}
         <header className="mb-8 pb-6 border-b border-[#DED8CD] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
@@ -132,7 +132,7 @@ export default function GovDashboardClient() {
         </header>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto space-y-8 pb-20">
+        <div className="w-full max-w-7xl mx-auto space-y-8 pb-20">
           {loading ? (
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
