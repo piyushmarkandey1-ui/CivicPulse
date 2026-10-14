@@ -67,6 +67,7 @@ const STATUS_COLOR: Record<Issue["status"], string> = {
   Verified: "bg-[#EBF0EC] text-[#4A7A55]",
   "In Progress": "bg-[#FEF6E9] text-[#C58B32]",
   Resolved: "bg-[#EBF0EC] text-[#5E8061]",
+  Escalated: "bg-[#FDEDEC] text-[#B83A3A]",
 };
 
 // ─── Score bar ────────────────────────────────────────────────────────────────
