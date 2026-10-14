@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 import KPIStatsRow from "./KPIStatsRow";
@@ -9,7 +9,7 @@ import WardPerformanceTable from "./WardPerformanceTable";
 import EscalationAlerts from "./EscalationAlerts";
 import RecognitionWall from "./RecognitionWall";
 import PriorityQueueTable from "./PriorityQueueTable";
-import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI } from "./mockData";
+import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI, type WardPerformance, type Escalation } from "./mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
@@ -33,14 +33,30 @@ export default function GovDashboardClient() {
   }, [authLoading, user, role, router]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "issues"), (snapshot) => {
-      const fetched: Issue[] = [];
-      snapshot.forEach((doc) => {
-        fetched.push({ id: doc.id, ...doc.data() } as Issue);
-      });
-      setIssues(fetched);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      collection(db, "issues"),
+      (snapshot) => {
+        const fetched: Issue[] = [];
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          let reportedAtStr = new Date().toISOString();
+          if (data.reportedAt) {
+            if (typeof data.reportedAt.toDate === "function") {
+              reportedAtStr = data.reportedAt.toDate().toISOString();
+            } else if (typeof data.reportedAt === "string") {
+              reportedAtStr = data.reportedAt;
+            }
+          }
+          fetched.push({ id: docSnap.id, ...data, reportedAt: reportedAtStr } as Issue);
+        });
+        setIssues(fetched);
+        setLoading(false);
+      },
+      (error) => {
+        console.warn("Firestore snapshot error, continuing with fallback:", error);
+        setLoading(false);
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -56,6 +72,86 @@ export default function GovDashboardClient() {
     pendingEscalations: issues.length > 0 ? pendingCount : MOCK_KPI.pendingEscalations,
     trustScore: MOCK_KPI.trustScore,
   };
+
+  // ─── 1. Ward Performance dynamically derived from issues ─────────────────
+  const wardData: WardPerformance[] = useMemo(() => {
+    if (issues.length === 0) return WARD_DATA;
+
+    const map = new Map<string, Issue[]>();
+    issues.forEach((issue) => {
+      const wardName = issue.ward?.trim() || "Unassigned Ward";
+      if (!map.has(wardName)) {
+        map.set(wardName, []);
+      }
+      map.get(wardName)!.push(issue);
+    });
+
+    const list: WardPerformance[] = [];
+    let idx = 1;
+    map.forEach((wIssues, wardName) => {
+      const total = wIssues.length;
+      const resolved = wIssues.filter((i) => i.status === "Resolved");
+      const resolvedPercent = Math.round((resolved.length / total) * 100);
+
+      let avgResponseDays = 3.5;
+      if (resolved.length > 0) {
+        const totalDays = resolved.reduce((acc, curr) => {
+          const start = new Date(curr.reportedAt).getTime();
+          const end = curr.lastUpdated ? new Date(curr.lastUpdated).getTime() : Date.now();
+          const days = Math.max(0.5, (end - start) / (1000 * 60 * 60 * 24));
+          return acc + days;
+        }, 0);
+        avgResponseDays = Number((totalDays / resolved.length).toFixed(1));
+      }
+
+      const status: WardPerformance["status"] =
+        resolvedPercent >= 90
+          ? "Excellent"
+          : resolvedPercent >= 75
+          ? "Good"
+          : resolvedPercent >= 60
+          ? "Needs Improvement"
+          : "Critical";
+
+      list.push({
+        id: `W-${idx++}`,
+        name: wardName,
+        totalReports: total,
+        resolvedPercent,
+        avgResponseDays,
+        status,
+      });
+    });
+
+    return list.sort((a, b) => b.totalReports - a.totalReports);
+  }, [issues]);
+
+  // ─── 2. Active Escalations (Unresolved > 5 days) ─────────────────────────
+  const escalations: Escalation[] = useMemo(() => {
+    if (issues.length === 0) return ESCALATIONS;
+
+    const overdue = issues.filter((i) => {
+      if (i.status === "Resolved" || !i.reportedAt) return false;
+      const reportedMs = new Date(i.reportedAt).getTime();
+      if (isNaN(reportedMs)) return false;
+      const days = (Date.now() - reportedMs) / (1000 * 60 * 60 * 24);
+      return days > 5;
+    });
+
+    // If live data has items, show them; if live data is loaded but none are overdue, show empty list
+    return overdue.map((i) => {
+      const reportedMs = new Date(i.reportedAt).getTime();
+      const daysOverdue = Math.max(1, Math.floor((Date.now() - reportedMs) / (1000 * 60 * 60 * 24)));
+      return {
+        id: i.id,
+        title: i.title || `${i.category} Hazard`,
+        ward: i.ward || "Unassigned Ward",
+        daysOverdue,
+        category: i.category,
+        description: i.description || "Reported infrastructure complaint exceeding statutory SLA response window.",
+      };
+    });
+  }, [issues]);
 
   return (
     <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex">
@@ -127,7 +223,7 @@ export default function GovDashboardClient() {
                       Comparative turnaround and closure rate metrics across all 40 municipal wards.
                     </p>
                   </div>
-                  <WardPerformanceTable data={WARD_DATA} />
+                  <WardPerformanceTable data={wardData} />
                 </div>
               )}
 
@@ -141,7 +237,7 @@ export default function GovDashboardClient() {
                       Complaints exceeding statutory resolution turnaround limits requiring immediate directorate intervention.
                     </p>
                   </div>
-                  <EscalationAlerts escalations={ESCALATIONS} />
+                  <EscalationAlerts escalations={escalations} />
                 </div>
               )}
 
