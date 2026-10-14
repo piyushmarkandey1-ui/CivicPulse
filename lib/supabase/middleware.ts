@@ -36,6 +36,11 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // If no live Supabase keys configured, return early for instant demo bypass
+  if (!isRealSupabase) {
+    return supabaseResponse;
+  }
+
   // Real Supabase is configured
   const supabase = createServerClient(
     supabaseUrl!,
