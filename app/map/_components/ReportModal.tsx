@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { type Category, type Severity, type Issue } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 // ─── Step definitions ─────────────────────────────────────────────────────────
 const STEPS = ["Photo", "Location", "Category", "Description", "Review"];
@@ -368,15 +370,36 @@ function StepReview({ draft }: { draft: DraftIssue }) {
   );
 }
 
+// ─── Ward derivation from coordinates (Mumbai grid) ──────────────────────────
+function deriveWard(lat: number, lng: number): string {
+  // Simple bounding-box lookup for major Mumbai wards
+  if (lat > 19.18 && lng < 72.84) return "Ward 25 — Borivali West";
+  if (lat > 19.17) return "Ward 21 — Malad West";
+  if (lat > 19.14) return "Ward 16 — Oshiwara";
+  if (lat > 19.12 && lng > 72.87) return "Ward 23 — Powai";
+  if (lat > 19.11) return "Ward 12 — Andheri East";
+  if (lat > 19.08 && lng < 72.84) return "Ward 31 — Versova";
+  if (lat > 19.08) return "Ward 14 — Dadar";
+  if (lat > 19.06 && lng > 72.87) return "Ward 18 — Kurla";
+  if (lat > 19.06) return "Ward 10 — Sion";
+  if (lat > 19.05 && lng < 72.84) return "Ward 7 — Bandra West";
+  if (lat > 19.04) return "Ward 6 — Mahim";
+  return "Ward 3 — Colaba";
+}
+
+type SubmitState = "idle" | "loading" | "success" | "error";
+
 interface ReportModalProps {
   onClose: () => void;
-  onSubmit: (issue: Omit<Issue, "id" | "upvotes" | "reportedAt">) => void;
+  /** Optional post-submit hook for optimistic local state in parent */
+  onSubmit?: (issue: Omit<Issue, "id" | "upvotes" | "reportedAt">) => void;
 }
 
 export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<DraftIssue>(DEFAULT_DRAFT);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const updateDraft = (partial: Partial<DraftIssue>) =>
     setDraft((d) => ({ ...d, ...partial }));
@@ -389,23 +412,88 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
     return true;
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setTimeout(() => {
-      onSubmit({
+  // Convert blob URL → data URL so Firebase Storage can upload it
+  const blobToDataUrl = async (blobUrl: string): Promise<string> => {
+    try {
+      const res = await fetch(blobUrl);
+      const blob = await res.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return blobUrl; // fallback: keep the blob URL
+    }
+  };
+
+  const handleSubmit = useCallback(async () => {
+    setSubmitState("loading");
+    setErrorMsg("");
+
+    try {
+      const category = (draft.category || "Other") as Category;
+      const severity = (draft.severity || "moderate") as Severity;
+      const ward = deriveWard(draft.lat, draft.lng);
+      const title = `${category} at ${draft.address}`;
+
+      // Convert blob URL to data URL for storage compatibility
+      let photoUrl = "";
+      if (draft.photoFile) {
+        if (draft.photoFile.startsWith("blob:")) {
+          photoUrl = await blobToDataUrl(draft.photoFile);
+        } else {
+          photoUrl = draft.photoFile;
+        }
+      }
+
+      const issuePayload = {
         lat: draft.lat,
         lng: draft.lng,
-        category: (draft.category || "Other") as Category,
-        severity: (draft.severity || "moderate") as Severity,
-        title: `${draft.category || "Issue"} at ${draft.address}`,
+        category,
+        severity,
+        title,
         description: draft.description,
-        ward: "Ward 12 — Andheri East",
+        ward,
         status: "Reported",
         address: draft.address,
+        upvotes: 1,
+        reportedAt: serverTimestamp(),
+        photoUrl: photoUrl || null,
+      };
 
+      // Write to Firestore
+      await addDoc(collection(db, "issues"), issuePayload);
+
+      // Notify parent for optimistic UI update
+      onSubmit?.({
+        lat: draft.lat,
+        lng: draft.lng,
+        category,
+        severity,
+        title,
+        description: draft.description,
+        ward,
+        status: "Reported",
+        address: draft.address,
+        photoUrl: photoUrl || undefined,
       });
-    }, 1200);
-  };
+
+      setSubmitState("success");
+
+      // Auto-close after showing success screen
+      setTimeout(() => onClose(), 2800);
+    } catch (err) {
+      console.error("Firestore write failed:", err);
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Failed to submit. Check your connection and try again."
+      );
+      setSubmitState("error");
+    }
+  }, [draft, onSubmit, onClose]);
 
   return (
     <div
@@ -444,15 +532,38 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          {submitted ? (
-            <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+          {submitState === "success" ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-8 gap-3 text-center"
+            >
               <span className="text-5xl">✅</span>
               <h3 className="text-lg font-bold text-[#242222]">Report Successfully Logged</h3>
               <p className="text-xs text-[#625E59] max-w-xs leading-relaxed">
-                Your report has been entered into the municipal GIS ledger and assigned to the Ward 12 engineering desk.
+                Your report has been entered into the municipal GIS ledger and assigned to the{" "}
+                <span className="font-bold text-[#242222]">{deriveWard(draft.lat, draft.lng)}</span>{" "}
+                engineering desk. Officers will be notified shortly.
               </p>
               <Badge label="Report Logged" variant="sand" />
-            </div>
+              <p className="text-[11px] text-[#88827A] mt-1">Closing automatically…</p>
+            </motion.div>
+          ) : submitState === "error" ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-8 gap-3 text-center"
+            >
+              <span className="text-5xl">⚠️</span>
+              <h3 className="text-base font-bold text-[#8B2635]">Submission Failed</h3>
+              <p className="text-xs text-[#625E59] max-w-xs leading-relaxed">{errorMsg}</p>
+              <button
+                onClick={() => setSubmitState("idle")}
+                className="mt-2 px-4 py-2 rounded-lg bg-[#8B2635] text-white text-xs font-bold hover:bg-[#641B27] transition-colors"
+              >
+                Try Again
+              </button>
+            </motion.div>
           ) : (
             <>
               {step === 0 && <StepPhoto draft={draft} onUpdate={updateDraft} />}
@@ -465,7 +576,7 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         </div>
 
         {/* Footer */}
-        {!submitted && (
+        {submitState === "idle" && (
           <div className="px-6 py-4 border-t border-[#DED8CD] flex gap-3 bg-[#F7F4ED]">
             <button
               type="button"
@@ -487,11 +598,21 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="flex-1 py-2.5 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs"
+                disabled={submitState !== "idle"}
+                className="flex-1 py-2.5 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs disabled:opacity-50"
               >
                 Submit Incident Report
               </button>
             )}
+          </div>
+        )}
+        {submitState === "loading" && (
+          <div className="px-6 py-4 border-t border-[#DED8CD] flex items-center justify-center gap-2.5 bg-[#F7F4ED]">
+            <svg className="animate-spin h-4 w-4 text-[#8B2635]" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <span className="text-xs font-bold text-[#8B2635]">Logging report to municipal GIS ledger…</span>
           </div>
         )}
       </motion.div>

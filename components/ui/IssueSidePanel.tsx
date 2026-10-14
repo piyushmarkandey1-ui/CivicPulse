@@ -219,6 +219,33 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
             <Badge label={`Reported ${reportDate}`} variant="neutral" />
           </div>
 
+          {/* Duplicate count + priority signals */}
+          {((issue.duplicateCount ?? 1) > 1 || issue.priorityScore !== undefined) && (
+            <div className="flex flex-wrap gap-2">
+              {(issue.duplicateCount ?? 1) > 1 && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F0E5D8] border border-[#8B2635]/25 text-[#8B2635] text-xs font-bold">
+                  <span>🔁</span>
+                  <span>{issue.duplicateCount} residents reported this same issue</span>
+                </div>
+              )}
+              {issue.priorityScore !== undefined && issue.status !== "Resolved" && (
+                <div
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold",
+                    issue.priorityScore >= 70
+                      ? "bg-[#FDEDED] border-[#B83A3A]/30 text-[#B83A3A]"
+                      : issue.priorityScore >= 40
+                      ? "bg-[#FEF6E9] border-[#C58B32]/30 text-[#C58B32]"
+                      : "bg-[#F7F4ED] border-[#DED8CD] text-[#625E59]"
+                  )}
+                >
+                  <span>⚡</span>
+                  <span>Priority {issue.priorityScore}/100</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Description */}
           <p className="text-xs text-[#625E59] leading-relaxed bg-[#F7F4ED] p-3 rounded-xl border border-[#DED8CD]">
             {issue.description}

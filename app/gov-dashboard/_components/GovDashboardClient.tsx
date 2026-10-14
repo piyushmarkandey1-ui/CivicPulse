@@ -8,6 +8,7 @@ import ChartsSection from "./ChartsSection";
 import WardPerformanceTable from "./WardPerformanceTable";
 import EscalationAlerts from "./EscalationAlerts";
 import RecognitionWall from "./RecognitionWall";
+import PriorityQueueTable from "./PriorityQueueTable";
 import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI } from "./mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
@@ -16,7 +17,7 @@ import { type Issue } from "@/lib/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
-export type TabType = "Overview" | "Departments" | "Wards" | "Escalations" | "Recognition";
+export type TabType = "Overview" | "Departments" | "Wards" | "Escalations" | "Priority Queue" | "Recognition";
 
 export default function GovDashboardClient() {
   const [activeTab, setActiveTab] = useState<TabType>("Overview");
@@ -141,6 +142,29 @@ export default function GovDashboardClient() {
                     </p>
                   </div>
                   <EscalationAlerts escalations={ESCALATIONS} />
+                </div>
+              )}
+
+              {activeTab === "Priority Queue" && (
+                <div>
+                  <div className="mb-5">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h2 className="text-base font-bold text-[#242222]">AI Priority Queue</h2>
+                        <p className="text-xs text-[#625E59] mt-1 max-w-lg">
+                          Issues ranked by automated priority score: Severity (40pts) + Citizen Reports (20pts) + Traffic Impact (20pts) + Days Overdue (20pts). Officers should action top items first.
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8B2635] bg-[#F0E5D8] border border-[#D6C2A3] px-2.5 py-1 rounded-full flex-shrink-0">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8B2635] opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8B2635]"></span>
+                        </span>
+                        Smart Automation
+                      </span>
+                    </div>
+                  </div>
+                  <PriorityQueueTable issues={issues.length > 0 ? issues : []} />
                 </div>
               )}
 

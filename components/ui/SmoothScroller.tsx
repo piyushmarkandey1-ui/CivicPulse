@@ -8,9 +8,9 @@ export function SmoothScroller({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Disable Lenis on gov-dashboard — it uses sticky sidebar + natural page scroll
-    // Lenis intercepts wheel events on window which conflicts with that layout
-    if (pathname?.startsWith("/gov-dashboard")) return;
+    // Disable Lenis on gov-dashboard and /map — /map is an interactive GIS viewport
+    // Lenis intercepts wheel and gesture events on window which conflicts with map navigation
+    if (pathname?.startsWith("/gov-dashboard") || pathname?.startsWith("/map")) return;
 
     const lenis = new Lenis({
       duration: 1.2,
