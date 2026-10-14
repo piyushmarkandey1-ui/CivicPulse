@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
-import { type Issue, type Category, type Severity, type IssueStatus } from "@/lib/types";
+import { type Issue, type Category, type Severity, type IssueStatus, type City } from "@/lib/types";
 import {
   subscribeToIssues,
   incrementUpvote,
@@ -24,9 +24,10 @@ export type Filters = {
   category: Category | "all";
   severity: Severity | "all";
   status: IssueStatus | "all";
+  city: City | "all";
 };
 
-const DEFAULT_FILTERS: Filters = { category: "all", severity: "all", status: "all" };
+const DEFAULT_FILTERS: Filters = { category: "all", severity: "all", status: "all", city: "Durg" };
 
 export default function MapDashboard() {
   const { user } = useAuth();
@@ -49,9 +50,19 @@ export default function MapDashboard() {
     return () => window.removeEventListener("open-report-modal", handleOpenModal);
   }, []);
 
-  // Derived: filter issues based on chips
+  // Derived: filter issues based on chips and city
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
+      if (filters.city !== "all") {
+        const issueCity =
+          issue.city ||
+          (issue.address?.includes("Durg") ||
+          issue.ward?.includes("Durg") ||
+          (issue.lat > 20 && issue.lat < 22)
+            ? "Durg"
+            : "Mumbai");
+        if (issueCity !== filters.city) return false;
+      }
       if (filters.category !== "all" && issue.category !== filters.category) return false;
       if (filters.severity !== "all" && issue.severity !== filters.severity) return false;
       if (filters.status !== "all" && issue.status !== filters.status) return false;
@@ -60,6 +71,16 @@ export default function MapDashboard() {
   }, [issues, filters]);
 
   const handleSelectIssue = useCallback((issue: Issue | null) => setSelectedIssue(issue), []);
+
+  const handleIssueUpdate = useCallback(
+    (updated: Partial<Issue>) => {
+      setSelectedIssue((prev) => (prev ? { ...prev, ...updated } : null));
+      setIssues((prev) =>
+        prev.map((it) => (it.id === selectedIssue?.id ? { ...it, ...updated } : it))
+      );
+    },
+    [selectedIssue?.id]
+  );
 
   const handleUpvote = useCallback(async (id: string) => {
     // Optimistic local update
@@ -110,22 +131,26 @@ export default function MapDashboard() {
           photoUrl = issue.photoFile;
         }
 
+        const isDurg = issue.city === "Durg" || (issue.lat !== undefined && issue.lat > 20 && issue.lat < 22);
         const newIssue: Issue = {
           category: issue.category || "Other",
           severity: issue.severity || "moderate",
-          address: issue.address || "Andheri East, Mumbai",
-          lat: issue.lat ?? 19.09,
-          lng: issue.lng ?? 72.865,
+          address: issue.address || (isDurg ? "Indira Market Main Road, Durg" : "Andheri East, Mumbai"),
+          lat: issue.lat ?? (isDurg ? 21.1904 : 19.09),
+          lng: issue.lng ?? (isDurg ? 81.2849 : 72.865),
+          city: isDurg ? "Durg" : "Mumbai",
           ...issue,
           id: issueId,
           upvotes: 1,
           status: "Reported",
           title: issue.title || `${issue.category || "Infrastructure"} Issue Reported`,
           description: issue.description || "Reported by citizen via CivicPulse mobile web.",
-          ward: issue.ward || "Ward 12 — Andheri East",
+          ward: issue.ward || (isDurg ? "Ward 12 — Mohan Nagar, Durg" : "Ward 12 — Andheri East"),
           reportedAt: new Date().toISOString(),
           photoUrl,
           reporterUid: user?.id || "anonymous",
+          assignedDepartment: "Public Works Department (Civil Maintenance)",
+          progressStage: "Reported",
         };
 
         // Instant local feedback
@@ -154,6 +179,7 @@ export default function MapDashboard() {
         selectedIssue={selectedIssue}
         onSelectIssue={handleSelectIssue}
         showHeatmap={showHeatmap}
+        selectedCity={filters.city === "all" ? undefined : filters.city}
       />
 
       {/* ── Filter bar (top center floating) with Report Issue button ── */}
@@ -183,6 +209,7 @@ export default function MapDashboard() {
             issue={selectedIssue}
             onClose={() => setSelectedIssue(null)}
             onUpvote={() => handleUpvote(selectedIssue.id)}
+            onUpdateIssue={handleIssueUpdate}
           />
         )}
       </AnimatePresence>

@@ -8,9 +8,11 @@ import ChartsSection from "./ChartsSection";
 import WardPerformanceTable from "./WardPerformanceTable";
 import EscalationAlerts from "./EscalationAlerts";
 import RecognitionWall from "./RecognitionWall";
+import DepartmentTriageSection from "./DepartmentTriageSection";
 import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI } from "./mockData";
+import { MOCK_ISSUES } from "@/app/map/_components/mockData";
 import { useAuth } from "@/contexts/AuthContext";
-import { subscribeToIssues } from "@/lib/supabase/db";
+import { subscribeToIssues, updateIssue } from "@/lib/supabase/db";
 import { type Issue } from "@/lib/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
@@ -19,8 +21,8 @@ export type TabType = "Overview" | "Departments" | "Wards" | "Escalations" | "Re
 
 export default function GovDashboardClient() {
   const [activeTab, setActiveTab] = useState<TabType>("Overview");
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [issues, setIssues] = useState<Issue[]>(MOCK_ISSUES);
+  const [loading, setLoading] = useState(false);
   const { role, loading: authLoading, user } = useAuth();
   const router = useRouter();
 
@@ -33,16 +35,36 @@ export default function GovDashboardClient() {
   useEffect(() => {
     const unsubscribe = subscribeToIssues(
       (fetched: Issue[]) => {
-        setIssues(fetched);
+        if (fetched && fetched.length > 0) {
+          const merged = [
+            ...fetched,
+            ...MOCK_ISSUES.filter((m) => !fetched.some((f) => f.id === m.id)),
+          ];
+          setIssues(merged);
+        } else {
+          setIssues(MOCK_ISSUES);
+        }
         setLoading(false);
       },
       (error) => {
-        console.warn("Supabase error in gov dashboard, falling back to mock KPIs:", error);
+        console.warn("Supabase error in gov dashboard, falling back to mock data:", error);
+        setIssues(MOCK_ISSUES);
         setLoading(false);
       }
     );
     return unsubscribe;
   }, []);
+
+  const handleUpdateIssue = async (id: string, updates: Partial<Issue>) => {
+    setIssues((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, ...updates } : it))
+    );
+    try {
+      await updateIssue(id, updates);
+    } catch (err) {
+      console.warn("Issue updated locally in gov dashboard:", err);
+    }
+  };
 
   // Live KPIs
   const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
@@ -110,10 +132,24 @@ export default function GovDashboardClient() {
             </div>
           ) : (
             <>
-              {(activeTab === "Overview" || activeTab === "Departments") && (
+              {activeTab === "Overview" && (
                 <>
                   <KPIStatsRow kpi={KPI_DATA} />
+                  <DepartmentTriageSection
+                    issues={issues}
+                    onUpdateIssue={handleUpdateIssue}
+                  />
                   <ChartsSection />
+                </>
+              )}
+
+              {activeTab === "Departments" && (
+                <>
+                  <DepartmentTriageSection
+                    issues={issues}
+                    onUpdateIssue={handleUpdateIssue}
+                  />
+                  <KPIStatsRow kpi={KPI_DATA} />
                 </>
               )}
 

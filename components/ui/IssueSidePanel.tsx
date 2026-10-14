@@ -6,9 +6,18 @@ import { type Issue, type IssueStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { db, storage } from "@/lib/firebase";
-import { doc, updateDoc } from "firebase/firestore";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
+import { updateIssue } from "@/lib/supabase/db";
+import IssueProgressModal from "@/components/ui/IssueProgressModal";
+import {
+  Building2,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  ShieldCheck,
+  UserCheck,
+  Activity,
+} from "lucide-react";
 
 // ─── Escalation countdown ─────────────────────────────────────────────────────
 const SLA_HOURS: Record<Issue["severity"], number> = { critical: 72, moderate: 120, resolved: 240 };
@@ -95,12 +104,19 @@ interface IssueSidePanelProps {
   issue: Issue;
   onClose: () => void;
   onUpvote: (id: string) => void;
+  onUpdateIssue?: (updated: Partial<Issue>) => Promise<void> | void;
 }
 
-export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePanelProps) {
+export default function IssueSidePanel({
+  issue,
+  onClose,
+  onUpvote,
+  onUpdateIssue,
+}: IssueSidePanelProps) {
   const { role } = useAuth();
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const escl = useEscalation(issue.reportedAt, issue.severity);
@@ -112,36 +128,40 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
     }
   };
 
+  const handleProgressUpdate = async (updates: Partial<Issue>) => {
+    try {
+      await updateIssue(issue.id, updates);
+      if (onUpdateIssue) {
+        await onUpdateIssue(updates);
+      }
+    } catch (err) {
+      console.warn("Could not sync with DB:", err);
+    }
+  };
+
   const handleStatusUpdate = async (newStatus: IssueStatus, e?: React.ChangeEvent<HTMLInputElement>) => {
     if (isUpdating) return;
     setIsUpdating(true);
 
     try {
-      const issueRef = doc(db, "issues", issue.id);
       const updates: Partial<Issue> = { status: newStatus };
 
       if (e?.target?.files && e.target.files[0]) {
         const file = e.target.files[0];
         const reader = new FileReader();
 
-        const photoPromise = new Promise<string>((resolve, reject) => {
-          reader.onloadend = async () => {
-            try {
-              const storageRef = ref(storage, `resolutions/${issue.id}.jpg`);
-              await uploadString(storageRef, reader.result as string, "data_url");
-              const url = await getDownloadURL(storageRef);
-              resolve(url);
-            } catch (err) {
-              reject(err);
-            }
-          };
+        const base64Url = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
           reader.readAsDataURL(file);
         });
 
-        updates.resolutionPhotoUrl = await photoPromise;
+        updates.resolutionPhotoUrl = base64Url;
       }
 
-      await updateDoc(issueRef, updates);
+      await updateIssue(issue.id, updates);
+      if (onUpdateIssue) {
+        await onUpdateIssue(updates);
+      }
     } catch (error) {
       console.error("Error updating status:", error);
     } finally {
@@ -278,17 +298,89 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
             </div>
           </div>
 
+          {/* Municipal Department & Progress Lifecycle Card */}
+          <div className="rounded-xl border border-[#DED8CD] bg-[#FDFBF7] p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#88827A] flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-[#8B2635]" />
+                Municipal Lifecycle Stage
+              </span>
+              <span
+                className={cn(
+                  "px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                  issue.status === "Resolved"
+                    ? "bg-[#EBF0EC] text-[#3F6B4C] border-[#C2D9C6]"
+                    : issue.status === "In Progress"
+                    ? "bg-[#FEF6E9] text-[#B07525] border-[#EBD8AE]"
+                    : issue.assignedDepartment
+                    ? "bg-[#FAF3EF] text-[#8B2635] border-[#EAD6CE]"
+                    : "bg-white text-[#625E59] border-[#DED8CD]"
+                )}
+              >
+                {issue.status === "Resolved"
+                  ? "Stage 5: Field Resolved"
+                  : issue.status === "In Progress"
+                  ? "Stage 4: In Progress"
+                  : issue.assignedDepartment
+                  ? "Stage 3: Assigned to Dept"
+                  : issue.priorityScore !== undefined
+                  ? "Stage 2: AI Triaged"
+                  : "Stage 1: Citizen Logged"}
+              </span>
+            </div>
+
+            {issue.assignedDepartment ? (
+              <div className="text-xs space-y-1">
+                <div className="flex items-start gap-1.5 text-[#242222]">
+                  <Building2 className="w-3.5 h-3.5 text-[#8B2635] mt-0.5 flex-shrink-0" />
+                  <span className="font-semibold leading-tight">{issue.assignedDepartment}</span>
+                </div>
+                {issue.assignedOfficer && (
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#625E59]">
+                    <UserCheck className="w-3.5 h-3.5 text-[#3F6B4C]" />
+                    <span>
+                      Officer: <strong className="text-[#242222]">{issue.assignedOfficer}</strong>
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-[11px] text-[#88827A] italic">
+                Awaiting directorate department allocation.
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setProgressModalOpen(true)}
+              className="w-full py-2 px-3 rounded-lg bg-[#FAF3EF] hover:bg-[#F5EAE6] text-[#8B2635] border border-[#E8D4CD] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <span>Track Stage Timeline &amp; Directives</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           {/* Actions depending on role */}
           {role === "government" ? (
             <div className="flex flex-col gap-2.5 pt-2 border-t border-[#DED8CD]">
               <p className="text-[10px] font-bold text-[#88827A] uppercase tracking-wider">
                 Official Operations Triage
               </p>
+              
+              <button
+                type="button"
+                onClick={() => setProgressModalOpen(true)}
+                className="w-full py-2.5 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              >
+                <Building2 className="w-4 h-4" />
+                <span>Assign Department / Dispatch</span>
+              </button>
+
               <div className="flex gap-2">
                 <button
                   disabled={isUpdating || issue.status === "In Progress" || issue.status === "Resolved"}
                   onClick={() => handleStatusUpdate("In Progress")}
-                  className="flex-1 py-2.5 rounded-lg bg-[#C58B32] hover:bg-[#A87222] text-white text-xs font-bold transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-[#C58B32] hover:bg-[#A87222] text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   Mark In Progress
                 </button>
@@ -303,7 +395,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                 <button
                   disabled={isUpdating || issue.status === "Resolved"}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 py-2.5 rounded-lg bg-[#5E8061] hover:bg-[#4C684F] text-white text-xs font-bold transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-[#5E8061] hover:bg-[#4C684F] text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? "Saving..." : "Resolve + Photo"}
                 </button>
@@ -331,6 +423,15 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           )}
         </div>
       </div>
+
+      {/* ── 5-Stage Live Resolution & Officer Dispatch Modal ── */}
+      <IssueProgressModal
+        issue={issue}
+        isOpen={progressModalOpen}
+        onClose={() => setProgressModalOpen(false)}
+        isOfficer={role === "government"}
+        onUpdateIssue={handleProgressUpdate}
+      />
     </motion.aside>
   );
 }

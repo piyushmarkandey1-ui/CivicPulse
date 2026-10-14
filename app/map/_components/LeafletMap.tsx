@@ -98,6 +98,19 @@ function FlyToIssue({ issue }: { issue: Issue | null }) {
   return null;
 }
 
+function FlyToCity({ city }: { city?: "Mumbai" | "Durg" }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!city) return;
+    if (city === "Durg") {
+      map.flyTo([21.1904, 81.2849], 13.5, { duration: 1.2 });
+    } else {
+      map.flyTo([19.09, 72.865], 13, { duration: 1.2 });
+    }
+  }, [city, map]);
+  return null;
+}
+
 function PinCluster({
   issues,
   selectedIssue,
@@ -132,6 +145,7 @@ interface LeafletMapProps {
   selectedIssue: Issue | null;
   onSelectIssue: (issue: Issue | null) => void;
   showHeatmap: boolean;
+  selectedCity?: "Mumbai" | "Durg";
 }
 
 export default function LeafletMap({
@@ -139,6 +153,7 @@ export default function LeafletMap({
   selectedIssue,
   onSelectIssue,
   showHeatmap,
+  selectedCity = "Mumbai",
 }: LeafletMapProps) {
   // Dynamically cluster points with Turf.js
   const hotspots = useMemo(() => {
@@ -237,6 +252,7 @@ export default function LeafletMap({
         />
 
         <FlyToIssue issue={selectedIssue} />
+        <FlyToCity city={selectedCity} />
 
         {/* Heatmap overlay with restrained status colors */}
         {showHeatmap &&

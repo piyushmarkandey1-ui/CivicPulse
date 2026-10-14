@@ -12,6 +12,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { subscribeToUserIssues } from "@/lib/supabase/db";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { MOCK_ISSUES } from "@/app/map/_components/mockData";
 import Link from "next/link";
 
 export default function ProfileClient() {
@@ -102,24 +103,29 @@ export default function ProfileClient() {
                 <Skeleton key={i} className="h-56 rounded-xl bg-white border border-[#DED8CD]" />
               ))}
             </div>
-          ) : issues.length === 0 ? (
-            <div className="text-center py-12 rounded-2xl bg-white border border-[#DED8CD] shadow-[0_4px_20px_rgba(36,34,34,0.05)] p-6">
-              <span className="text-4xl">📢</span>
-              <h3 className="text-sm font-bold text-[#242222] mt-2 mb-1">
-                No reports submitted yet
-              </h3>
-              <p className="text-xs text-[#625E59] max-w-sm mx-auto mb-4">
-                Help improve your neighbourhood by reporting road hazards, waterlogging, or structural issues.
-              </p>
-              <Link
-                href="/map?report=true"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors"
-              >
-                Pin Your First Issue →
-              </Link>
-            </div>
           ) : (
-            <MyReportsGrid reports={issues} onSelectReport={(i) => setSelectedIssue(i)} />
+            <div className="space-y-4">
+              {issues.length === 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3.5 rounded-xl bg-[#FAF3EF] border border-[#EAD6CE] text-xs">
+                  <div className="flex items-center gap-2 text-[#8B2635]">
+                    <span className="font-bold">Municipal Corridor Demo:</span>
+                    <span className="text-[#625E59]">
+                      Displaying active citizen reports from Durg, CG corridor with real-time department routing.
+                    </span>
+                  </div>
+                  <Link
+                    href="/map?report=true"
+                    className="font-bold text-[#8B2635] hover:underline whitespace-nowrap"
+                  >
+                    + File Your Own Report →
+                  </Link>
+                </div>
+              )}
+              <MyReportsGrid
+                reports={issues.length > 0 ? issues : MOCK_ISSUES.slice(18, 24)}
+                onSelectReport={(i) => setSelectedIssue(i)}
+              />
+            </div>
           )}
         </section>
       </main>

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { type Issue } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
-import { MapPin } from "lucide-react";
+import { MapPin, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STATUS_STEPS = ["Reported", "Verified", "In Progress", "Resolved"];
@@ -85,6 +85,13 @@ export default function MyReportsGrid({ reports, onSelectReport }: MyReportsGrid
               <MapPin className="h-3 w-3 text-[#8B2635]" /> {report.ward}
             </p>
             <h3 className="text-xs font-bold text-[#242222] mb-1 line-clamp-1">{report.title}</h3>
+
+            {report.assignedDepartment && (
+              <p className="text-[10px] text-[#8B2635] font-semibold truncate flex items-center gap-1 my-1">
+                <Building2 className="w-2.5 h-2.5 flex-shrink-0" />
+                <span className="truncate">{report.assignedDepartment}</span>
+              </p>
+            )}
 
             <MiniTimeline current={report.status} />
 

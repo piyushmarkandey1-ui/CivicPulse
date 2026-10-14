@@ -58,6 +58,13 @@ interface IssueRow {
   repair_cost_estimate?: string | null;
   duplicate_count?: number;
   priority_score?: number;
+  city?: string | null;
+  assigned_department?: string | null;
+  assigned_officer?: string | null;
+  assigned_at?: string | null;
+  target_date?: string | null;
+  triage_notes?: string | null;
+  progress_stage?: string | null;
 }
 
 /** Convert snake_case DB row → camelCase Issue interface */
@@ -81,6 +88,13 @@ function rowToIssue(row: IssueRow): Issue {
     resolutionPhotoUrl:  row.resolution_photo_url ?? undefined,
     trafficImpact:       (row.traffic_impact as Issue["trafficImpact"]) ?? undefined,
     repairCostEstimate:  row.repair_cost_estimate ?? undefined,
+    city:                (row.city as Issue["city"]) ?? undefined,
+    assignedDepartment:  row.assigned_department ?? undefined,
+    assignedOfficer:     row.assigned_officer ?? undefined,
+    assignedAt:          row.assigned_at ?? undefined,
+    targetDate:          row.target_date ?? undefined,
+    triageNotes:         row.triage_notes ?? undefined,
+    progressStage:       (row.progress_stage as Issue["progressStage"]) ?? undefined,
   };
 }
 
@@ -158,6 +172,29 @@ export async function incrementUpvote(id: string): Promise<void> {
       .from("issues")
       .update({ upvotes: ((data as { upvotes: number } | null)?.upvotes ?? 0) + 1 })
       .eq("id", id);
+  }
+}
+
+// ─── Update issue fields (department assignment, officer, status, notes) ────────
+export async function updateIssue(id: string, updates: Partial<Issue>): Promise<void> {
+  const supabase = createClient();
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.status !== undefined) dbUpdates.status = updates.status;
+  if (updates.assignedDepartment !== undefined) dbUpdates.assigned_department = updates.assignedDepartment;
+  if (updates.assignedOfficer !== undefined) dbUpdates.assigned_officer = updates.assignedOfficer;
+  if (updates.resolutionPhotoUrl !== undefined) dbUpdates.resolution_photo_url = updates.resolutionPhotoUrl;
+  if (updates.triageNotes !== undefined) dbUpdates.triage_notes = updates.triageNotes;
+  if (updates.assignedAt !== undefined) dbUpdates.assigned_at = updates.assignedAt;
+  if (updates.targetDate !== undefined) dbUpdates.target_date = updates.targetDate;
+  if (updates.progressStage !== undefined) dbUpdates.progress_stage = updates.progressStage;
+
+  try {
+    const { error } = await supabase.from("issues").update(dbUpdates).eq("id", id);
+    if (error) {
+      console.warn("Supabase updateIssue (fallback to local state):", error.message);
+    }
+  } catch (err) {
+    console.warn("Supabase network error, issue preserved locally:", err);
   }
 }
 

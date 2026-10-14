@@ -7,11 +7,13 @@ import {
   type Issue,
   type TrafficImpact,
   type RepairScale,
+  type City,
   REPAIR_COST_MAP,
 } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+import { DURG_WARDS, MUMBAI_WARDS } from "./mockData";
 
 // ─── Step definitions ─────────────────────────────────────────────────────────
 const STEPS = ["Photo", "Location", "Category", "Description", "Impact", "Review"];
@@ -108,18 +110,22 @@ interface DraftIssue {
   address: string;
   trafficImpact: TrafficImpact | null;
   repairScale: RepairScale | null;
+  city: City;
+  ward: string;
 }
 
 const DEFAULT_DRAFT: DraftIssue = {
   photoFile: null,
-  lat: 19.09,
-  lng: 72.865,
+  lat: 21.1904,
+  lng: 81.2849,
   category: null,
   severity: null,
   description: "",
-  address: "Andheri East, Mumbai",
+  address: "Indira Market Main Road, Durg",
   trafficImpact: null,
   repairScale: null,
+  city: "Durg",
+  ward: "Ward 15 — Indira Market, Durg",
 };
 
 // ─── Progress stepper ─────────────────────────────────────────────────────────
@@ -264,21 +270,99 @@ function StepLocation({
   draft: DraftIssue;
   onUpdate: (d: Partial<DraftIssue>) => void;
 }) {
+  const wards = draft.city === "Durg" ? DURG_WARDS : MUMBAI_WARDS;
+
+  const handleCityChange = (city: City) => {
+    if (city === "Durg") {
+      onUpdate({
+        city: "Durg",
+        lat: 21.1904,
+        lng: 81.2849,
+        ward: "Ward 15 — Indira Market, Durg",
+        address: "Indira Market Main Road, Durg",
+      });
+    } else {
+      onUpdate({
+        city: "Mumbai",
+        lat: 19.09,
+        lng: 72.865,
+        ward: "Ward 12 — Andheri East",
+        address: "S.V. Road near Andheri Station, Mumbai",
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="text-base font-bold text-[#242222] mb-0.5">Confirm Incident Location</h3>
-        <p className="text-xs text-[#625E59]">Coordinates detected from GPS. Adjust street address if needed.</p>
+        <h3 className="text-base font-bold text-[#242222] mb-0.5">Incident Location &amp; Municipal Ward</h3>
+        <p className="text-xs text-[#625E59]">Select municipal jurisdiction and confirm street address.</p>
       </div>
 
-      <div
-        className="relative h-40 rounded-xl overflow-hidden border border-[#DED8CD] flex items-center justify-center"
-        style={{ background: "#EFE9DE" }}
-      >
+      {/* City Switcher */}
+      <div>
+        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">
+          Municipal Corporation / City
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => handleCityChange("Durg")}
+            className={cn(
+              "py-2.5 px-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-0.5 cursor-pointer",
+              draft.city === "Durg"
+                ? "bg-[#8B2635] text-white border-[#8B2635] shadow-xs"
+                : "bg-white text-[#625E59] border-[#DED8CD] hover:border-[#8B2635]/40"
+            )}
+          >
+            <span className="font-bold">Durg, CG</span>
+            <span className={cn("text-[10px]", draft.city === "Durg" ? "text-white/80" : "text-[#88827A]")}>
+              Durg Municipal Corp.
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleCityChange("Mumbai")}
+            className={cn(
+              "py-2.5 px-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-0.5 cursor-pointer",
+              draft.city === "Mumbai"
+                ? "bg-[#8B2635] text-white border-[#8B2635] shadow-xs"
+                : "bg-white text-[#625E59] border-[#DED8CD] hover:border-[#8B2635]/40"
+            )}
+          >
+            <span className="font-bold">Mumbai, MH</span>
+            <span className={cn("text-[10px]", draft.city === "Mumbai" ? "text-white/80" : "text-[#88827A]")}>
+              BMC Municipal Corp.
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Ward Dropdown */}
+      <div>
+        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">
+          Administrative Ward
+        </label>
+        <select
+          value={draft.ward}
+          onChange={(e) => onUpdate({ ward: e.target.value })}
+          className="w-full px-3.5 py-2.5 rounded-lg text-sm border border-[#C9C0B3] bg-white text-[#242222] focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15 cursor-pointer"
+        >
+          {wards.map((w) => (
+            <option key={w} value={w}>
+              {w}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="relative h-20 rounded-xl overflow-hidden border border-[#DED8CD] flex items-center justify-center bg-[#F4EFE6]">
         <div className="text-center">
-          <span className="text-2xl">📍</span>
-          <p className="text-xs font-bold text-[#242222] mt-1">Geo-Tagged to Ward 12</p>
-          <p className="text-[11px] font-mono text-[#8B2635]">{draft.lat.toFixed(4)}, {draft.lng.toFixed(4)}</p>
+          <p className="text-xs font-bold text-[#242222]">GPS Geo-Coordinates for {draft.city}</p>
+          <p className="text-[11px] font-mono font-bold text-[#8B2635] mt-0.5">
+            {draft.lat.toFixed(4)}° N, {draft.lng.toFixed(4)}° E
+          </p>
         </div>
       </div>
 
@@ -290,7 +374,11 @@ function StepLocation({
           type="text"
           value={draft.address}
           onChange={(e) => onUpdate({ address: e.target.value })}
-          placeholder="e.g. S.V. Road near Andheri Station"
+          placeholder={
+            draft.city === "Durg"
+              ? "e.g. Near Station Road / Indira Market"
+              : "e.g. S.V. Road near Andheri Station"
+          }
           className="w-full px-3.5 py-2.5 rounded-lg text-sm border border-[#C9C0B3] bg-white text-[#242222] focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15"
         />
       </div>
@@ -613,12 +701,13 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         severity: (draft.severity || "moderate") as Severity,
         title: `${draft.category || "Issue"} at ${draft.address}`,
         description: draft.description,
-        ward: "Ward 12 — Andheri East",
+        ward: draft.ward || (draft.city === "Durg" ? "Ward 15 — Indira Market, Durg" : "Ward 12 — Andheri East"),
+        city: draft.city,
         status: "Reported",
         address: draft.address,
         photoUrl: draft.photoFile || undefined,
         photoFile: draft.photoFile || undefined,
-        // Impact fields — written to Firestore
+        // Impact fields — written to database
         trafficImpact: draft.trafficImpact ?? undefined,
         repairCostEstimate: draft.repairScale
           ? REPAIR_COST_MAP[draft.repairScale]
@@ -669,7 +758,7 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
               <span className="text-5xl">✅</span>
               <h3 className="text-lg font-bold text-[#242222]">Report Successfully Logged</h3>
               <p className="text-xs text-[#625E59] max-w-xs leading-relaxed">
-                Your report has been entered into the municipal GIS ledger and assigned to the Ward 12 engineering desk.
+                Your report in {draft.city} has been entered into the municipal GIS ledger and assigned to the {draft.ward} engineering desk.
               </p>
               <Badge label="Report Logged" variant="sand" />
             </div>

@@ -31,7 +31,7 @@ export default function FilterBar({
     filters.status === "all";
 
   const handleReset = () => {
-    onChange({ category: "all", severity: "all", status: "all" });
+    onChange({ category: "all", severity: "all", status: "all", city: filters.city });
   };
 
   const handleCategoryClick = (cat: Category) => {
@@ -63,6 +63,50 @@ export default function FilterBar({
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="pointer-events-auto flex items-center gap-2 p-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#DED8CD] shadow-[0_8px_30px_rgba(36,34,34,0.1)] overflow-x-auto scrollbar-none"
       >
+        {/* City Selector Pill Group */}
+        <div className="flex items-center gap-1 bg-[#F4EFE6] p-0.5 rounded-full border border-[#E2DACE]">
+          <button
+            type="button"
+            onClick={() => onChange({ ...filters, city: "Durg" })}
+            className={cn(
+              "px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer",
+              filters.city === "Durg"
+                ? "bg-[#8B2635] text-white shadow-xs"
+                : "text-[#625E59] hover:text-[#8B2635]"
+            )}
+          >
+            <span>Durg, CG</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ ...filters, city: "Mumbai" })}
+            className={cn(
+              "px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer",
+              filters.city === "Mumbai"
+                ? "bg-[#8B2635] text-white shadow-xs"
+                : "text-[#625E59] hover:text-[#8B2635]"
+            )}
+          >
+            <span>Mumbai</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ ...filters, city: "all" })}
+            className={cn(
+              "px-2 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer",
+              filters.city === "all"
+                ? "bg-white text-[#242222] shadow-2xs font-bold"
+                : "text-[#88827A] hover:text-[#242222]"
+            )}
+          >
+            All
+          </button>
+        </div>
+
+        <div className="h-4 w-px bg-[#DED8CD] flex-shrink-0" />
+
         {/* All / Reset Pill */}
         <button
           type="button"

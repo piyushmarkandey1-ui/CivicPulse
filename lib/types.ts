@@ -11,6 +11,8 @@ export const REPAIR_COST_MAP: Record<RepairScale, string> = {
   full_road:     "₹5L – ₹25L",
 };
 
+export type City = "Mumbai" | "Durg";
+
 export interface Issue {
   id:                  string;
   lat:                 number;
@@ -33,4 +35,13 @@ export interface Issue {
   repairCostEstimate?: string;   // e.g. "₹50k – ₹5L"
   duplicateCount?:     number;
   priorityScore?:      number;
+  /** City location (Mumbai or Durg, Chhattisgarh) */
+  city?:               City;
+  /** Officer Workflow & Department Assignment */
+  assignedDepartment?: string;
+  assignedOfficer?:    string;
+  assignedAt?:         string;
+  targetDate?:         string;
+  triageNotes?:        string;
+  progressStage?:      "Reported" | "AI Triaged" | "Department Assigned" | "In Progress" | "Resolved";
 }
