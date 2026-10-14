@@ -11,6 +11,7 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import Link from "next/link";
+import { MapPin, Cpu, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/Badge";
@@ -421,41 +422,63 @@ function HeroSection() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────────────────
    Section 1b: THREE-STEP AI FLOW (Visual Process Overview)
 ───────────────────────────────────────────────────────────────────────────── */
 const FLOW_STEPS = [
   {
-    emoji: "🏘️",
     step: "01",
+    phase: "Spatial Intake",
     actor: "Citizens & Inspectors",
     title: "Report Damage on the Map",
     description:
-      "Community members and on-ground inspectors pin road damage with photos and exact GPS coordinates directly on the live city map — from potholes to structural cracks.",
+      "Community members and on-ground inspectors pin road hazards with geotagged photographic proof and sub-meter GPS coordinates directly on the live municipal GIS map.",
+    capabilities: [
+      "Sub-meter GPS pinpointing",
+      "Geotagged image metadata",
+      "Live GIS layer broadcast",
+    ],
+    icon: MapPin,
     color: "#8B2635",
-    bg: "#F0E5D8",
-    border: "#D6C2A3",
+    bg: "#FAF3EF",
+    border: "#EAD6CE",
+    accentLight: "rgba(139,38,53,0.08)",
   },
   {
-    emoji: "🤖",
     step: "02",
+    phase: "Automated Triage",
     actor: "AI Priority Engine",
     title: "Deduplicate, Score & Rank",
     description:
-      "The AI engine merges duplicate reports, then scores each issue by safety risk, repair cost efficiency, and traffic impact — surfacing the most critical repairs first.",
-    color: "#5E8061",
-    bg: "#EAF0EA",
-    border: "#B8D0BC",
+      "The spatial AI engine clusters redundant incident reports, then dynamically scores each ticket by safety severity, repair cost efficiency, and traffic density impact.",
+    capabilities: [
+      "Spatial duplicate clustering",
+      "Multi-factor severity scoring",
+      "Statutory SLA timer kickoff",
+    ],
+    icon: Cpu,
+    color: "#3F6B4C",
+    bg: "#EFF5F1",
+    border: "#CFDFD3",
+    accentLight: "rgba(63,107,76,0.08)",
   },
   {
-    emoji: "🛠️",
     step: "03",
+    phase: "Field Resolution",
     actor: "Municipal Officers",
     title: "Act on a Ranked Queue",
     description:
-      "Officers receive a clean, ranked work queue. Each resolved issue requires photographic proof of repair — creating an auditable public record of every fix.",
-    color: "#C58B32",
-    bg: "#F5ECD8",
-    border: "#D9B96A",
+      "Public works engineering crews receive an optimized, prioritized work roster. Every resolution requires verified photographic field proof before case closure.",
+    capabilities: [
+      "Ranked dispatch queue",
+      "Before/After photographic proof",
+      "Public immutable audit log",
+    ],
+    icon: ShieldCheck,
+    color: "#B07525",
+    bg: "#FBF5EA",
+    border: "#EEDBBE",
+    accentLight: "rgba(176,117,37,0.08)",
   },
 ];
 
@@ -468,119 +491,154 @@ function ThreeStepFlowSection() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-caption text-[#8B2635] mb-1.5 font-bold tracking-widest uppercase">How CivicPulse Works</p>
-          <h2 className="text-h1 text-[#242222] mb-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8B2635]/8 border border-[#8B2635]/20 mb-3.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8B2635] animate-pulse" />
+            <span className="text-[11px] font-bold text-[#8B2635] tracking-widest uppercase font-mono">
+              The Civic Maintenance Pipeline
+            </span>
+          </div>
+
+          <h2 className="text-h1 text-[#242222] mb-3">
             From Report to Resolution —{" "}
             <span className="text-[#8B2635]">Automated</span>
           </h2>
-          <p className="text-body text-[#625E59] max-w-2xl mx-auto">
-            A closed-loop system where AI handles the complexity so citizens,
-            inspectors, and officers can focus on what matters: fixing the road.
+          <p className="text-body text-[#625E59] max-w-2xl mx-auto text-base sm:text-lg">
+            A closed-loop civic intelligence system that eliminates bureaucracy, merges duplicates,
+            and ensures every public works repair is backed by photographic verification.
           </p>
         </motion.div>
 
-        {/* Flow Steps with connecting arrows */}
+        {/* 3 Step Cards with Seamless Desktop Flow */}
         <div className="relative">
-          {/* Desktop connector line */}
-          <div className="hidden lg:block absolute top-[68px] left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-0.5 bg-gradient-to-r from-[#D6C2A3] via-[#B8D0BC] to-[#D9B96A] z-0" />
-
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 relative z-10">
-            {FLOW_STEPS.map((step, i) => (
-              <motion.div
-                key={step.step}
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.55, delay: 0.1 + i * 0.15 }}
-                className="flex flex-col"
-              >
-                {/* Step indicator + emoji */}
-                <div className="flex flex-col items-center mb-5">
-                  <motion.div
-                    className="relative flex items-center justify-center w-16 h-16 rounded-2xl text-3xl shadow-[0_8px_24px_rgba(36,34,34,0.1)] mb-3"
-                    style={{ background: step.bg, border: `1.5px solid ${step.border}` }}
-                    whileHover={{ scale: 1.08, rotate: 2 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    {step.emoji}
-                    {/* Step number bubble */}
-                    <span
-                      className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow-sm"
-                      style={{ background: step.color }}
-                    >
-                      {i + 1}
-                    </span>
-                  </motion.div>
-
-                  {/* Connector arrow for mobile */}
-                  {i < FLOW_STEPS.length - 1 && (
-                    <div className="md:hidden flex items-center justify-center mt-4 mb-1">
-                      <motion.div
-                        className="text-[#D6C2A3] text-xl font-bold"
-                        animate={{ y: [0, 4, 0] }}
-                        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        ↓
-                      </motion.div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Card */}
-                <div
-                  className="flex-1 rounded-3xl bg-white/90 backdrop-blur-md border shadow-[0_10px_32px_rgba(36,34,34,0.06),0_1px_3px_rgba(36,34,34,0.03)] hover:shadow-[0_20px_48px_rgba(36,34,34,0.10)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-                  style={{ borderColor: `${step.border}99` }}
+            {FLOW_STEPS.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={step.step}
+                  initial={{ opacity: 0, y: 28 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.55, delay: 0.12 + i * 0.14 }}
+                  className="group flex flex-col relative"
                 >
-                  {/* Colored top accent bar */}
-                  <div className="h-1 w-full" style={{ background: step.color }} />
+                  {/* Card Container */}
+                  <div
+                    className="flex-1 flex flex-col rounded-3xl bg-white/95 backdrop-blur-md border shadow-[0_4px_20px_-4px_rgba(36,34,34,0.05),0_1px_3px_rgba(36,34,34,0.03)] hover:shadow-[0_20px_40px_-12px_rgba(36,34,34,0.12)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
+                    style={{ borderColor: `${step.border}` }}
+                  >
+                    {/* Top colored accent line */}
+                    <div className="h-1.5 w-full transition-all duration-300" style={{ background: step.color }} />
 
-                  <div className="p-6">
-                    {/* Actor label */}
-                    <span
-                      className="inline-block text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full mb-3"
-                      style={{ background: step.bg, color: step.color, border: `1px solid ${step.border}` }}
-                    >
-                      {step.actor}
-                    </span>
+                    <div className="p-7 flex-1 flex flex-col">
+                      {/* Top Meta Bar: Icon + Actor + Step Number */}
+                      <div className="flex items-center justify-between gap-3 mb-6">
+                        <div className="flex items-center gap-3">
+                          {/* Refined Icon Container */}
+                          <div
+                            className="w-11 h-11 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105"
+                            style={{
+                              background: step.bg,
+                              borderColor: step.border,
+                              color: step.color,
+                            }}
+                          >
+                            <Icon className="w-5 h-5 stroke-[2]" />
+                          </div>
 
-                    <h3 className="text-h3 text-[#242222] mb-2.5">{step.title}</h3>
-                    <p className="text-body-sm text-[#625E59] leading-relaxed">{step.description}</p>
+                          {/* Actor Badge */}
+                          <span
+                            className="text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border"
+                            style={{
+                              background: step.bg,
+                              color: step.color,
+                              borderColor: step.border,
+                            }}
+                          >
+                            {step.actor}
+                          </span>
+                        </div>
 
-                    {/* Step number watermark */}
-                    <div
-                      className="mt-5 pt-4 border-t flex items-center justify-between"
-                      style={{ borderColor: `${step.border}66` }}
-                    >
-                      <span className="text-xs text-[#88827A] font-medium">Step {step.step}</span>
-                      <span
-                        className="text-3xl font-bold font-mono opacity-15"
-                        style={{ color: step.color }}
+                        {/* Minimalist Step Pill */}
+                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F5F2EB] border border-[#E6E0D4] text-[#88827A]">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: step.color }} />
+                          <span className="font-mono text-[11px] font-bold tracking-wider">
+                            0{i + 1}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Title & Description */}
+                      <h3 className="text-xl font-bold text-[#242222] mb-2.5 tracking-tight group-hover:text-[#8B2635] transition-colors duration-200">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm text-[#625E59] leading-relaxed mb-6 flex-1">
+                        {step.description}
+                      </p>
+
+                      {/* Capabilities Checklist */}
+                      <div
+                        className="pt-4 border-t space-y-2 mt-auto"
+                        style={{ borderColor: `${step.border}88` }}
                       >
-                        {step.step}
-                      </span>
+                        {step.capabilities.map((cap) => (
+                          <div key={cap} className="flex items-center gap-2">
+                            <CheckCircle2
+                              className="w-3.5 h-3.5 shrink-0 opacity-80"
+                              style={{ color: step.color }}
+                            />
+                            <span className="text-xs text-[#524E48] font-medium tracking-tight">
+                              {cap}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Bottom Phase Badge */}
+                      <div className="mt-5 pt-3.5 border-t border-[#F0EBE3] flex items-center justify-between text-xs text-[#88827A]">
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-[#9E978F]">
+                          Phase 0{i + 1}
+                        </span>
+                        <span
+                          className="font-medium text-[11px]"
+                          style={{ color: step.color }}
+                        >
+                          {step.phase}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+
+                  {/* Flow Arrow between cards on desktop */}
+                  {i < FLOW_STEPS.length - 1 && (
+                    <div className="hidden md:flex absolute -right-3 lg:-right-4 top-1/2 -translate-y-1/2 z-20 w-6 h-6 lg:w-7 lg:h-7 rounded-full bg-white border border-[#DED8CD] items-center justify-center text-[#88827A] shadow-sm pointer-events-none">
+                      <ArrowRight className="w-3 h-3 text-[#625E59]" />
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
 
         {/* Bottom note */}
         <motion.div
-          className="mt-12 text-center"
+          className="mt-14 text-center"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <p className="text-xs text-[#88827A] max-w-md mx-auto leading-relaxed">
-            Every resolved issue is logged with photographic proof, timestamps, and officer signatures —
-            creating a permanent, publicly auditable record of municipal maintenance.
-          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/70 backdrop-blur-sm border border-[#E6E0D4] shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[#5E8061]" />
+            <p className="text-xs text-[#625E59] font-medium">
+              Every resolved issue is logged with photographic proof, timestamps, and officer credentials —
+              creating an immutable municipal audit ledger.
+            </p>
+          </div>
         </motion.div>
       </div>
     </section>
