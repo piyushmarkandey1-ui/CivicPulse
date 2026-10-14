@@ -35,10 +35,18 @@ export default function DepartmentTriageSection({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
+  const [sortBy, setSortBy] = useState<"priority" | "newest" | "upvotes">("priority");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const [highPriorityOnly, setHighPriorityOnly] = useState(false);
 
-  // Filtered issues
+  // Filtered and sorted issues (defaults to AI Priority Queue sorted by score out of 100)
   const filtered = useMemo(() => {
-    return issues.filter((issue) => {
+    const list = issues.filter((issue) => {
+      // High Priority Queue (Score >= 80)
+      if (highPriorityOnly && (issue.priorityScore ?? 70) < 80) {
+        return false;
+      }
+
       // City
       if (selectedCity !== "all") {
         const issueCity =
@@ -80,7 +88,24 @@ export default function DepartmentTriageSection({
 
       return true;
     });
-  }, [issues, selectedCity, selectedDept, statusFilter, searchQuery]);
+
+    // Sort by AI Priority Score (/100) descending by default
+    return list.sort((a, b) => {
+      if (sortBy === "priority") {
+        const scoreA = a.priorityScore ?? 70;
+        const scoreB = b.priorityScore ?? 70;
+        return sortOrder === "desc" ? scoreB - scoreA : scoreA - scoreB;
+      }
+      if (sortBy === "upvotes") {
+        return sortOrder === "desc"
+          ? (b.upvotes ?? 0) - (a.upvotes ?? 0)
+          : (a.upvotes ?? 0) - (b.upvotes ?? 0);
+      }
+      return sortOrder === "desc"
+        ? new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime()
+        : new Date(a.reportedAt).getTime() - new Date(b.reportedAt).getTime();
+    });
+  }, [issues, selectedCity, selectedDept, statusFilter, searchQuery, sortBy, sortOrder, highPriorityOnly]);
 
   // Statistics
   const durgCount = issues.filter(
@@ -216,6 +241,22 @@ export default function DepartmentTriageSection({
             </button>
           </div>
 
+          {/* Quick Priority Queue Toggle */}
+          <button
+            type="button"
+            onClick={() => setHighPriorityOnly((prev) => !prev)}
+            className={cn(
+              "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border shadow-2xs",
+              highPriorityOnly
+                ? "bg-[#8B2635] text-white border-[#8B2635]"
+                : "bg-[#FAF3EF] text-[#8B2635] border-[#EAD6CE] hover:bg-[#F3E5DF]"
+            )}
+            title="Filter to Top Priority tickets (Score ≥ 80/100)"
+          >
+            <span>⚡ High Priority Queue (≥80)</span>
+            {highPriorityOnly && <span className="text-[10px] opacity-80">✕</span>}
+          </button>
+
           {/* Search Box */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#88827A]" />
@@ -265,13 +306,38 @@ export default function DepartmentTriageSection({
               <option value="Resolved">Resolved</option>
             </select>
 
-            {(selectedDept !== "all" || statusFilter !== "all" || searchQuery) && (
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-1.5 pl-1 border-l border-[#DED8CD]">
+              <span className="text-[#88827A] font-semibold flex items-center gap-1 text-xs">
+                <ArrowUpDown className="w-3.5 h-3.5 text-[#8B2635]" />
+                Rank by:
+              </span>
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [sb, so] = e.target.value.split("-") as ["priority" | "newest" | "upvotes", "desc" | "asc"];
+                  setSortBy(sb);
+                  setSortOrder(so);
+                }}
+                className="px-2.5 py-1.5 rounded-lg border border-[#DED8CD] bg-[#FDFBF7] text-[#242222] font-bold text-xs focus:outline-none focus:border-[#8B2635] cursor-pointer"
+              >
+                <option value="priority-desc">⚡ AI Priority Score (Highest /100 First)</option>
+                <option value="priority-asc">AI Priority Score (Lowest First)</option>
+                <option value="upvotes-desc">Citizen Upvotes (Highest)</option>
+                <option value="newest-desc">Date Reported (Newest)</option>
+              </select>
+            </div>
+
+            {(selectedDept !== "all" || statusFilter !== "all" || searchQuery || highPriorityOnly || sortBy !== "priority") && (
               <button
                 type="button"
                 onClick={() => {
                   setSelectedDept("all");
                   setStatusFilter("all");
                   setSearchQuery("");
+                  setHighPriorityOnly(false);
+                  setSortBy("priority");
+                  setSortOrder("desc");
                 }}
                 className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#8B2635] hover:bg-[#FAF3EF] transition-colors cursor-pointer"
               >
@@ -294,7 +360,23 @@ export default function DepartmentTriageSection({
               <tr className="border-b border-[#E8E2D8] bg-[#FDFBF7] text-[10px] font-bold text-[#88827A] uppercase tracking-wider">
                 <th className="py-3 px-3.5">Ticket Ref &amp; City</th>
                 <th className="py-3 px-3.5">Issue Summary &amp; Ward</th>
-                <th className="py-3 px-3.5">AI Triage Score</th>
+                <th
+                  onClick={() => {
+                    if (sortBy === "priority") {
+                      setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+                    } else {
+                      setSortBy("priority");
+                      setSortOrder("desc");
+                    }
+                  }}
+                  className="py-3 px-3.5 cursor-pointer hover:text-[#8B2635] transition-colors select-none group"
+                  title="Click to sort by AI Priority Score out of 100"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>AI Priority Score (/100)</span>
+                    <ArrowUpDown className={cn("w-3 h-3 transition-colors", sortBy === "priority" ? "text-[#8B2635]" : "text-[#88827A] group-hover:text-[#8B2635]")} />
+                  </div>
+                </th>
                 <th className="py-3 px-3.5">Target Department</th>
                 <th className="py-3 px-3.5">Officer Assigned</th>
                 <th className="py-3 px-3.5">Lifecycle Stage</th>
@@ -368,20 +450,34 @@ export default function DepartmentTriageSection({
                         </p>
                       </td>
 
-                      {/* AI Triage Score */}
+                      {/* AI Priority Score */}
                       <td className="py-3 px-3.5 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span
                             className={cn(
-                              "font-mono font-bold px-2 py-0.5 rounded-md text-[11px] border",
-                              (issue.priorityScore ?? 75) >= 80
+                              "font-mono font-bold px-2.5 py-1 rounded-md text-xs border tabular-nums flex items-center gap-0.5 shadow-2xs",
+                              (issue.priorityScore ?? 75) >= 85
                                 ? "bg-[#FAF3EF] text-[#8B2635] border-[#EAD6CE]"
-                                : "bg-[#FDF6EA] text-[#B07525] border-[#EEDBBE]"
+                                : (issue.priorityScore ?? 75) >= 70
+                                ? "bg-[#FEF6E9] text-[#B07525] border-[#EBD8AE]"
+                                : (issue.priorityScore ?? 75) >= 45
+                                ? "bg-[#FAF8F3] text-[#625E59] border-[#DED8CD]"
+                                : "bg-[#EEF5EE] text-[#3F6B4C] border-[#C2D9C6]"
                             )}
                           >
-                            {issue.priorityScore ?? 75}/100
+                            <span>{issue.priorityScore ?? 75}</span>
+                            <span className="text-[10px] opacity-75 font-normal">/100</span>
                           </span>
-                          <span className="text-[10px] text-[#88827A] uppercase font-bold">
+                          <span
+                            className={cn(
+                              "text-[10px] uppercase font-bold",
+                              (issue.priorityScore ?? 75) >= 85
+                                ? "text-[#8B2635]"
+                                : (issue.priorityScore ?? 75) >= 70
+                                ? "text-[#B07525]"
+                                : "text-[#88827A]"
+                            )}
+                          >
                             {issue.severity}
                           </span>
                         </div>

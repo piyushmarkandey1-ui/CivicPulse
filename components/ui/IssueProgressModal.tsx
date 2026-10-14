@@ -92,7 +92,7 @@ export default function IssueProgressModal({
       color: "#3F6B4C",
       bg: "#EFF5F1",
       border: "#CFDFD3",
-      description: `Priority Score computed: ${issue.priorityScore ?? 75}/100. Duplicate clustering verified.`,
+      description: `AI Priority Score: ${issue.priorityScore ?? 75}/100. Computed dynamically via Severity (40%), Traffic Impact (30%), Citizen Upvotes (20%), and Duplicate Clustering (10%).`,
       date: "Automated analysis complete",
     },
     {
@@ -233,16 +233,27 @@ export default function IssueProgressModal({
               </div>
             </div>
 
-            {issue.assignedDepartment && (
-              <div className="text-left sm:text-right">
-                <p className="text-[10px] font-bold tracking-wider uppercase text-[#88827A]">
-                  Assigned Department
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1.5 rounded-xl bg-[#FAF3EF] border border-[#EAD6CE] text-left sm:text-right">
+                <p className="text-[9px] font-bold tracking-wider uppercase text-[#88827A]">
+                  AI Priority Score
                 </p>
-                <p className="text-xs font-bold text-[#3F6B4C]">
-                  {issue.assignedDepartment}
+                <p className="text-sm font-bold font-mono text-[#8B2635] tabular-nums">
+                  {issue.priorityScore ?? 75}<span className="text-[10px] text-[#88827A] font-normal">/100</span>
                 </p>
               </div>
-            )}
+
+              {issue.assignedDepartment && (
+                <div className="text-left sm:text-right">
+                  <p className="text-[10px] font-bold tracking-wider uppercase text-[#88827A]">
+                    Assigned Department
+                  </p>
+                  <p className="text-xs font-bold text-[#3F6B4C]">
+                    {issue.assignedDepartment}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* 5-Step Lifecycle Pipeline */}

@@ -8,6 +8,26 @@ const getPastDate = (daysAgo: number, hoursAgo: number) => {
   return new Date(now - (daysAgo * 24 * 60 * 60 * 1000) - (hoursAgo * 60 * 60 * 1000)).toISOString();
 };
 
+/**
+ * CivicPulse AI Priority Engine Scoring Model (0–100)
+ * - Severity Weight: 40% (Critical: 40, Moderate: 24, Low/Resolved: 8)
+ * - Traffic Impact:  30% (High: 30, Medium: 18, Low: 6)
+ * - Citizen Upvotes: 20% (Normalized up to 20 pts)
+ * - Duplicate Clustering: 10% (Cluster density up to 10 pts)
+ */
+export function calcPriorityScore(
+  severity: "critical" | "moderate" | "resolved",
+  trafficImpact: "high" | "medium" | "low" = "medium",
+  upvotes: number = 20,
+  duplicateCount: number = 2
+): number {
+  const sevScore = severity === "critical" ? 40 : severity === "moderate" ? 24 : 8;
+  const trafScore = trafficImpact === "high" ? 30 : trafficImpact === "medium" ? 18 : 6;
+  const upvScore = Math.min(20, Math.round((upvotes / 110) * 20));
+  const dupScore = Math.min(10, duplicateCount * 2);
+  return Math.min(100, Math.max(15, sevScore + trafScore + upvScore + dupScore));
+}
+
 export const MOCK_ISSUES: Issue[] = [
   {
     id: "ISS-001", lat: 19.1197, lng: 72.8468,
@@ -299,6 +319,22 @@ export const MOCK_ISSUES: Issue[] = [
     progressStage: "In Progress",
   },
 ];
+
+// Ensure every issue in MOCK_ISSUES has its calculated AI priority score (0-100)
+MOCK_ISSUES.forEach((issue) => {
+  if (issue.priorityScore === undefined) {
+    const defaultTraffic =
+      issue.severity === "critical" ? "high" : issue.severity === "moderate" ? "medium" : "low";
+    const defaultDuplicates =
+      issue.severity === "critical" ? 4 : issue.severity === "moderate" ? 2 : 0;
+    issue.priorityScore = calcPriorityScore(
+      issue.severity,
+      issue.trafficImpact || defaultTraffic,
+      issue.upvotes || 20,
+      issue.duplicateCount !== undefined ? issue.duplicateCount : defaultDuplicates
+    );
+  }
+});
 
 // ─── Ward leaderboard for sidebar ────────────────────────────────────────────
 export const WARD_LEADERBOARD = [

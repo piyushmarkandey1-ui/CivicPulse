@@ -281,16 +281,22 @@ export default function IssueSidePanel({
           )}
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 gap-2.5 text-center">
-            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2">
               <p className="text-[10px] text-[#88827A] font-medium uppercase">Upvotes</p>
               <p className="text-sm font-bold font-mono text-[#8B2635]">{issue.upvotes}</p>
             </div>
-            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
-              <p className="text-[10px] text-[#88827A] font-medium uppercase">Status</p>
-              <p className="text-xs font-bold text-[#242222] truncate">{issue.status}</p>
+            <div className="rounded-lg bg-[#FAF3EF] border border-[#EAD6CE] p-2">
+              <p className="text-[10px] text-[#8B2635] font-bold uppercase">Priority</p>
+              <p className="text-sm font-bold font-mono text-[#8B2635] tabular-nums">
+                {issue.priorityScore ?? 75}<span className="text-[10px] opacity-75 font-normal">/100</span>
+              </p>
             </div>
-            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2">
+              <p className="text-[10px] text-[#88827A] font-medium uppercase">Status</p>
+              <p className="text-xs font-bold text-[#242222] truncate mt-0.5">{issue.status}</p>
+            </div>
+            <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2">
               <p className="text-[10px] text-[#88827A] font-medium uppercase">SLA</p>
               <p className="text-sm font-bold font-mono text-[#242222]">
                 {SLA_HOURS[issue.severity]}h
