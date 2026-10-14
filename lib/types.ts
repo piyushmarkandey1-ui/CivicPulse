@@ -1,6 +1,6 @@
 export type Severity          = "critical" | "moderate" | "resolved";
 export type Category          = "Pothole" | "Water Clogging" | "Crack" | "Road Damage" | "Other";
-export type IssueStatus       = "Reported" | "Verified" | "In Progress" | "Resolved";
+export type IssueStatus       = "Reported" | "Verified" | "In Progress" | "Resolved" | "Escalated";
 export type TrafficImpact     = "Low" | "Medium" | "High";
 export type RepairCostEstimate = "< ₹50k" | "₹50k–2L" | "> ₹2L";
 

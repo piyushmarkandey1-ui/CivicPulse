@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { MapContainer, TileLayer, CircleMarker, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L, { type LatLngTuple } from "leaflet";
+import * as turf from "@turf/turf";
+import "leaflet/dist/leaflet.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
 import {
   ChevronUp,
   ChevronDown,
@@ -64,11 +68,6 @@ function deduplicateIssues(issues: Issue[]): Issue[] {
 
   return result;
 }
-
-import "leaflet/dist/leaflet.css";
-import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
-import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
-import * as turf from "@turf/turf";
 
 // ─── Municipal GIS Config ──────────────────────────────────────────────────────
 const MAP_CENTER: LatLngTuple = [19.09, 72.865];

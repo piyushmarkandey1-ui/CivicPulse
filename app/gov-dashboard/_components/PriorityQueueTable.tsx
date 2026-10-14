@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { type Issue } from "@/lib/types";
+import { type Issue, type IssueStatus } from "@/lib/types";
 import { computePriorityScore, cn } from "@/lib/utils";
-import { AlertTriangle, Zap, Users, TrendingUp, IndianRupee, MapPin, Clock, ChevronDown } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { AlertTriangle, Zap, Users, TrendingUp, IndianRupee, MapPin, Clock, ChevronDown, CheckCircle2, Loader2 } from "lucide-react";
 
 // ─── Priority tier helpers ────────────────────────────────────────────────────
 type PriorityTier = "CRITICAL" | "HIGH" | "NORMAL";
@@ -46,11 +48,12 @@ const TIER_CONFIG = {
 const TRAFFIC_ICON: Record<string, string> = { High: "🔴", Medium: "🟡", Low: "🟢" };
 const COST_ICON: Record<string, string> = { "< ₹50k": "💚", "₹50k–2L": "🟡", "> ₹2L": "🔴" };
 
-const STATUS_COLOR: Record<Issue["status"], string> = {
-  Reported: "bg-[#F0E5D8] text-[#8B2635]",
-  Verified: "bg-[#EBF0EC] text-[#4A7A55]",
+const STATUS_COLOR: Record<IssueStatus, string> = {
+  Reported:     "bg-[#F0E5D8] text-[#8B2635]",
+  Verified:     "bg-[#EBF0EC] text-[#4A7A55]",
   "In Progress": "bg-[#FEF6E9] text-[#C58B32]",
-  Resolved: "bg-[#EBF0EC] text-[#5E8061]",
+  Resolved:     "bg-[#EBF0EC] text-[#5E8061]",
+  Escalated:    "bg-[#FDEDED] text-[#B83A3A]",
 };
 
 // ─── Score bar ────────────────────────────────────────────────────────────────
@@ -73,42 +76,165 @@ function ScoreBar({ score, tier }: { score: number; tier: PriorityTier }) {
   );
 }
 
-// ─── Assign action panel ──────────────────────────────────────────────────────
+// ─── Status steps (ordered pipeline) ─────────────────────────────────────────
+const STATUS_STEPS: IssueStatus[] = ["Reported", "Verified", "In Progress", "Resolved"];
+
+const STATUS_META: Record<IssueStatus, { color: string; bg: string; icon: string }> = {
+  Reported:      { color: "#8B2635", bg: "#F0E5D8", icon: "📋" },
+  Verified:      { color: "#4A7A55", bg: "#EBF0EC", icon: "✅" },
+  "In Progress": { color: "#C58B32", bg: "#FEF6E9", icon: "🔧" },
+  Resolved:      { color: "#5E8061", bg: "#EBF0EC", icon: "🎉" },
+  Escalated:     { color: "#B83A3A", bg: "#FDEDED", icon: "🚨" },
+};
+
+// ─── Assign / Triage Modal Panel ──────────────────────────────────────────────
 function AssignPanel({ issue, onClose }: { issue: Issue; onClose: () => void }) {
+  const [selectedStatus, setSelectedStatus] = useState<IssueStatus>(issue.status);
+  const [note, setNote] = useState(issue.officerNote ?? "");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  const isDirty =
+    selectedStatus !== issue.status || note.trim() !== (issue.officerNote ?? "").trim();
+
+  const handleSave = useCallback(async () => {
+    if (saveState === "saving") return;
+    setSaveState("saving");
+    try {
+      await updateDoc(doc(db, "issues", issue.id), {
+        status:      selectedStatus,
+        officerNote: note.trim() || null,
+        lastUpdated: new Date().toISOString(),
+      });
+      setSaveState("saved");
+      // Auto-close after success
+      setTimeout(() => {
+        setSaveState("idle");
+        onClose();
+      }, 1200);
+    } catch (err) {
+      console.error("Assign update failed:", err);
+      setSaveState("error");
+      setTimeout(() => setSaveState("idle"), 2500);
+    }
+  }, [issue.id, selectedStatus, note, saveState, onClose]);
+
   return (
     <motion.div
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       className="overflow-hidden"
     >
-      <div className="px-4 pb-4 pt-3 border-t border-[#DED8CD] bg-[#F7F4ED]/60">
-        <p className="text-[11px] font-bold text-[#88827A] uppercase tracking-wider mb-2">
-          Quick Actions — {issue.id}
-        </p>
-        <div className="flex flex-wrap gap-2">
+      <div className="px-4 pb-5 pt-4 border-t border-[#DED8CD] bg-[#F7F4ED]/70 space-y-4">
+
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-bold text-[#88827A] uppercase tracking-wider">
+            Officer Triage — <span className="font-mono text-[#242222]">{issue.id}</span>
+          </p>
+          {issue.lastUpdated && (
+            <p className="text-[10px] text-[#88827A]">
+              Last updated {new Date(issue.lastUpdated).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
+            </p>
+          )}
+        </div>
+
+        {/* Status stepper */}
+        <div>
+          <p className="text-[11px] font-bold text-[#242222] mb-2">Change Status</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {STATUS_STEPS.map((s) => {
+              const meta = STATUS_META[s];
+              const isActive = selectedStatus === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSelectedStatus(s)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all",
+                    isActive
+                      ? "text-white shadow-sm"
+                      : "bg-white border-[#DED8CD] text-[#625E59] hover:border-[#8B2635] hover:text-[#242222]"
+                  )}
+                  style={isActive ? { backgroundColor: meta.color, borderColor: meta.color } : undefined}
+                >
+                  <span>{meta.icon}</span>
+                  <span>{s}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Officer note */}
+        <div>
+          <label className="text-[11px] font-bold text-[#242222] block mb-1.5">
+            Officer Note <span className="text-[#88827A] font-normal">(optional)</span>
+          </label>
+          <textarea
+            rows={2}
+            maxLength={300}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="e.g. Field crew dispatched. Estimated fix by EOD Thursday."
+            className="w-full px-3 py-2 rounded-lg text-xs text-[#242222] placeholder-[#88827A] border border-[#C9C0B3] bg-white resize-none focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/10 leading-relaxed"
+          />
+          <p className="text-[10px] text-[#88827A] text-right mt-0.5">{note.length}/300</p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
           <button
-            onClick={onClose}
-            className="px-3.5 py-1.5 bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center gap-1.5"
+            onClick={handleSave}
+            disabled={!isDirty || saveState === "saving" || saveState === "saved"}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-xs",
+              saveState === "saved"
+                ? "bg-[#5E8061] text-white border border-[#5E8061]"
+                : saveState === "error"
+                ? "bg-[#B83A3A] text-white border border-[#B83A3A]"
+                : isDirty
+                ? "bg-[#8B2635] hover:bg-[#641B27] text-white border border-transparent"
+                : "bg-white text-[#88827A] border border-[#DED8CD] cursor-not-allowed"
+            )}
           >
-            <Zap className="h-3 w-3" />
-            Dispatch Field Crew
+            {saveState === "saving" && <Loader2 className="h-3 w-3 animate-spin" />}
+            {saveState === "saved"  && <CheckCircle2 className="h-3 w-3" />}
+            {saveState === "error"  && <AlertTriangle className="h-3 w-3" />}
+            {saveState === "saving" ? "Saving…"
+              : saveState === "saved"  ? "Saved!"
+              : saveState === "error"  ? "Retry"
+              : "Confirm Update"}
           </button>
+
           <button
             onClick={onClose}
-            className="px-3.5 py-1.5 bg-white hover:bg-[#F0E5D8] text-[#242222] text-xs font-bold rounded-lg border border-[#DED8CD] transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-lg text-xs font-bold border border-[#DED8CD] bg-white text-[#625E59] hover:text-[#242222] hover:border-[#C9C0B3] transition-colors"
           >
-            <AlertTriangle className="h-3 w-3 text-[#C58B32]" />
-            Escalate to Directorate
+            Cancel
           </button>
+
+          {/* Escalate shortcut */}
           <button
-            onClick={onClose}
-            className="px-3.5 py-1.5 bg-white hover:bg-[#F0E5D8] text-[#242222] text-xs font-bold rounded-lg border border-[#DED8CD] transition-colors"
+            onClick={() => {
+              setSelectedStatus("Escalated" as IssueStatus);
+              setNote((n) => n ? n + " [Escalated to directorate]" : "Escalated to directorate");
+            }}
+            className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-[#DED8CD] bg-white text-[#C58B32] hover:border-[#C58B32] transition-colors"
           >
-            View on GIS Map
+            <AlertTriangle className="h-3 w-3" />
+            Escalate
           </button>
         </div>
+
+        {/* Existing officer note preview */}
+        {issue.officerNote && issue.officerNote !== note && (
+          <p className="text-[10px] text-[#88827A] bg-white border border-[#DED8CD] rounded-lg px-3 py-2 leading-relaxed">
+            <span className="font-bold">Previous note:</span> {issue.officerNote}
+          </p>
+        )}
       </div>
     </motion.div>
   );

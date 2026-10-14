@@ -316,7 +316,7 @@ function HeroSection() {
 
           {/* Heading with Dynamic Word Animation */}
           <h1 className="text-hero text-[#242222] tracking-tight">
-            Civic{" "}
+            Coordinating Road Repairs{" "}
             <span className="inline-block relative overflow-visible text-[#8B2635]">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -331,16 +331,15 @@ function HeroSection() {
                 </motion.span>
               </AnimatePresence>
             </span>
-            .
-            <br />
-            Powered by You.
+            .<br />
+            Across a City.
           </h1>
 
           {/* Subtitle */}
           <p className="text-body text-[#625E59] max-w-lg leading-relaxed">
-            Report municipal infrastructure failures with precise geolocation and
-            verified photographic evidence. Track government SLA response times
-            in real time and hold ward administrations accountable.
+            Smart automation for municipal infrastructure — citizens report road damage,
+            AI deduplicates and scores by safety, cost &amp; traffic impact, and officers
+            act on a ranked priority queue with photographic proof of resolution.
           </p>
 
           {/* Action Buttons */}
@@ -423,8 +422,163 @@ function HeroSection() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Section 2: HOW IT WORKS (Floating Step Cards)
+   Section 1b: AI FLOW — 3-Step Visual Pipeline
 ───────────────────────────────────────────────────────────────────────────── */
+const AI_FLOW_STEPS = [
+  {
+    emoji: "🏘️",
+    step: "01",
+    title: "Citizens & Inspectors Report",
+    description:
+      "Road damage is reported directly on the live GIS map — with GPS-pinned location, category, severity, photographic evidence, and traffic impact. Each report enters the municipal queue instantly.",
+    highlight: "Any citizen. Any ward. Real-time.",
+    accentColor: "#8B2635",
+    accentBg: "#F0E5D8",
+    accentBorder: "#D6C2A3",
+  },
+  {
+    emoji: "🤖",
+    step: "02",
+    title: "AI Priority Engine",
+    description:
+      "Duplicate reports within 80m are merged by proximity clustering. Each issue receives a 0–100 priority score: Severity (40pts) + Citizen Upvotes (20pts) + Traffic Impact (20pts) + Days Overdue (20pts).",
+    highlight: "Deduplication + Smart Scoring.",
+    accentColor: "#C58B32",
+    accentBg: "#FEF6E9",
+    accentBorder: "#E4C97A",
+  },
+  {
+    emoji: "🛠️",
+    step: "03",
+    title: "Officers Act on Ranked Queue",
+    description:
+      "Municipal officers triage from a live priority queue sorted by AI score. Status is updated (Verified → In Progress → Resolved) and repair is confirmed with photographic proof visible to all citizens.",
+    highlight: "Accountability. Proof. Closure.",
+    accentColor: "#5E8061",
+    accentBg: "#EBF0EC",
+    accentBorder: "#A8C5AD",
+  },
+];
+
+function AIFlowSection() {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-20 bg-transparent">
+      <div className="max-w-7xl mx-auto">
+
+        {/* Section header */}
+        <motion.div
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <p className="text-caption text-[#8B2635] mb-1.5 font-bold">How It Works</p>
+          <h2 className="text-h1 text-[#242222] mb-2.5">
+            Smart Automation for{" "}
+            <span className="text-[#8B2635]">Municipal Infrastructure</span>
+          </h2>
+          <p className="text-body text-[#625E59] max-w-2xl mx-auto">
+            From citizen report to photographic resolution — the entire pipeline runs on
+            live Firestore data, geospatial deduplication, and AI-scored prioritization.
+          </p>
+        </motion.div>
+
+        {/* Flow cards + connector arrows */}
+        <div className="relative grid md:grid-cols-3 gap-6">
+
+          {/* Animated connector lines (desktop only) */}
+          <div className="hidden md:block absolute top-[56px] left-[calc(33.33%-8px)] w-[calc(33.33%+16px)] pointer-events-none z-10">
+            <motion.div
+              className="h-0.5 w-full bg-gradient-to-r from-[#D6C2A3] via-[#E4C97A] to-[#D6C2A3] rounded-full"
+              initial={{ scaleX: 0, originX: 0 }}
+              animate={inView ? { scaleX: 1 } : {}}
+              transition={{ duration: 0.7, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+          <div className="hidden md:block absolute top-[56px] left-[calc(66.66%-8px)] w-[calc(33.33%+16px)] pointer-events-none z-10">
+            <motion.div
+              className="h-0.5 w-full bg-gradient-to-r from-[#E4C97A] via-[#A8C5AD] to-[#A8C5AD] rounded-full"
+              initial={{ scaleX: 0, originX: 0 }}
+              animate={inView ? { scaleX: 1 } : {}}
+              transition={{ duration: 0.7, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+
+          {AI_FLOW_STEPS.map((step, i) => (
+            <motion.div
+              key={step.step}
+              initial={{ opacity: 0, y: 28 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: 0.1 + i * 0.15 }}
+              className="relative flex flex-col rounded-3xl bg-white/90 backdrop-blur-md border border-[#DED8CD]/70 shadow-[0_12px_36px_rgba(36,34,34,0.06),0_1px_3px_rgba(36,34,34,0.03)] hover:shadow-[0_20px_48px_rgba(36,34,34,0.10)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            >
+              {/* Top accent stripe */}
+              <div className="h-1 w-full" style={{ background: step.accentColor }} />
+
+              <div className="p-6 flex flex-col gap-4 flex-1">
+                {/* Emoji + step number */}
+                <div className="flex items-center justify-between">
+                  <div
+                    className="h-14 w-14 rounded-2xl flex items-center justify-center text-3xl shadow-xs border"
+                    style={{ background: step.accentBg, borderColor: step.accentBorder }}
+                  >
+                    {step.emoji}
+                  </div>
+                  <span className="text-4xl font-bold font-mono" style={{ color: step.accentBorder }}>
+                    {step.step}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-base font-bold text-[#242222] leading-snug">{step.title}</h3>
+
+                {/* Description */}
+                <p className="text-xs text-[#625E59] leading-relaxed flex-1">{step.description}</p>
+
+                {/* Highlight pill */}
+                <div
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border self-start"
+                  style={{ color: step.accentColor, background: step.accentBg, borderColor: step.accentBorder }}
+                >
+                  <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: step.accentColor }} />
+                  {step.highlight}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom CTA strip */}
+        <motion.div
+          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 text-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <p className="text-sm text-[#625E59]">
+            End-to-end pipeline powered by{" "}
+            <span className="font-bold text-[#242222]">Firebase Firestore</span>,{" "}
+            <span className="font-bold text-[#242222]">×Turf.js spatial clustering</span>, and{" "}
+            <span className="font-bold text-[#242222]">real-time onSnapshot listeners</span>.
+          </p>
+          <Link
+            href="/map"
+            className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs"
+          >
+            Open Live Map →
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HOW IT WORKS SECTION
+   ───────────────────────────────────────────────────────────────────────────── */
 const HOW_STEPS = [
   {
     step: "01",
@@ -882,6 +1036,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full overflow-x-hidden bg-transparent">
       <HeroSection />
+      <AIFlowSection />
       <BridgeStory />
       <HowItWorksSection />
       <StatsSection />

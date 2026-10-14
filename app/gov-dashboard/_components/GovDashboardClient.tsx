@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 import KPIStatsRow from "./KPIStatsRow";
@@ -9,7 +9,7 @@ import WardPerformanceTable from "./WardPerformanceTable";
 import EscalationAlerts from "./EscalationAlerts";
 import RecognitionWall from "./RecognitionWall";
 import PriorityQueueTable from "./PriorityQueueTable";
-import { WARD_DATA, ESCALATIONS, KPI_DATA as MOCK_KPI } from "./mockData";
+import { KPI_DATA as MOCK_KPI, type WardPerformance, type Escalation } from "./mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
@@ -56,6 +56,79 @@ export default function GovDashboardClient() {
     pendingEscalations: issues.length > 0 ? pendingCount : MOCK_KPI.pendingEscalations,
     trustScore: MOCK_KPI.trustScore,
   };
+
+  // ─── Live Ward Performance ────────────────────────────────────────────────
+  const wardData = useMemo<WardPerformance[]>(() => {
+    if (issues.length === 0) return [];
+
+    const wardMap = new Map<string, Issue[]>();
+    for (const issue of issues) {
+      const key = issue.ward || "Unknown Ward";
+      if (!wardMap.has(key)) wardMap.set(key, []);
+      wardMap.get(key)!.push(issue);
+    }
+
+    const now = Date.now();
+    const result: WardPerformance[] = [];
+
+    wardMap.forEach((wardIssues, wardName) => {
+      const total = wardIssues.length;
+      const resolved = wardIssues.filter((i) => i.status === "Resolved");
+      const resolvedPercent = Math.round((resolved.length / total) * 100);
+
+      // Average days from reportedAt → now for resolved issues
+      let avgResponseDays = 0;
+      if (resolved.length > 0) {
+        const totalDays = resolved.reduce((sum, i) => {
+          const ms = now - new Date(i.reportedAt).getTime();
+          return sum + ms / 86_400_000;
+        }, 0);
+        avgResponseDays = Math.round((totalDays / resolved.length) * 10) / 10;
+      }
+
+      const status: WardPerformance["status"] =
+        resolvedPercent > 90 ? "Excellent" :
+        resolvedPercent > 75 ? "Good" :
+        resolvedPercent > 60 ? "Needs Improvement" : "Critical";
+
+      result.push({
+        id: wardName.replace(/\s+/g, "-").toUpperCase().slice(0, 6),
+        name: wardName,
+        totalReports: total,
+        resolvedPercent,
+        avgResponseDays,
+        status,
+      });
+    });
+
+    // Sort: Critical first, then Needs Improvement, then by resolvedPercent desc
+    const ORDER = { Critical: 0, "Needs Improvement": 1, Good: 2, Excellent: 3 };
+    return result.sort((a, b) => ORDER[a.status] - ORDER[b.status]);
+  }, [issues]);
+
+  // ─── Live Escalations (unresolved, > 5 days old) ──────────────────────────
+  const escalations = useMemo<Escalation[]>(() => {
+    if (issues.length === 0) return [];
+
+    const now = Date.now();
+    return issues
+      .filter((i) => {
+        if (i.status === "Resolved") return false;
+        const daysOld = (now - new Date(i.reportedAt).getTime()) / 86_400_000;
+        return daysOld > 5;
+      })
+      .map((i) => ({
+        id: i.id,
+        title: i.title,
+        ward: i.ward,
+        daysOverdue: Math.floor(
+          (now - new Date(i.reportedAt).getTime()) / 86_400_000
+        ),
+        category: i.category,
+        description: i.description,
+      }))
+      .sort((a, b) => b.daysOverdue - a.daysOverdue);
+  }, [issues]);
 
   return (
     <div className="min-h-screen bg-[#F7F4ED] text-[#242222] flex">
@@ -127,7 +200,7 @@ export default function GovDashboardClient() {
                       Comparative turnaround and closure rate metrics across all 40 municipal wards.
                     </p>
                   </div>
-                  <WardPerformanceTable data={WARD_DATA} />
+                  <WardPerformanceTable data={wardData.length > 0 ? wardData : []} />
                 </div>
               )}
 
@@ -141,7 +214,7 @@ export default function GovDashboardClient() {
                       Complaints exceeding statutory resolution turnaround limits requiring immediate directorate intervention.
                     </p>
                   </div>
-                  <EscalationAlerts escalations={ESCALATIONS} />
+                  <EscalationAlerts escalations={escalations} />
                 </div>
               )}
 

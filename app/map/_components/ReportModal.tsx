@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { type Category, type Severity, type Issue } from "@/lib/types";
+import { type Category, type Severity, type Issue, type TrafficImpact, type RepairCostEstimate } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,8 @@ interface DraftIssue {
   lng: number;
   category: Category | null;
   severity: Severity | null;
+  trafficImpact: TrafficImpact | null;
+  repairCostEstimate: RepairCostEstimate | null;
   description: string;
   address: string;
 }
@@ -40,6 +42,8 @@ const DEFAULT_DRAFT: DraftIssue = {
   lng: 72.865,
   category: null,
   severity: null,
+  trafficImpact: null,
+  repairCostEstimate: null,
   description: "",
   address: "Andheri East, Mumbai",
 };
@@ -202,22 +206,32 @@ function StepLocation({
       </div>
 
       <div>
-        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">
-          Street Address / Landmark
-        </label>
+        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">Street Address</label>
         <input
           type="text"
           value={draft.address}
           onChange={(e) => onUpdate({ address: e.target.value })}
-          placeholder="e.g. S.V. Road near Andheri Station"
-          className="w-full px-3.5 py-2.5 rounded-lg text-sm border border-[#C9C0B3] bg-white text-[#242222] focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15"
+          className="w-full px-3.5 py-2.5 rounded-lg text-xs text-[#242222] border border-[#C9C0B3] bg-white focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15"
+          placeholder="e.g. Andheri East, Mumbai"
         />
       </div>
     </div>
   );
 }
 
-// ─── Step 3: Category & Severity ──────────────────────────────────────────────
+// ─── Step 3: Category, Severity, Traffic Impact & Cost ───────────────────────
+const TRAFFIC_OPTIONS: { value: TrafficImpact; label: string; emoji: string; color: string }[] = [
+  { value: "Low",    label: "Low Traffic",    emoji: "🟢", color: "#5E8061" },
+  { value: "Medium", label: "Medium Traffic",  emoji: "🟡", color: "#C58B32" },
+  { value: "High",   label: "High Traffic",    emoji: "🔴", color: "#B83A3A" },
+];
+
+const COST_OPTIONS: { value: RepairCostEstimate; label: string; emoji: string }[] = [
+  { value: "< ₹50k",   label: "< ₹50k",   emoji: "💚" },
+  { value: "₹50k–2L",  label: "₹50k–2L",  emoji: "🟡" },
+  { value: "> ₹2L",    label: "> ₹2L",    emoji: "🔴" },
+];
+
 function StepCategory({
   draft,
   onUpdate,
@@ -232,6 +246,7 @@ function StepCategory({
         <p className="text-xs text-[#625E59]">Select classification for municipal department routing.</p>
       </div>
 
+      {/* Issue Category */}
       <div>
         <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Issue Category</p>
         <div className="grid grid-cols-2 gap-2">
@@ -254,6 +269,7 @@ function StepCategory({
         </div>
       </div>
 
+      {/* Severity */}
       <div>
         <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Severity Level</p>
         <div className="flex gap-2.5">
@@ -275,6 +291,53 @@ function StepCategory({
               }
             >
               {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Traffic Impact */}
+      <div>
+        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Traffic Impact</p>
+        <div className="flex gap-2">
+          {TRAFFIC_OPTIONS.map(({ value, label, emoji, color }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onUpdate({ trafficImpact: value })}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-bold transition-all",
+                draft.trafficImpact === value
+                  ? "text-white shadow-xs"
+                  : "border-[#DED8CD] bg-white text-[#625E59] hover:border-[#8B2635]"
+              )}
+              style={draft.trafficImpact === value ? { backgroundColor: color, borderColor: color } : undefined}
+            >
+              <span>{emoji}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Repair Cost Estimate */}
+      <div>
+        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Repair Cost Estimate</p>
+        <div className="flex gap-2">
+          {COST_OPTIONS.map(({ value, label, emoji }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onUpdate({ repairCostEstimate: value })}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-bold transition-all",
+                draft.repairCostEstimate === value
+                  ? "border-[#8B2635] bg-[#F0E5D8] text-[#8B2635] shadow-xs"
+                  : "border-[#DED8CD] bg-white text-[#625E59] hover:border-[#8B2635] hover:text-[#242222]"
+              )}
+            >
+              <span>{emoji}</span>
+              <span>{label}</span>
             </button>
           ))}
         </div>
@@ -461,6 +524,8 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         upvotes: 1,
         reportedAt: serverTimestamp(),
         photoUrl: photoUrl || null,
+        trafficImpact: draft.trafficImpact ?? null,
+        repairCostEstimate: draft.repairCostEstimate ?? null,
       };
 
       // Write to Firestore
@@ -478,6 +543,8 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         status: "Reported",
         address: draft.address,
         photoUrl: photoUrl || undefined,
+        trafficImpact: draft.trafficImpact ?? undefined,
+        repairCostEstimate: draft.repairCostEstimate ?? undefined,
       });
 
       setSubmitState("success");
