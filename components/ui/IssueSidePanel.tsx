@@ -105,11 +105,22 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
   const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync upvote state with localStorage per issue id
+  useEffect(() => {
+    if (typeof window !== "undefined" && issue?.id) {
+      const stored = localStorage.getItem(`civicpulse_upvoted_${issue.id}`);
+      setHasUpvoted(Boolean(stored));
+    }
+  }, [issue?.id]);
+
   const escl = useEscalation(issue.reportedAt, issue.severity);
 
   const handleUpvote = () => {
-    if (!hasUpvoted) {
+    if (!hasUpvoted && issue?.id) {
       setHasUpvoted(true);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`civicpulse_upvoted_${issue.id}`, "true");
+      }
       if (onUpvote) onUpvote(issue.id);
     }
   };
@@ -341,20 +352,29 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           ) : (
             <div className="flex gap-2.5 pt-1">
               <motion.button
-                whileTap={{ scale: 0.96 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-xs font-bold transition-all duration-200",
+                  "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-xs font-bold transition-all duration-200 shadow-xs",
                   hasUpvoted
                     ? "bg-[#F0E5D8] border-[#D6C2A3] text-[#8B2635] cursor-default"
-                    : "bg-[#8B2635] text-white border-transparent hover:bg-[#641B27]"
+                    : "bg-[#8B2635] text-white border-transparent hover:bg-[#641B27] cursor-pointer"
                 )}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-                </svg>
-                {hasUpvoted ? "Confirmed (+1)" : `Confirm Issue (${issue.upvotes})`}
+                <motion.span
+                  animate={hasUpvoted ? { scale: [1, 1.35, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                  className="text-sm"
+                  aria-hidden
+                >
+                  👍
+                </motion.span>
+                <span>
+                  {hasUpvoted
+                    ? `Upvoted (${issue.upvotes ?? 0})`
+                    : `Upvote Hazard (${issue.upvotes ?? 0})`}
+                </span>
               </motion.button>
             </div>
           )}
