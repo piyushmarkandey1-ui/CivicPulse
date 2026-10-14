@@ -8,9 +8,9 @@ export function SmoothScroller({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Disable Lenis on gov-dashboard and /map — /map is an interactive GIS viewport
-    // Lenis intercepts wheel and gesture events on window which conflicts with map navigation
-    if (pathname?.startsWith("/gov-dashboard") || pathname?.startsWith("/map")) return;
+    // Disable Lenis on gov-dashboard — it uses sticky sidebar + natural page scroll
+    // Lenis intercepts wheel events on window which conflicts with that layout
+    if (pathname?.startsWith("/gov-dashboard")) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -21,14 +21,17 @@ export function SmoothScroller({ children }: { children: React.ReactNode }) {
       touchMultiplier: 2,
     });
 
+    let rafId: number;
+
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
     };
   }, [pathname]);

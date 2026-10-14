@@ -4,16 +4,17 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !key) {
+  if (!supabaseUrl || !supabaseKey) {
+    // When Supabase is not configured (e.g. demo mode or fresh clone), pass through
     return supabaseResponse;
   }
 
   const supabase = createServerClient(
-    url,
-    key,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {

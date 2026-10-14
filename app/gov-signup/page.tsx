@@ -62,8 +62,8 @@ export default function GovSignupPage() {
 
       router.push("/gov-dashboard");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Failed to register government account.");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Failed to register government account.");
     } finally {
       setLoading(false);
     }

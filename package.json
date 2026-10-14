@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "ts-node --project tsconfig.seed.json -r tsconfig-paths/register scripts/seed-supabase.ts",
+    "seed:firestore": "ts-node --project tsconfig.seed.json -r tsconfig-paths/register scripts/seed-firestore.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -35,9 +37,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^18.0.7",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "firebase-admin": "^14.5.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   }
 }

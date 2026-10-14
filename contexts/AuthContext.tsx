@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { type User } from "@supabase/supabase-js";
+import { type User, type AuthChangeEvent, type Session } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
 type AuthRole = "citizen" | "government" | null;
 
@@ -31,18 +32,18 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
 });
 
+const isSupabaseConfigured = () => {
+  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<AuthRole>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => isSupabaseConfigured());
 
   const getSupabase = () => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !key) return null;
-    // Lazy import to avoid crashing on build
-    const { createClient } = require("@/lib/supabase/client");
+    if (!isSupabaseConfigured()) return null;
     return createClient();
   };
 
@@ -66,16 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const supabase = getSupabase();
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
+    if (!supabase) return;
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }: any) => {
-      if (session?.user) {
-        setUser(session.user);
-        fetchProfile(session.user.id).finally(() => setLoading(false));
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      if (data?.session?.user) {
+        setUser(data.session.user);
+        fetchProfile(data.session.user.id).finally(() => setLoading(false));
       } else {
         setLoading(false);
       }
@@ -84,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
+    } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
       if (session?.user) {
         setUser(session.user);
         await fetchProfile(session.user.id);

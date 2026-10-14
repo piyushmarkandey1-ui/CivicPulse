@@ -39,8 +39,8 @@ export default function LoginPage() {
         router.push("/map");
       }
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Failed to sign in. Check your credentials.");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Failed to sign in. Check your credentials.");
     } finally {
       setLoading(false);
     }

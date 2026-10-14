@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { type Issue, type IssueStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
-import { GradientButton } from "@/components/ui/GradientButton";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, storage } from "@/lib/firebase";
@@ -50,7 +49,6 @@ function StatusTimeline({ current }: { current: IssueStatus }) {
 
         {STATUS_STEPS.map((step, i) => {
           const done = i <= currentIdx;
-          const active = i === currentIdx;
           return (
             <div key={step} className="relative flex flex-col items-center gap-1.5 z-10">
               <div
@@ -101,44 +99,18 @@ interface IssueSidePanelProps {
 
 export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePanelProps) {
   const { role } = useAuth();
+  const [hasUpvoted, setHasUpvoted] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Upvote state: persisted per-issue in localStorage ──────────────────────
-  const LS_KEY = `civicpulse_upvoted_${issue.id}`;
-  const [hasUpvoted, setHasUpvoted] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(LS_KEY) === "1";
-  });
-  // Optimistic local count so it animates immediately without waiting for Firestore
-  const [displayCount, setDisplayCount] = useState<number>(issue.upvotes ?? 0);
-  const [countBounce, setCountBounce] = useState(false);
-
-  // Sync displayCount when the Firestore snapshot updates the issue prop
-  useEffect(() => {
-    setDisplayCount(issue.upvotes ?? 0);
-  }, [issue.upvotes]);
-
-  // Re-read localStorage whenever the selected issue changes
-  useEffect(() => {
-    setHasUpvoted(localStorage.getItem(LS_KEY) === "1");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [issue.id]);
-
   const escl = useEscalation(issue.reportedAt, issue.severity);
 
-  const handleUpvote = useCallback(() => {
-    if (hasUpvoted) return;
-    // Persist in localStorage so the disabled state survives re-mounts
-    localStorage.setItem(LS_KEY, "1");
-    setHasUpvoted(true);
-    // Optimistic count + bounce animation
-    setDisplayCount((c) => c + 1);
-    setCountBounce(true);
-    setTimeout(() => setCountBounce(false), 350);
-    if (onUpvote) onUpvote(issue.id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasUpvoted, issue.id, onUpvote]);
+  const handleUpvote = () => {
+    if (!hasUpvoted) {
+      setHasUpvoted(true);
+      if (onUpvote) onUpvote(issue.id);
+    }
+  };
 
   const handleStatusUpdate = async (newStatus: IssueStatus, e?: React.ChangeEvent<HTMLInputElement>) => {
     if (isUpdating) return;
@@ -146,13 +118,13 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
 
     try {
       const issueRef = doc(db, "issues", issue.id);
-      const updates: any = { status: newStatus };
+      const updates: Partial<Issue> = { status: newStatus };
 
       if (e?.target?.files && e.target.files[0]) {
         const file = e.target.files[0];
         const reader = new FileReader();
 
-        const photoPromise = new Promise((resolve, reject) => {
+        const photoPromise = new Promise<string>((resolve, reject) => {
           reader.onloadend = async () => {
             try {
               const storageRef = ref(storage, `resolutions/${issue.id}.jpg`);
@@ -245,33 +217,6 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
             <Badge label={`Reported ${reportDate}`} variant="neutral" />
           </div>
 
-          {/* Duplicate count + priority signals */}
-          {((issue.duplicateCount ?? 1) > 1 || issue.priorityScore !== undefined) && (
-            <div className="flex flex-wrap gap-2">
-              {(issue.duplicateCount ?? 1) > 1 && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F0E5D8] border border-[#8B2635]/25 text-[#8B2635] text-xs font-bold">
-                  <span>🔁</span>
-                  <span>{issue.duplicateCount} residents reported this same issue</span>
-                </div>
-              )}
-              {issue.priorityScore !== undefined && issue.status !== "Resolved" && (
-                <div
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold",
-                    issue.priorityScore >= 70
-                      ? "bg-[#FDEDED] border-[#B83A3A]/30 text-[#B83A3A]"
-                      : issue.priorityScore >= 40
-                      ? "bg-[#FEF6E9] border-[#C58B32]/30 text-[#C58B32]"
-                      : "bg-[#F7F4ED] border-[#DED8CD] text-[#625E59]"
-                  )}
-                >
-                  <span>⚡</span>
-                  <span>Priority {issue.priorityScore}/100</span>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Description */}
           <p className="text-xs text-[#625E59] leading-relaxed bg-[#F7F4ED] p-3 rounded-xl border border-[#DED8CD]">
             {issue.description}
@@ -319,12 +264,7 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
           <div className="grid grid-cols-3 gap-2.5 text-center">
             <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
               <p className="text-[10px] text-[#88827A] font-medium uppercase">Upvotes</p>
-              <p
-                className="text-sm font-bold font-mono text-[#8B2635] transition-transform duration-200"
-                style={{ transform: countBounce ? "scale(1.4)" : "scale(1)" }}
-              >
-                {displayCount}
-              </p>
+              <p className="text-sm font-bold font-mono text-[#8B2635]">{issue.upvotes}</p>
             </div>
             <div className="rounded-lg bg-[#F7F4ED] border border-[#DED8CD] p-2.5">
               <p className="text-[10px] text-[#88827A] font-medium uppercase">Status</p>
@@ -370,12 +310,11 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-2 pt-1">
+            <div className="flex gap-2.5 pt-1">
               <motion.button
                 whileTap={{ scale: 0.96 }}
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                aria-label={hasUpvoted ? "Already upvoted" : `Upvote this issue (${displayCount} upvotes)`}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-xs font-bold transition-all duration-200",
                   hasUpvoted
@@ -383,34 +322,11 @@ export default function IssueSidePanel({ issue, onClose, onUpvote }: IssueSidePa
                     : "bg-[#8B2635] text-white border-transparent hover:bg-[#641B27]"
                 )}
               >
-                {/* Thumb icon */}
-                <span
-                  className="transition-transform duration-200"
-                  style={{ transform: countBounce ? "scale(1.3)" : "scale(1)" }}
-                  aria-hidden
-                >
-                  👍
-                </span>
-                {/* Animated count */}
-                <span
-                  className="tabular-nums transition-transform duration-200"
-                  style={{ transform: countBounce ? "scale(1.25)" : "scale(1)" }}
-                >
-                  {hasUpvoted ? `Upvoted · ${displayCount}` : `Confirm Issue · ${displayCount}`}
-                </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                </svg>
+                {hasUpvoted ? "Confirmed (+1)" : `Confirm Issue (${issue.upvotes})`}
               </motion.button>
-
-              {/* Social proof — deduplication story */}
-              <p className="text-[11px] text-[#88827A] text-center leading-snug">
-                {displayCount > 1 ? (
-                  <>
-                    <span className="font-bold text-[#8B2635]">{displayCount} residents</span>{" "}
-                    upvoted this {issue.category.toLowerCase()} — flagged for priority action
-                  </>
-                ) : (
-                  "Be the first to confirm this issue in your ward"
-                )}
-              </p>
             </div>
           )}
         </div>

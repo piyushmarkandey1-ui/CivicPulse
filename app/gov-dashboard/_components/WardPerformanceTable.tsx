@@ -43,7 +43,7 @@ export default function WardPerformanceTable({ data }: { data: WardPerformance[]
     }
   };
 
-  const SortIcon = ({ field }: { field: SortField }) => {
+  const renderSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="h-3 w-3 text-[#88827A] ml-1 inline" />;
     return sortOrder === "asc" ? (
       <ChevronUp className="h-3 w-3 text-[#8B2635] inline ml-1" />
@@ -62,31 +62,31 @@ export default function WardPerformanceTable({ data }: { data: WardPerformance[]
                 className="py-3.5 px-6 text-xs font-bold text-[#625E59] uppercase tracking-wider cursor-pointer hover:text-[#242222] transition-colors"
                 onClick={() => handleSort("name")}
               >
-                Ward Name <SortIcon field="name" />
+                Ward Name {renderSortIcon("name")}
               </th>
               <th
                 className="py-3.5 px-6 text-xs font-bold text-[#625E59] uppercase tracking-wider cursor-pointer hover:text-[#242222] transition-colors"
                 onClick={() => handleSort("totalReports")}
               >
-                Total Reports <SortIcon field="totalReports" />
+                Total Reports {renderSortIcon("totalReports")}
               </th>
               <th
                 className="py-3.5 px-6 text-xs font-bold text-[#625E59] uppercase tracking-wider cursor-pointer hover:text-[#242222] transition-colors"
                 onClick={() => handleSort("resolvedPercent")}
               >
-                Resolution Rate (%) <SortIcon field="resolvedPercent" />
+                Resolution Rate (%) {renderSortIcon("resolvedPercent")}
               </th>
               <th
                 className="py-3.5 px-6 text-xs font-bold text-[#625E59] uppercase tracking-wider cursor-pointer hover:text-[#242222] transition-colors"
                 onClick={() => handleSort("avgResponseDays")}
               >
-                Avg Turnaround (Days) <SortIcon field="avgResponseDays" />
+                Avg Turnaround (Days) {renderSortIcon("avgResponseDays")}
               </th>
               <th
                 className="py-3.5 px-6 text-xs font-bold text-[#625E59] uppercase tracking-wider cursor-pointer hover:text-[#242222] transition-colors"
                 onClick={() => handleSort("status")}
               >
-                Performance Rating <SortIcon field="status" />
+                Performance Rating {renderSortIcon("status")}
               </th>
             </tr>
           </thead>

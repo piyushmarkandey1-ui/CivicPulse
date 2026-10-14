@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { LayoutDashboard, Users, Map, AlertOctagon, Award, LogOut, ListOrdered } from "lucide-react";
+import { LayoutDashboard, Users, Map, AlertOctagon, Award, LogOut } from "lucide-react";
 import { type TabType } from "./GovDashboardClient";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,7 +16,6 @@ const TABS: { label: TabType; icon: React.ElementType }[] = [
   { label: "Departments", icon: Users },
   { label: "Wards", icon: Map },
   { label: "Escalations", icon: AlertOctagon },
-  { label: "Priority Queue", icon: ListOrdered },
   { label: "Recognition", icon: Award },
 ];
 

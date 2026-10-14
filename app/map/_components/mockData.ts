@@ -1,4 +1,4 @@
-import { type Issue, type Severity, type Category, type IssueStatus } from "@/lib/types";
+import { type Issue } from "@/lib/types";
 
 // ─── Mock Data — 18 issues around Mumbai Andheri/Bandra corridor ──────────────
 
@@ -17,7 +17,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 12 — Andheri East", status: "In Progress",
     reportedAt: getPastDate(1, 21), upvotes: 47,
     address: "S.V. Road, near Andheri Station, Andheri East", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "₹50k–2L", duplicateCount: 6, priorityScore: 89,
   },
   {
     id: "ISS-002", lat: 19.0544, lng: 72.8405,
@@ -27,7 +26,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 7 — Bandra West", status: "Verified",
     reportedAt: getPastDate(3, 4), upvotes: 89,
     address: "Turner Road Junction, Bandra West", photoUrl: "https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "₹50k–2L", duplicateCount: 11, priorityScore: 95,
   },
   {
     id: "ISS-003", lat: 19.1176, lng: 72.9060,
@@ -37,7 +35,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 23 — Powai", status: "Reported",
     reportedAt: getPastDate(2, 14), upvotes: 63,
     address: "Hiranandani Gardens Footbridge, Powai", photoUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "> ₹2L", duplicateCount: 4, priorityScore: 82,
   },
   {
     id: "ISS-004", lat: 19.1075, lng: 72.8263,
@@ -47,7 +44,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 8 — Juhu", status: "In Progress",
     reportedAt: getPastDate(2, 3), upvotes: 38,
     address: "JVPD Scheme School, Juhu", photoUrl: "https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "< ₹50k", duplicateCount: 3, priorityScore: 49,
   },
   {
     id: "ISS-005", lat: 19.1320, lng: 72.8181,
@@ -57,7 +53,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 31 — Versova", status: "Verified",
     reportedAt: getPastDate(3, 11), upvotes: 29,
     address: "Versova Road near Andheri-Versova Link Road", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "₹50k–2L", duplicateCount: 2, priorityScore: 43,
   },
   {
     id: "ISS-006", lat: 19.1140, lng: 72.8557,
@@ -67,7 +62,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 12 — Andheri East", status: "Resolved",
     reportedAt: getPastDate(0, 5), upvotes: 21,
     address: "D.N. Nagar Main Road, Andheri West", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Low", repairCostEstimate: "< ₹50k", duplicateCount: 1, priorityScore: 0,
   },
   {
     id: "ISS-007", lat: 19.0760, lng: 72.8777,
@@ -77,7 +71,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 15 — Dharavi", status: "Reported",
     reportedAt: getPastDate(0, 16), upvotes: 55,
     address: "Dharavi Main Road, near 90 Feet Road", photoUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "> ₹2L", duplicateCount: 5, priorityScore: 61,
   },
   {
     id: "ISS-008", lat: 19.0663, lng: 72.8526,
@@ -87,7 +80,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 10 — Sion", status: "Verified",
     reportedAt: getPastDate(1, 14), upvotes: 102,
     address: "Dharavi-Sion Link Road, Sion", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "> ₹2L", duplicateCount: 14, priorityScore: 100,
   },
   {
     id: "ISS-009", lat: 19.1663, lng: 72.8526,
@@ -97,7 +89,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 19 — Goregaon", status: "Resolved",
     reportedAt: getPastDate(0, 15), upvotes: 18,
     address: "Goregaon West Market, Goregaon", photoUrl: "https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Low", repairCostEstimate: "< ₹50k", duplicateCount: 1, priorityScore: 0,
   },
   {
     id: "ISS-010", lat: 19.1874, lng: 72.8481,
@@ -107,7 +98,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 21 — Malad West", status: "Reported",
     reportedAt: getPastDate(1, 17), upvotes: 24,
     address: "Malad Market, S.V. Road, Malad West", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "₹50k–2L", duplicateCount: 4, priorityScore: 55,
   },
   {
     id: "ISS-011", lat: 19.2288, lng: 72.8566,
@@ -117,7 +107,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 25 — Borivali West", status: "Reported",
     reportedAt: getPastDate(1, 20), upvotes: 41,
     address: "Borivali West Main Road, near IC Colony", photoUrl: "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Low", repairCostEstimate: "< ₹50k", duplicateCount: 2, priorityScore: 34,
   },
   {
     id: "ISS-012", lat: 19.0910, lng: 72.8650,
@@ -127,7 +116,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 14 — Andheri East", status: "In Progress",
     reportedAt: getPastDate(0, 20), upvotes: 73,
     address: "SEEPZ Crossroads, Andheri East", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "₹50k–2L", duplicateCount: 9, priorityScore: 94,
   },
   {
     id: "ISS-013", lat: 19.0399, lng: 72.8553,
@@ -137,7 +125,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 6 — Mahim", status: "Verified",
     reportedAt: getPastDate(3, 8), upvotes: 66,
     address: "Mahim Underpass, Western Express Highway", photoUrl: "https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "High", repairCostEstimate: "> ₹2L", duplicateCount: 7, priorityScore: 66,
   },
   {
     id: "ISS-014", lat: 19.1057, lng: 72.8369,
@@ -147,7 +134,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 8 — Juhu", status: "Resolved",
     reportedAt: getPastDate(3, 8), upvotes: 12,
     address: "Versova Link Road Bridge, Juhu", photoUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Low", repairCostEstimate: "₹50k–2L", duplicateCount: 1, priorityScore: 0,
   },
   {
     id: "ISS-015", lat: 19.1445, lng: 72.8287,
@@ -157,7 +143,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 16 — Oshiwara", status: "Reported",
     reportedAt: getPastDate(1, 10), upvotes: 33,
     address: "WEH Service Road, Oshiwara, Andheri West", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "₹50k–2L", duplicateCount: 3, priorityScore: 42,
   },
   {
     id: "ISS-016", lat: 19.0839, lng: 72.8984,
@@ -167,7 +152,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 18 — Kurla", status: "Verified",
     reportedAt: getPastDate(3, 6), upvotes: 48,
     address: "Kurla West Station Road, Kurla", photoUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "< ₹50k", duplicateCount: 5, priorityScore: 52,
   },
   {
     id: "ISS-017", lat: 19.0640, lng: 72.8350,
@@ -177,7 +161,6 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 7 — Bandra East", status: "In Progress",
     reportedAt: getPastDate(0, 6), upvotes: 91,
     address: "Kalanagar, Bandra East", photoUrl: "https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Medium", repairCostEstimate: "> ₹2L", duplicateCount: 8, priorityScore: 88,
   },
   {
     id: "ISS-018", lat: 19.1550, lng: 72.8710,
@@ -187,10 +170,8 @@ export const MOCK_ISSUES: Issue[] = [
     ward: "Ward 17 — Jogeshwari", status: "Resolved",
     reportedAt: getPastDate(2, 16), upvotes: 9,
     address: "Jogeshwari West Main Road", photoUrl: "https://images.unsplash.com/photo-1604871000636-074fa5117945?auto=format&fit=crop&q=80&w=800",
-    trafficImpact: "Low", repairCostEstimate: "< ₹50k", duplicateCount: 1, priorityScore: 0,
   },
 ];
-
 
 // ─── Ward leaderboard for sidebar ────────────────────────────────────────────
 export const WARD_LEADERBOARD = [

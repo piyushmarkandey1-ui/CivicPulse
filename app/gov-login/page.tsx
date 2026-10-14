@@ -43,8 +43,8 @@ export default function GovLoginPage() {
 
       router.push("/gov-dashboard");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Authentication failed. Please check credentials.");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Authentication failed. Please check credentials.");
     } finally {
       setLoading(false);
     }

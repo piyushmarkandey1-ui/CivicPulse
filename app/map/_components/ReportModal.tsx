@@ -1,15 +1,20 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { type Category, type Severity, type Issue, type TrafficImpact, type RepairCostEstimate } from "@/lib/types";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
+import {
+  type Category,
+  type Severity,
+  type Issue,
+  type TrafficImpact,
+  type RepairScale,
+  REPAIR_COST_MAP,
+} from "@/lib/types";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 // ─── Step definitions ─────────────────────────────────────────────────────────
-const STEPS = ["Photo", "Location", "Category", "Description", "Review"];
+const STEPS = ["Photo", "Location", "Category", "Description", "Impact", "Review"];
 
 const CATEGORIES: Category[] = ["Pothole", "Water Clogging", "Crack", "Road Damage", "Other"];
 const CAT_ICON: Record<Category, string> = {
@@ -24,16 +29,85 @@ const SEVERITIES: { value: Severity; label: string; color: string }[] = [
   { value: "moderate", label: "Reported / Moderate", color: "#C58B32" },
 ];
 
+// ─── Impact step constants ─────────────────────────────────────────────────────
+const TRAFFIC_OPTIONS: {
+  value: TrafficImpact;
+  label: string;
+  emoji: string;
+  desc: string;
+  color: string;
+  bg: string;
+  border: string;
+}[] = [
+  {
+    value: "low",
+    label: "Low",
+    emoji: "🟢",
+    desc: "Minimal disruption, passable",
+    color: "#5E8061",
+    bg: "#EAF0EA",
+    border: "#B8D0BC",
+  },
+  {
+    value: "medium",
+    label: "Medium",
+    emoji: "🟡",
+    desc: "Slows traffic, caution needed",
+    color: "#C58B32",
+    bg: "#F5ECD8",
+    border: "#D9B96A",
+  },
+  {
+    value: "high",
+    label: "High",
+    emoji: "🔴",
+    desc: "Blocks lane or major hazard",
+    color: "#B83A3A",
+    bg: "#F5E5E5",
+    border: "#D9A0A0",
+  },
+];
+
+const REPAIR_OPTIONS: {
+  value: RepairScale;
+  label: string;
+  icon: string;
+  cost: string;
+  desc: string;
+}[] = [
+  {
+    value: "small_patch",
+    label: "Small Patch",
+    icon: "🔧",
+    cost: REPAIR_COST_MAP.small_patch,
+    desc: "Isolated crack or pothole ≤ 1 m²",
+  },
+  {
+    value: "road_section",
+    label: "Road Section",
+    icon: "🚧",
+    cost: REPAIR_COST_MAP.road_section,
+    desc: "Damaged stretch, 1 – 20 m",
+  },
+  {
+    value: "full_road",
+    label: "Full Road",
+    icon: "🏗️",
+    cost: REPAIR_COST_MAP.full_road,
+    desc: "Entire carriageway needs resurfacing",
+  },
+];
+
 interface DraftIssue {
   photoFile: string | null;
   lat: number;
   lng: number;
   category: Category | null;
   severity: Severity | null;
-  trafficImpact: TrafficImpact | null;
-  repairCostEstimate: RepairCostEstimate | null;
   description: string;
   address: string;
+  trafficImpact: TrafficImpact | null;
+  repairScale: RepairScale | null;
 }
 
 const DEFAULT_DRAFT: DraftIssue = {
@@ -42,10 +116,10 @@ const DEFAULT_DRAFT: DraftIssue = {
   lng: 72.865,
   category: null,
   severity: null,
-  trafficImpact: null,
-  repairCostEstimate: null,
   description: "",
   address: "Andheri East, Mumbai",
+  trafficImpact: null,
+  repairScale: null,
 };
 
 // ─── Progress stepper ─────────────────────────────────────────────────────────
@@ -94,8 +168,11 @@ function StepPhoto({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
-    const url = URL.createObjectURL(file);
-    onUpdate({ photoFile: url });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      onUpdate({ photoFile: reader.result as string });
+    };
+    reader.readAsDataURL(file);
     
     // Extract actual EXIF data
     try {
@@ -107,7 +184,7 @@ function StepPhoto({
       } else {
         setExifStatus("No EXIF found. Using default location.");
       }
-    } catch (err) {
+    } catch {
       setExifStatus("EXIF read failed. Using default location.");
     }
     
@@ -206,32 +283,22 @@ function StepLocation({
       </div>
 
       <div>
-        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">Street Address</label>
+        <label className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-1.5 block">
+          Street Address / Landmark
+        </label>
         <input
           type="text"
           value={draft.address}
           onChange={(e) => onUpdate({ address: e.target.value })}
-          className="w-full px-3.5 py-2.5 rounded-lg text-xs text-[#242222] border border-[#C9C0B3] bg-white focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15"
-          placeholder="e.g. Andheri East, Mumbai"
+          placeholder="e.g. S.V. Road near Andheri Station"
+          className="w-full px-3.5 py-2.5 rounded-lg text-sm border border-[#C9C0B3] bg-white text-[#242222] focus:outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15"
         />
       </div>
     </div>
   );
 }
 
-// ─── Step 3: Category, Severity, Traffic Impact & Cost ───────────────────────
-const TRAFFIC_OPTIONS: { value: TrafficImpact; label: string; emoji: string; color: string }[] = [
-  { value: "Low",    label: "Low Traffic",    emoji: "🟢", color: "#5E8061" },
-  { value: "Medium", label: "Medium Traffic",  emoji: "🟡", color: "#C58B32" },
-  { value: "High",   label: "High Traffic",    emoji: "🔴", color: "#B83A3A" },
-];
-
-const COST_OPTIONS: { value: RepairCostEstimate; label: string; emoji: string }[] = [
-  { value: "< ₹50k",   label: "< ₹50k",   emoji: "💚" },
-  { value: "₹50k–2L",  label: "₹50k–2L",  emoji: "🟡" },
-  { value: "> ₹2L",    label: "> ₹2L",    emoji: "🔴" },
-];
-
+// ─── Step 3: Category & Severity ──────────────────────────────────────────────
 function StepCategory({
   draft,
   onUpdate,
@@ -246,7 +313,6 @@ function StepCategory({
         <p className="text-xs text-[#625E59]">Select classification for municipal department routing.</p>
       </div>
 
-      {/* Issue Category */}
       <div>
         <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Issue Category</p>
         <div className="grid grid-cols-2 gap-2">
@@ -269,7 +335,6 @@ function StepCategory({
         </div>
       </div>
 
-      {/* Severity */}
       <div>
         <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Severity Level</p>
         <div className="flex gap-2.5">
@@ -291,53 +356,6 @@ function StepCategory({
               }
             >
               {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Traffic Impact */}
-      <div>
-        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Traffic Impact</p>
-        <div className="flex gap-2">
-          {TRAFFIC_OPTIONS.map(({ value, label, emoji, color }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onUpdate({ trafficImpact: value })}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-bold transition-all",
-                draft.trafficImpact === value
-                  ? "text-white shadow-xs"
-                  : "border-[#DED8CD] bg-white text-[#625E59] hover:border-[#8B2635]"
-              )}
-              style={draft.trafficImpact === value ? { backgroundColor: color, borderColor: color } : undefined}
-            >
-              <span>{emoji}</span>
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Repair Cost Estimate */}
-      <div>
-        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2">Repair Cost Estimate</p>
-        <div className="flex gap-2">
-          {COST_OPTIONS.map(({ value, label, emoji }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onUpdate({ repairCostEstimate: value })}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-bold transition-all",
-                draft.repairCostEstimate === value
-                  ? "border-[#8B2635] bg-[#F0E5D8] text-[#8B2635] shadow-xs"
-                  : "border-[#DED8CD] bg-white text-[#625E59] hover:border-[#8B2635] hover:text-[#242222]"
-              )}
-            >
-              <span>{emoji}</span>
-              <span>{label}</span>
             </button>
           ))}
         </div>
@@ -402,8 +420,117 @@ function StepDescription({
   );
 }
 
-// ─── Step 5: Review ───────────────────────────────────────────────────────────
+// ─── Step 5: Impact ───────────────────────────────────────────────────────────
+function StepImpact({
+  draft,
+  onUpdate,
+}: {
+  draft: DraftIssue;
+  onUpdate: (d: Partial<DraftIssue>) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div>
+        <h3 className="text-base font-bold text-[#242222] mb-0.5">Impact Assessment</h3>
+        <p className="text-xs text-[#625E59]">
+          Help the AI Priority Engine rank this repair accurately.
+        </p>
+      </div>
+
+      {/* Traffic Impact */}
+      <div>
+        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2.5">
+          Traffic Impact
+        </p>
+        <div className="flex flex-col gap-2">
+          {TRAFFIC_OPTIONS.map((opt) => {
+            const selected = draft.trafficImpact === opt.value;
+            return (
+              <motion.button
+                key={opt.value}
+                type="button"
+                onClick={() => onUpdate({ trafficImpact: opt.value })}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "flex items-center gap-3.5 w-full px-4 py-3 rounded-xl border-2 text-left transition-all duration-150",
+                  selected ? "shadow-sm" : "border-[#DED8CD] bg-white hover:border-[#C9C0B3]"
+                )}
+                style={selected ? { background: opt.bg, borderColor: opt.border } : undefined}
+              >
+                <div
+                  className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+                  style={selected ? { borderColor: opt.color, background: opt.color } : { borderColor: "#C9C0B3" }}
+                >
+                  {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                </div>
+                <span className="text-xl leading-none">{opt.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold" style={{ color: selected ? opt.color : "#242222" }}>
+                    {opt.label}
+                  </p>
+                  <p className="text-[11px] text-[#88827A] mt-0.5">{opt.desc}</p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Repair Scale */}
+      <div>
+        <p className="text-xs font-bold text-[#242222] uppercase tracking-wider mb-2.5">
+          Approximate Repair Scale
+        </p>
+        <div className="flex flex-col gap-2">
+          {REPAIR_OPTIONS.map((opt) => {
+            const selected = draft.repairScale === opt.value;
+            return (
+              <motion.button
+                key={opt.value}
+                type="button"
+                onClick={() => onUpdate({ repairScale: opt.value })}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "flex items-center gap-3.5 w-full px-4 py-3 rounded-xl border-2 text-left transition-all duration-150",
+                  selected
+                    ? "border-[#8B2635] bg-[#F0E5D8] shadow-sm"
+                    : "border-[#DED8CD] bg-white hover:border-[#C9C0B3]"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
+                    selected ? "border-[#8B2635] bg-[#8B2635]" : "border-[#C9C0B3]"
+                  )}
+                >
+                  {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                </div>
+                <span className="text-xl leading-none">{opt.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className={cn("text-xs font-bold", selected ? "text-[#8B2635]" : "text-[#242222]")}>
+                      {opt.label}
+                    </p>
+                    <span className="text-[11px] font-mono font-bold text-[#8B2635] flex-shrink-0">
+                      {opt.cost}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#88827A] mt-0.5">{opt.desc}</p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 6: Review ───────────────────────────────────────────────────────────
 function StepReview({ draft }: { draft: DraftIssue }) {
+  const trafficOpt = TRAFFIC_OPTIONS.find((o) => o.value === draft.trafficImpact);
+  const repairOpt  = REPAIR_OPTIONS.find((o) => o.value === draft.repairScale);
+
   return (
     <div className="flex flex-col gap-3">
       <div>
@@ -424,6 +551,27 @@ function StepReview({ draft }: { draft: DraftIssue }) {
           <span className="text-[#88827A] font-medium">Location:</span>
           <span className="font-medium text-[#242222] text-right">{draft.address}</span>
         </div>
+        <div className="flex justify-between border-b border-[#DED8CD] pb-2 items-center">
+          <span className="text-[#88827A] font-medium">Traffic Impact:</span>
+          {trafficOpt ? (
+            <span className="flex items-center gap-1.5 font-bold" style={{ color: trafficOpt.color }}>
+              {trafficOpt.emoji} {trafficOpt.label}
+            </span>
+          ) : (
+            <span className="font-bold text-[#242222]">—</span>
+          )}
+        </div>
+        <div className="flex justify-between border-b border-[#DED8CD] pb-2 items-center">
+          <span className="text-[#88827A] font-medium">Repair Scale:</span>
+          {repairOpt ? (
+            <span className="font-bold text-[#242222]">
+              {repairOpt.icon} {repairOpt.label}{" "}
+              <span className="font-mono text-[#8B2635]">({repairOpt.cost})</span>
+            </span>
+          ) : (
+            <span className="font-bold text-[#242222]">—</span>
+          )}
+        </div>
         <div className="pt-1">
           <span className="text-[#88827A] font-medium block mb-1">Description:</span>
           <p className="text-[#625E59] leading-relaxed italic">{draft.description || "—"}</p>
@@ -433,36 +581,15 @@ function StepReview({ draft }: { draft: DraftIssue }) {
   );
 }
 
-// ─── Ward derivation from coordinates (Mumbai grid) ──────────────────────────
-function deriveWard(lat: number, lng: number): string {
-  // Simple bounding-box lookup for major Mumbai wards
-  if (lat > 19.18 && lng < 72.84) return "Ward 25 — Borivali West";
-  if (lat > 19.17) return "Ward 21 — Malad West";
-  if (lat > 19.14) return "Ward 16 — Oshiwara";
-  if (lat > 19.12 && lng > 72.87) return "Ward 23 — Powai";
-  if (lat > 19.11) return "Ward 12 — Andheri East";
-  if (lat > 19.08 && lng < 72.84) return "Ward 31 — Versova";
-  if (lat > 19.08) return "Ward 14 — Dadar";
-  if (lat > 19.06 && lng > 72.87) return "Ward 18 — Kurla";
-  if (lat > 19.06) return "Ward 10 — Sion";
-  if (lat > 19.05 && lng < 72.84) return "Ward 7 — Bandra West";
-  if (lat > 19.04) return "Ward 6 — Mahim";
-  return "Ward 3 — Colaba";
-}
-
-type SubmitState = "idle" | "loading" | "success" | "error";
-
 interface ReportModalProps {
   onClose: () => void;
-  /** Optional post-submit hook for optimistic local state in parent */
-  onSubmit?: (issue: Omit<Issue, "id" | "upvotes" | "reportedAt">) => void;
+  onSubmit: (issue: Omit<Issue, "id" | "upvotes" | "reportedAt"> & { photoFile?: string }) => void;
 }
 
 export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<DraftIssue>(DEFAULT_DRAFT);
-  const [submitState, setSubmitState] = useState<SubmitState>("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const updateDraft = (partial: Partial<DraftIssue>) =>
     setDraft((d) => ({ ...d, ...partial }));
@@ -472,95 +599,33 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
     if (step === 1) return !!draft.address;
     if (step === 2) return !!draft.category && !!draft.severity;
     if (step === 3) return draft.description.length >= 6;
+    if (step === 4) return !!draft.trafficImpact && !!draft.repairScale;
     return true;
   };
 
-  // Convert blob URL → data URL so Firebase Storage can upload it
-  const blobToDataUrl = async (blobUrl: string): Promise<string> => {
-    try {
-      const res = await fetch(blobUrl);
-      const blob = await res.blob();
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return blobUrl; // fallback: keep the blob URL
-    }
-  };
-
-  const handleSubmit = useCallback(async () => {
-    setSubmitState("loading");
-    setErrorMsg("");
-
-    try {
-      const category = (draft.category || "Other") as Category;
-      const severity = (draft.severity || "moderate") as Severity;
-      const ward = deriveWard(draft.lat, draft.lng);
-      const title = `${category} at ${draft.address}`;
-
-      // Convert blob URL to data URL for storage compatibility
-      let photoUrl = "";
-      if (draft.photoFile) {
-        if (draft.photoFile.startsWith("blob:")) {
-          photoUrl = await blobToDataUrl(draft.photoFile);
-        } else {
-          photoUrl = draft.photoFile;
-        }
-      }
-
-      const issuePayload = {
+  const handleSubmit = () => {
+    setSubmitted(true);
+    setTimeout(() => {
+      onSubmit({
         lat: draft.lat,
         lng: draft.lng,
-        category,
-        severity,
-        title,
+        category: (draft.category || "Other") as Category,
+        severity: (draft.severity || "moderate") as Severity,
+        title: `${draft.category || "Issue"} at ${draft.address}`,
         description: draft.description,
-        ward,
+        ward: "Ward 12 — Andheri East",
         status: "Reported",
         address: draft.address,
-        upvotes: 1,
-        reportedAt: serverTimestamp(),
-        photoUrl: photoUrl || null,
-        trafficImpact: draft.trafficImpact ?? null,
-        repairCostEstimate: draft.repairCostEstimate ?? null,
-      };
-
-      // Write to Firestore
-      await addDoc(collection(db, "issues"), issuePayload);
-
-      // Notify parent for optimistic UI update
-      onSubmit?.({
-        lat: draft.lat,
-        lng: draft.lng,
-        category,
-        severity,
-        title,
-        description: draft.description,
-        ward,
-        status: "Reported",
-        address: draft.address,
-        photoUrl: photoUrl || undefined,
+        photoUrl: draft.photoFile || undefined,
+        photoFile: draft.photoFile || undefined,
+        // Impact fields — written to Firestore
         trafficImpact: draft.trafficImpact ?? undefined,
-        repairCostEstimate: draft.repairCostEstimate ?? undefined,
+        repairCostEstimate: draft.repairScale
+          ? REPAIR_COST_MAP[draft.repairScale]
+          : undefined,
       });
-
-      setSubmitState("success");
-
-      // Auto-close after showing success screen
-      setTimeout(() => onClose(), 2800);
-    } catch (err) {
-      console.error("Firestore write failed:", err);
-      setErrorMsg(
-        err instanceof Error
-          ? err.message
-          : "Failed to submit. Check your connection and try again."
-      );
-      setSubmitState("error");
-    }
-  }, [draft, onSubmit, onClose]);
+    }, 1200);
+  };
 
   return (
     <div
@@ -599,51 +664,29 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          {submitState === "success" ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center py-8 gap-3 text-center"
-            >
+          {submitted ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
               <span className="text-5xl">✅</span>
               <h3 className="text-lg font-bold text-[#242222]">Report Successfully Logged</h3>
               <p className="text-xs text-[#625E59] max-w-xs leading-relaxed">
-                Your report has been entered into the municipal GIS ledger and assigned to the{" "}
-                <span className="font-bold text-[#242222]">{deriveWard(draft.lat, draft.lng)}</span>{" "}
-                engineering desk. Officers will be notified shortly.
+                Your report has been entered into the municipal GIS ledger and assigned to the Ward 12 engineering desk.
               </p>
               <Badge label="Report Logged" variant="sand" />
-              <p className="text-[11px] text-[#88827A] mt-1">Closing automatically…</p>
-            </motion.div>
-          ) : submitState === "error" ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-8 gap-3 text-center"
-            >
-              <span className="text-5xl">⚠️</span>
-              <h3 className="text-base font-bold text-[#8B2635]">Submission Failed</h3>
-              <p className="text-xs text-[#625E59] max-w-xs leading-relaxed">{errorMsg}</p>
-              <button
-                onClick={() => setSubmitState("idle")}
-                className="mt-2 px-4 py-2 rounded-lg bg-[#8B2635] text-white text-xs font-bold hover:bg-[#641B27] transition-colors"
-              >
-                Try Again
-              </button>
-            </motion.div>
+            </div>
           ) : (
             <>
               {step === 0 && <StepPhoto draft={draft} onUpdate={updateDraft} />}
               {step === 1 && <StepLocation draft={draft} onUpdate={updateDraft} />}
               {step === 2 && <StepCategory draft={draft} onUpdate={updateDraft} />}
               {step === 3 && <StepDescription draft={draft} onUpdate={updateDraft} />}
-              {step === 4 && <StepReview draft={draft} />}
+              {step === 4 && <StepImpact draft={draft} onUpdate={updateDraft} />}
+              {step === 5 && <StepReview draft={draft} />}
             </>
           )}
         </div>
 
         {/* Footer */}
-        {submitState === "idle" && (
+        {!submitted && (
           <div className="px-6 py-4 border-t border-[#DED8CD] flex gap-3 bg-[#F7F4ED]">
             <button
               type="button"
@@ -665,21 +708,11 @@ export default function ReportModal({ onClose, onSubmit }: ReportModalProps) {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={submitState !== "idle"}
-                className="flex-1 py-2.5 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs"
               >
                 Submit Incident Report
               </button>
             )}
-          </div>
-        )}
-        {submitState === "loading" && (
-          <div className="px-6 py-4 border-t border-[#DED8CD] flex items-center justify-center gap-2.5 bg-[#F7F4ED]">
-            <svg className="animate-spin h-4 w-4 text-[#8B2635]" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            <span className="text-xs font-bold text-[#8B2635]">Logging report to municipal GIS ledger…</span>
           </div>
         )}
       </motion.div>

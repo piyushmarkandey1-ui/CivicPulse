@@ -10,7 +10,7 @@ const SLA_HOURS = {
   moderate: 120, // 5 days
 };
 
-export const checkEscalations = functions.pubsub.schedule("every 24 hours").onRun(async (context) => {
+export const checkEscalations = functions.pubsub.schedule("every 24 hours").onRun(async (_context) => {
   const now = new Date().getTime();
   
   try {

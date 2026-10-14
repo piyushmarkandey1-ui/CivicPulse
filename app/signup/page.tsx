@@ -38,8 +38,8 @@ export default function SignupPage() {
       // Profile is auto-created by database trigger
       router.push("/map");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try again.");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Failed to create account. Please try again.");
     } finally {
       setLoading(false);
     }

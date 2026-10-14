@@ -21,7 +21,7 @@ export function createClient() {
         select: () => ({ eq: () => ({ single: async () => ({ data: null, error: null }) }) }),
         insert: async () => ({ error: null }),
       }),
-    } as any;
+    } as unknown as ReturnType<typeof createBrowserClient>;
   }
 
   return createBrowserClient(url, key);

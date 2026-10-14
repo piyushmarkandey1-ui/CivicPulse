@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Municipal Command Center | CivicPulse",
+  description: "Operations, ward performance telemetry, and statutory SLA triage portal for municipal engineers.",
+};
+
 // The gov-dashboard has its own sidebar navigation — the global Navbar is NOT
 // rendered here. This layout wraps GovDashboardClient without adding the
 // floating Navbar that is injected by the root layout.

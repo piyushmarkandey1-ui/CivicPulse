@@ -9,10 +9,8 @@ import MyReportsGrid from "./MyReportsGrid";
 import IssueSidePanel from "@/components/ui/IssueSidePanel";
 import { type Issue } from "@/lib/types";
 import { Navbar } from "@/components/ui/Navbar";
-import { Footer } from "@/components/ui/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { subscribeToUserIssues } from "@/lib/supabase/db";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
@@ -20,34 +18,28 @@ export default function ProfileClient() {
   const { user, profile, loading: authLoading } = useAuth();
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [loadingIssues, setLoadingIssues] = useState(true);
+  const [loadingIssues, setLoadingIssues] = useState(() => !!user);
 
   useEffect(() => {
-    if (!user) {
-      setLoadingIssues(false);
-      return;
-    }
+    if (!user) return;
 
-    const q = query(collection(db, "issues"), where("reporterUid", "==", user.id));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedIssues: Issue[] = [];
-      snapshot.forEach((doc) => {
-        fetchedIssues.push({ id: doc.id, ...doc.data() } as Issue);
-      });
-      fetchedIssues.sort(
-        (a, b) => new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime()
-      );
+    const unsubscribe = subscribeToUserIssues(
+      user.id,
+      (fetchedIssues: Issue[]) => {
+        setIssues(fetchedIssues);
+        setLoadingIssues(false);
+        setSelectedIssue((prev) => {
+          if (!prev) return null;
+          return fetchedIssues.find((i) => i.id === prev.id) || prev;
+        });
+      },
+      (error) => {
+        console.warn("Supabase error fetching user reports:", error);
+        setLoadingIssues(false);
+      }
+    );
 
-      setIssues(fetchedIssues);
-      setLoadingIssues(false);
-
-      setSelectedIssue((prev) => {
-        if (!prev) return null;
-        return fetchedIssues.find((i) => i.id === prev.id) || prev;
-      });
-    });
-
-    return () => unsubscribe();
+    return unsubscribe;
   }, [user]);
 
   const handleUpvote = () => {

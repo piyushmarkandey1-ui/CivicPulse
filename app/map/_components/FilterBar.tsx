@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { type Filters } from "./MapDashboard";
-import { type Category, type Severity, type IssueStatus } from "@/lib/types";
+import { type Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface FilterBarProps {

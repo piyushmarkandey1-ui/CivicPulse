@@ -331,15 +331,14 @@ function HeroSection() {
                 </motion.span>
               </AnimatePresence>
             </span>
-            .<br />
-            Across a City.
+            .
           </h1>
 
           {/* Subtitle */}
           <p className="text-body text-[#625E59] max-w-lg leading-relaxed">
-            Smart automation for municipal infrastructure — citizens report road damage,
-            AI deduplicates and scores by safety, cost &amp; traffic impact, and officers
-            act on a ranked priority queue with photographic proof of resolution.
+            Smart Automation for Municipal Infrastructure — AI-driven deduplication,
+            priority scoring, and ranked repair queues that help officers act faster
+            and citizens see results.
           </p>
 
           {/* Action Buttons */}
@@ -422,154 +421,166 @@ function HeroSection() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Section 1b: AI FLOW — 3-Step Visual Pipeline
+   Section 1b: THREE-STEP AI FLOW (Visual Process Overview)
 ───────────────────────────────────────────────────────────────────────────── */
-const AI_FLOW_STEPS = [
+const FLOW_STEPS = [
   {
     emoji: "🏘️",
     step: "01",
-    title: "Citizens & Inspectors Report",
+    actor: "Citizens & Inspectors",
+    title: "Report Damage on the Map",
     description:
-      "Road damage is reported directly on the live GIS map — with GPS-pinned location, category, severity, photographic evidence, and traffic impact. Each report enters the municipal queue instantly.",
-    highlight: "Any citizen. Any ward. Real-time.",
-    accentColor: "#8B2635",
-    accentBg: "#F0E5D8",
-    accentBorder: "#D6C2A3",
+      "Community members and on-ground inspectors pin road damage with photos and exact GPS coordinates directly on the live city map — from potholes to structural cracks.",
+    color: "#8B2635",
+    bg: "#F0E5D8",
+    border: "#D6C2A3",
   },
   {
     emoji: "🤖",
     step: "02",
-    title: "AI Priority Engine",
+    actor: "AI Priority Engine",
+    title: "Deduplicate, Score & Rank",
     description:
-      "Duplicate reports within 80m are merged by proximity clustering. Each issue receives a 0–100 priority score: Severity (40pts) + Citizen Upvotes (20pts) + Traffic Impact (20pts) + Days Overdue (20pts).",
-    highlight: "Deduplication + Smart Scoring.",
-    accentColor: "#C58B32",
-    accentBg: "#FEF6E9",
-    accentBorder: "#E4C97A",
+      "The AI engine merges duplicate reports, then scores each issue by safety risk, repair cost efficiency, and traffic impact — surfacing the most critical repairs first.",
+    color: "#5E8061",
+    bg: "#EAF0EA",
+    border: "#B8D0BC",
   },
   {
     emoji: "🛠️",
     step: "03",
-    title: "Officers Act on Ranked Queue",
+    actor: "Municipal Officers",
+    title: "Act on a Ranked Queue",
     description:
-      "Municipal officers triage from a live priority queue sorted by AI score. Status is updated (Verified → In Progress → Resolved) and repair is confirmed with photographic proof visible to all citizens.",
-    highlight: "Accountability. Proof. Closure.",
-    accentColor: "#5E8061",
-    accentBg: "#EBF0EC",
-    accentBorder: "#A8C5AD",
+      "Officers receive a clean, ranked work queue. Each resolved issue requires photographic proof of repair — creating an auditable public record of every fix.",
+    color: "#C58B32",
+    bg: "#F5ECD8",
+    border: "#D9B96A",
   },
 ];
 
-function AIFlowSection() {
+function ThreeStepFlowSection() {
   const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
     <section ref={ref} className="relative px-4 sm:px-6 lg:px-8 py-20 bg-transparent">
       <div className="max-w-7xl mx-auto">
-
-        {/* Section header */}
+        {/* Header */}
         <motion.div
           className="text-center mb-14"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-caption text-[#8B2635] mb-1.5 font-bold">How It Works</p>
+          <p className="text-caption text-[#8B2635] mb-1.5 font-bold tracking-widest uppercase">How CivicPulse Works</p>
           <h2 className="text-h1 text-[#242222] mb-2.5">
-            Smart Automation for{" "}
-            <span className="text-[#8B2635]">Municipal Infrastructure</span>
+            From Report to Resolution —{" "}
+            <span className="text-[#8B2635]">Automated</span>
           </h2>
           <p className="text-body text-[#625E59] max-w-2xl mx-auto">
-            From citizen report to photographic resolution — the entire pipeline runs on
-            live Firestore data, geospatial deduplication, and AI-scored prioritization.
+            A closed-loop system where AI handles the complexity so citizens,
+            inspectors, and officers can focus on what matters: fixing the road.
           </p>
         </motion.div>
 
-        {/* Flow cards + connector arrows */}
-        <div className="relative grid md:grid-cols-3 gap-6">
+        {/* Flow Steps with connecting arrows */}
+        <div className="relative">
+          {/* Desktop connector line */}
+          <div className="hidden lg:block absolute top-[68px] left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-0.5 bg-gradient-to-r from-[#D6C2A3] via-[#B8D0BC] to-[#D9B96A] z-0" />
 
-          {/* Animated connector lines (desktop only) */}
-          <div className="hidden md:block absolute top-[56px] left-[calc(33.33%-8px)] w-[calc(33.33%+16px)] pointer-events-none z-10">
-            <motion.div
-              className="h-0.5 w-full bg-gradient-to-r from-[#D6C2A3] via-[#E4C97A] to-[#D6C2A3] rounded-full"
-              initial={{ scaleX: 0, originX: 0 }}
-              animate={inView ? { scaleX: 1 } : {}}
-              transition={{ duration: 0.7, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-          <div className="hidden md:block absolute top-[56px] left-[calc(66.66%-8px)] w-[calc(33.33%+16px)] pointer-events-none z-10">
-            <motion.div
-              className="h-0.5 w-full bg-gradient-to-r from-[#E4C97A] via-[#A8C5AD] to-[#A8C5AD] rounded-full"
-              initial={{ scaleX: 0, originX: 0 }}
-              animate={inView ? { scaleX: 1 } : {}}
-              transition={{ duration: 0.7, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-
-          {AI_FLOW_STEPS.map((step, i) => (
-            <motion.div
-              key={step.step}
-              initial={{ opacity: 0, y: 28 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.55, delay: 0.1 + i * 0.15 }}
-              className="relative flex flex-col rounded-3xl bg-white/90 backdrop-blur-md border border-[#DED8CD]/70 shadow-[0_12px_36px_rgba(36,34,34,0.06),0_1px_3px_rgba(36,34,34,0.03)] hover:shadow-[0_20px_48px_rgba(36,34,34,0.10)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-            >
-              {/* Top accent stripe */}
-              <div className="h-1 w-full" style={{ background: step.accentColor }} />
-
-              <div className="p-6 flex flex-col gap-4 flex-1">
-                {/* Emoji + step number */}
-                <div className="flex items-center justify-between">
-                  <div
-                    className="h-14 w-14 rounded-2xl flex items-center justify-center text-3xl shadow-xs border"
-                    style={{ background: step.accentBg, borderColor: step.accentBorder }}
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 relative z-10">
+            {FLOW_STEPS.map((step, i) => (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 30 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.55, delay: 0.1 + i * 0.15 }}
+                className="flex flex-col"
+              >
+                {/* Step indicator + emoji */}
+                <div className="flex flex-col items-center mb-5">
+                  <motion.div
+                    className="relative flex items-center justify-center w-16 h-16 rounded-2xl text-3xl shadow-[0_8px_24px_rgba(36,34,34,0.1)] mb-3"
+                    style={{ background: step.bg, border: `1.5px solid ${step.border}` }}
+                    whileHover={{ scale: 1.08, rotate: 2 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
                     {step.emoji}
-                  </div>
-                  <span className="text-4xl font-bold font-mono" style={{ color: step.accentBorder }}>
-                    {step.step}
-                  </span>
+                    {/* Step number bubble */}
+                    <span
+                      className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-[10px] font-bold text-white flex items-center justify-center shadow-sm"
+                      style={{ background: step.color }}
+                    >
+                      {i + 1}
+                    </span>
+                  </motion.div>
+
+                  {/* Connector arrow for mobile */}
+                  {i < FLOW_STEPS.length - 1 && (
+                    <div className="md:hidden flex items-center justify-center mt-4 mb-1">
+                      <motion.div
+                        className="text-[#D6C2A3] text-xl font-bold"
+                        animate={{ y: [0, 4, 0] }}
+                        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        ↓
+                      </motion.div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Title */}
-                <h3 className="text-base font-bold text-[#242222] leading-snug">{step.title}</h3>
-
-                {/* Description */}
-                <p className="text-xs text-[#625E59] leading-relaxed flex-1">{step.description}</p>
-
-                {/* Highlight pill */}
+                {/* Card */}
                 <div
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border self-start"
-                  style={{ color: step.accentColor, background: step.accentBg, borderColor: step.accentBorder }}
+                  className="flex-1 rounded-3xl bg-white/90 backdrop-blur-md border shadow-[0_10px_32px_rgba(36,34,34,0.06),0_1px_3px_rgba(36,34,34,0.03)] hover:shadow-[0_20px_48px_rgba(36,34,34,0.10)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                  style={{ borderColor: `${step.border}99` }}
                 >
-                  <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: step.accentColor }} />
-                  {step.highlight}
+                  {/* Colored top accent bar */}
+                  <div className="h-1 w-full" style={{ background: step.color }} />
+
+                  <div className="p-6">
+                    {/* Actor label */}
+                    <span
+                      className="inline-block text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full mb-3"
+                      style={{ background: step.bg, color: step.color, border: `1px solid ${step.border}` }}
+                    >
+                      {step.actor}
+                    </span>
+
+                    <h3 className="text-h3 text-[#242222] mb-2.5">{step.title}</h3>
+                    <p className="text-body-sm text-[#625E59] leading-relaxed">{step.description}</p>
+
+                    {/* Step number watermark */}
+                    <div
+                      className="mt-5 pt-4 border-t flex items-center justify-between"
+                      style={{ borderColor: `${step.border}66` }}
+                    >
+                      <span className="text-xs text-[#88827A] font-medium">Step {step.step}</span>
+                      <span
+                        className="text-3xl font-bold font-mono opacity-15"
+                        style={{ color: step.color }}
+                      >
+                        {step.step}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom CTA strip */}
+        {/* Bottom note */}
         <motion.div
-          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 text-center"
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          className="mt-12 text-center"
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <p className="text-sm text-[#625E59]">
-            End-to-end pipeline powered by{" "}
-            <span className="font-bold text-[#242222]">Firebase Firestore</span>,{" "}
-            <span className="font-bold text-[#242222]">×Turf.js spatial clustering</span>, and{" "}
-            <span className="font-bold text-[#242222]">real-time onSnapshot listeners</span>.
+          <p className="text-xs text-[#88827A] max-w-md mx-auto leading-relaxed">
+            Every resolved issue is logged with photographic proof, timestamps, and officer signatures —
+            creating a permanent, publicly auditable record of municipal maintenance.
           </p>
-          <Link
-            href="/map"
-            className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#8B2635] hover:bg-[#641B27] text-white text-xs font-bold transition-colors shadow-xs"
-          >
-            Open Live Map →
-          </Link>
         </motion.div>
       </div>
     </section>
@@ -577,8 +588,8 @@ function AIFlowSection() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HOW IT WORKS SECTION
-   ───────────────────────────────────────────────────────────────────────────── */
+   Section 2: HOW IT WORKS (Floating Step Cards)
+───────────────────────────────────────────────────────────────────────────── */
 const HOW_STEPS = [
   {
     step: "01",
@@ -1036,7 +1047,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full overflow-x-hidden bg-transparent">
       <HeroSection />
-      <AIFlowSection />
+      <ThreeStepFlowSection />
       <BridgeStory />
       <HowItWorksSection />
       <StatsSection />
