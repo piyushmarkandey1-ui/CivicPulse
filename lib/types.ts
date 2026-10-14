@@ -31,4 +31,6 @@ export interface Issue {
   /** Added by the Impact step */
   trafficImpact?:      TrafficImpact;
   repairCostEstimate?: string;   // e.g. "₹50k – ₹5L"
+  duplicateCount?:     number;
+  priorityScore?:      number;
 }
