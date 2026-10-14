@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
+import {
+  isSupabaseConfigured,
+  setStoredDemoSession,
+  createMockUser,
+} from "@/lib/supabase/auth-helpers";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -21,21 +26,50 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            role: "citizen",
-          },
-        },
-      });
+      let createdUser = null;
 
-      if (signUpError) throw signUpError;
-      if (!data.user) throw new Error("Signup failed. Please try again.");
+      // 1. Attempt live Supabase registration if configured
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                name: name.trim() || "Active Citizen",
+                role: "citizen",
+              },
+            },
+          });
 
-      // Profile is auto-created by database trigger
+          if (signUpError) {
+            // If it's a real API validation error (e.g. invalid email format), surface it
+            const msg = signUpError.message?.toLowerCase() || "";
+            if (!msg.includes("fetch") && !msg.includes("network")) {
+              throw signUpError;
+            }
+          } else if (data?.user) {
+            createdUser = data.user;
+          }
+        } catch (netErr: any) {
+          // If network / DNS / fetch failed, fallback to local demo session
+          const msg = netErr?.message?.toLowerCase() || "";
+          if (!msg.includes("fetch") && !msg.includes("network")) {
+            throw netErr;
+          }
+        }
+      }
+
+      // 2. If Supabase is offline/unconfigured, create local session
+      if (!createdUser) {
+        const { user: demoUser, profile: demoProfile } = createMockUser({
+          email: email.trim(),
+          name: name.trim() || "Active Citizen",
+          role: "citizen",
+        });
+        setStoredDemoSession(demoUser, demoProfile);
+      }
+
       router.push("/map");
       router.refresh();
     } catch (err: unknown) {

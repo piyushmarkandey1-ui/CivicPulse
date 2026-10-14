@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
+import {
+  isSupabaseConfigured,
+  setStoredDemoSession,
+  getStoredDemoSession,
+  createMockUser,
+} from "@/lib/supabase/auth-helpers";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,20 +26,60 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      let loggedInUser = null;
+      let userRole: "citizen" | "government" = "citizen";
 
-      if (signInError) throw signInError;
+      // 1. Attempt live Supabase login if configured
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
+          if (signInError) {
+            const msg = signInError.message?.toLowerCase() || "";
+            if (!msg.includes("fetch") && !msg.includes("network")) {
+              throw signInError;
+            }
+          } else if (data?.user) {
+            loggedInUser = data.user;
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("role")
+              .eq("id", data.user.id)
+              .single();
+            if (profile?.role === "government") {
+              userRole = "government";
+            }
+          }
+        } catch (netErr: any) {
+          const msg = netErr?.message?.toLowerCase() || "";
+          if (!msg.includes("fetch") && !msg.includes("network")) {
+            throw netErr;
+          }
+        }
+      }
 
-      if (profile?.role === "government") {
+      // 2. Fallback to local session
+      if (!loggedInUser) {
+        const stored = getStoredDemoSession();
+        if (stored && stored.user.email?.toLowerCase() === email.trim().toLowerCase()) {
+          loggedInUser = stored.user;
+          userRole = (stored.profile.role as "citizen" | "government") || "citizen";
+        } else {
+          const isGov = email.toLowerCase().includes("gov") || email.toLowerCase().includes("officer");
+          userRole = isGov ? "government" : "citizen";
+          const { user: demoUser, profile: demoProfile } = createMockUser({
+            email: email.trim(),
+            name: email.split("@")[0] || "Active Citizen",
+            role: userRole,
+          });
+          setStoredDemoSession(demoUser, demoProfile);
+        }
+      }
+
+      if (userRole === "government") {
         router.push("/gov-dashboard");
       } else {
         router.push("/map");

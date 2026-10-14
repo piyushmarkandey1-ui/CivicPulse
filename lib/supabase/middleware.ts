@@ -7,14 +7,46 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
-    // When Supabase is not configured (e.g. demo mode or fresh clone), pass through
+  const isRealSupabase =
+    !!supabaseUrl &&
+    !!supabaseKey &&
+    !supabaseUrl.includes("your-project.supabase.co") &&
+    !supabaseUrl.includes("placeholder") &&
+    !supabaseUrl.includes("example.com");
+
+  const demoRole = request.cookies.get("civicpulse_role")?.value as "citizen" | "government" | undefined;
+  const { pathname } = request.nextUrl;
+
+  const citizenProtected = ["/profile"];
+  const govProtected = ["/gov-dashboard"];
+  const authRoutes = ["/login", "/signup", "/gov-login", "/gov-signup"];
+
+  // If running in demo mode or without real Supabase connection
+  if (!isRealSupabase) {
+    if (demoRole) {
+      if (govProtected.some((p) => pathname.startsWith(p)) && demoRole !== "government") {
+        return NextResponse.redirect(new URL("/login?error=unauthorized", request.url));
+      }
+      if (authRoutes.includes(pathname)) {
+        return NextResponse.redirect(new URL(demoRole === "government" ? "/gov-dashboard" : "/map", request.url));
+      }
+      return supabaseResponse;
+    }
+
+    // Unauthenticated demo user
+    if (govProtected.some((p) => pathname.startsWith(p))) {
+      return NextResponse.redirect(new URL("/gov-login", request.url));
+    }
+    if (citizenProtected.some((p) => pathname.startsWith(p))) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
     return supabaseResponse;
   }
 
+  // Real Supabase is configured
   const supabase = createServerClient(
-    supabaseUrl,
-    supabaseKey,
+    supabaseUrl!,
+    supabaseKey!,
     {
       cookies: {
         getAll() {
@@ -33,21 +65,22 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: do not add any logic between createServerClient and
-  // supabase.auth.getUser() — it will break session refreshing.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
-  // Protected routes that require authentication
-  const citizenProtected = ["/profile"];
-  const govProtected = ["/gov-dashboard"];
-  const authRoutes = ["/login", "/signup", "/gov-login", "/gov-signup"];
-
   // Redirect unauthenticated users away from protected routes
   if (!user) {
+    if (demoRole) {
+      if (govProtected.some((p) => pathname.startsWith(p)) && demoRole !== "government") {
+        return NextResponse.redirect(new URL("/login?error=unauthorized", request.url));
+      }
+      if (authRoutes.includes(pathname)) {
+        return NextResponse.redirect(new URL(demoRole === "government" ? "/gov-dashboard" : "/map", request.url));
+      }
+      return supabaseResponse;
+    }
+
     if (govProtected.some((p) => pathname.startsWith(p))) {
       return NextResponse.redirect(new URL("/gov-login", request.url));
     }

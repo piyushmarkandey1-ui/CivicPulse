@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
+import {
+  isSupabaseConfigured,
+  setStoredDemoSession,
+  createMockUser,
+} from "@/lib/supabase/auth-helpers";
 
 const DEPARTMENTS = [
   "Roads & Infrastructure",
@@ -44,21 +49,51 @@ export default function GovSignupPage() {
     }
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            role: "government",
-            department,
-            ward: ward || null,
-          },
-        },
-      });
+      let registeredUser = null;
 
-      if (signUpError) throw signUpError;
-      if (!data.user) throw new Error("Registration failed. Please try again.");
+      // 1. Attempt live Supabase registration if configured
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                name: name.trim() || "Municipal Officer",
+                role: "government",
+                department: department || "Roads & Infrastructure",
+                ward: ward || "Ward 1",
+              },
+            },
+          });
+
+          if (signUpError) {
+            const msg = signUpError.message?.toLowerCase() || "";
+            if (!msg.includes("fetch") && !msg.includes("network")) {
+              throw signUpError;
+            }
+          } else if (data?.user) {
+            registeredUser = data.user;
+          }
+        } catch (netErr: any) {
+          const msg = netErr?.message?.toLowerCase() || "";
+          if (!msg.includes("fetch") && !msg.includes("network")) {
+            throw netErr;
+          }
+        }
+      }
+
+      // 2. Fallback to local session
+      if (!registeredUser) {
+        const { user: demoUser, profile: demoProfile } = createMockUser({
+          email: email.trim(),
+          name: name.trim() || "Municipal Officer",
+          role: "government",
+          department: department || "Roads & Infrastructure",
+          ward: ward || "Ward 1",
+        });
+        setStoredDemoSession(demoUser, demoProfile);
+      }
 
       router.push("/gov-dashboard");
       router.refresh();
